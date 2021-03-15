@@ -26,8 +26,6 @@ public class Simulation {
 
         List<Character> characters = encounterOutcomes.stream().map(EncounterOutcome::getCharacter).distinct().collect(Collectors.toList());
 
-
-
         Map<Character, IntSummaryStatistics> timesAttackedStatsMap = encounterOutcomes.stream()
                 .collect(Collectors.groupingBy(EncounterOutcome::getCharacter, Collectors.summarizingInt(EncounterOutcome::getTimesAttacked)));
 

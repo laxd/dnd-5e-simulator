@@ -5,6 +5,15 @@ import uk.laxd.dndSimulator.action.InitiativeRoll;
 import uk.laxd.dndSimulator.character.Character;
 import uk.laxd.dndSimulator.dice.Roll;
 
+/**
+ * An {@code Effect} is any change to a character that impacts game play. This includes for example:
+ *
+ * * Weapons and other equipment
+ * * Class/race/other skills
+ * * Feats
+ * * Conditions
+ *
+ */
 public class Effect {
 
     private String name;

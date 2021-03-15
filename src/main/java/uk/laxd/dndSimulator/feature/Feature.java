@@ -4,6 +4,10 @@ import uk.laxd.dndSimulator.Effect;
 import uk.laxd.dndSimulator.action.AttackAction;
 import uk.laxd.dndSimulator.character.Character;
 
+/**
+ * A {@code Feature} is a specific type of {@link Effect} that
+ * a character obtains through their class, race or
+ */
 public abstract class Feature extends Effect {
 
     private boolean isActive;

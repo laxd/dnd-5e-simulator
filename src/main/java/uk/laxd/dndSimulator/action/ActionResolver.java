@@ -1,9 +1,11 @@
 package uk.laxd.dndSimulator.action;
 
+import org.springframework.stereotype.Component;
 import uk.laxd.dndSimulator.character.Character;
 import uk.laxd.dndSimulator.dice.RollResult;
 import uk.laxd.dndSimulator.equipment.Weapon;
 
+@Component
 public class ActionResolver {
 
     public void resolve(AttackAction attackAction) {

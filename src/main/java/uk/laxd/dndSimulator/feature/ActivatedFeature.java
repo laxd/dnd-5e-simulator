@@ -17,9 +17,6 @@ public abstract class ActivatedFeature extends Feature {
 
     public abstract ActionType getActionType();
 
-    /**
-     * Priority represents how important it is that this is applied.
-     * @return
-     */
+    // TODO: Include some sort of priority so that features can be ordered?
 
 }

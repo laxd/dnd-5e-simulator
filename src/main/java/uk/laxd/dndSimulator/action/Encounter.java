@@ -3,7 +3,6 @@ package uk.laxd.dndSimulator.action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.laxd.dndSimulator.character.Character;
-import uk.laxd.dndSimulator.dice.Die;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,12 +13,17 @@ public class Encounter {
 
     private int rounds;
 
+    private ActionResolver actionResolver;
+    private DamageResolver damageResolver;
+
     private Collection<Character> participants;
 
     private Map<Character, EncounterOutcome> outcomeMap;
 
     // TODO: Refactor this to take in teams? Or even a EncounterSettings object?
-    public Encounter(Character... participants) {
+    public Encounter(ActionResolver actionResolver, DamageResolver damageResolver, Character... participants) {
+        this.actionResolver = actionResolver;
+        this.damageResolver = damageResolver;
         this.participants = Arrays.asList(participants);
     }
 
@@ -29,20 +33,29 @@ public class Encounter {
         participants.forEach(p -> outcomeMap.put(p, new EncounterOutcome(p)));
 
         // Create a list of turns, sorted by initiative
-        List<Turn> turns = participants.stream()
-                .map(p -> {
-                    InitiativeRoll initiativeRoll = new InitiativeRoll();
-                    p.getFeatures().forEach(f -> f.onInitiativeRoll(initiativeRoll));
-                    int initiative = initiativeRoll.roll().getOutcome() + p.getInitiativeModifier();
+        Map<Character, Integer> charactersByInitiative = new HashMap<>();
 
-                    return new Turn(p, this, initiative);
-                })
-                .sorted(Comparator.comparing(Turn::getInitiative))
+        for(Character character : participants) {
+            InitiativeRoll initiativeRoll = new InitiativeRoll();
+            character.getFeatures().forEach(f -> f.onInitiativeRoll(initiativeRoll));
+
+            charactersByInitiative.put(character, initiativeRoll.roll().getOutcome() + character.getInitiativeModifier());
+        }
+
+        List<Character> characters = charactersByInitiative.entrySet().stream()
+                .sorted(Comparator.comparing(Map.Entry::getValue))
+                .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
+
 
         while(participants.stream().allMatch(p -> p.getHp() > 0)) {
             rounds++;
-            for(Turn turn : turns) {
+            for(Character character : characters) {
+
+                // TODO: Remove instantiation here, move to factory?
+                // Should a character be able to contain its own target selector?
+                Turn turn = new Turn(actionResolver, damageResolver, character, new SimpleTargetSelector(this.getTarget(character)));
+
                 TurnOutcome turnOutcome = turn.doTurn();
 
                 // Update the encounter outcome

@@ -4,28 +4,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.laxd.dndSimulator.character.Character;
 
-import java.util.Map;
-
 public class Turn {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Turn.class);
 
-    private ActionResolver actionResolver = new ActionResolver();
-    private DamageResolver damageResolver = new DamageResolver();
+    private ActionResolver actionResolver;
+    private DamageResolver damageResolver;
+    private TargetSelector targetSelector;
 
     private Character character;
-    private Encounter encounter;
 
-    private int initiative;
-
-    public Turn(Character character, Encounter encounter, int initiative) {
+    public Turn(ActionResolver actionResolver, DamageResolver damageResolver, Character character, TargetSelector targetSelector) {
+        this.actionResolver = actionResolver;
+        this.damageResolver = damageResolver;
         this.character = character;
-        this.encounter = encounter;
-        this.initiative = initiative;
+        this.targetSelector = targetSelector;
     }
 
     public TurnOutcome doTurn() {
-        Character target = encounter.getTarget(character);
+        Character target = targetSelector.getTarget();
 
         if(target == null) {
             LOGGER.info("Nothing to attack");
@@ -49,9 +46,5 @@ public class Turn {
 
     public Character getCharacter() {
         return character;
-    }
-
-    public int getInitiative() {
-        return initiative;
     }
 }

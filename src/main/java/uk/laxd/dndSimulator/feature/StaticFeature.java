@@ -1,6 +1,8 @@
 package uk.laxd.dndSimulator.feature;
 
-/* A feature that is always active, and doesn't need to be activated manually, i.e. Brutal Critical */
+/**
+ *  A {@code Feature} that is always active, and applies whenever a condition is met, i.e. Brutal Critical
+ */
 public class StaticFeature extends Feature {
     public StaticFeature(String name) {
         super(name);

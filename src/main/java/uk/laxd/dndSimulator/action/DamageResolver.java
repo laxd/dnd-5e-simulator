@@ -1,5 +1,6 @@
 package uk.laxd.dndSimulator.action;
 
+import org.springframework.stereotype.Component;
 import uk.laxd.dndSimulator.character.Character;
 import uk.laxd.dndSimulator.dice.Die;
 import uk.laxd.dndSimulator.dice.Roll;
@@ -11,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+@Component
 public class DamageResolver {
 
     public void resolve(AttackAction attackAction) {
