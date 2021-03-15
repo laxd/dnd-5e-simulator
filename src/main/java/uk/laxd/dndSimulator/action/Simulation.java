@@ -15,44 +15,38 @@ public class Simulation {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Simulation.class);
 
-    private Collection<EncounterOutcome> encounterOutcomes = new ArrayList<>();
-
     public void runSimulation(Encounter encounter, int count) {
+        Collection<CharacterEncounterOutcome> characterEncounterOutcomes = new ArrayList<>();
+
         for(int i=1; i<=count; i++) {
             encounter.reset();
-            encounterOutcomes.addAll(encounter.startEncounter());
+            EncounterOutcome encounterOutcome = encounter.startEncounter();
             LOGGER.info("Completed simulation {}/{}", i, count);
+
+            characterEncounterOutcomes.addAll(encounterOutcome.getCharacterEncounterOutcomes());
         }
 
-        List<Character> characters = encounterOutcomes.stream().map(EncounterOutcome::getCharacter).distinct().collect(Collectors.toList());
+        List<Character> characters = characterEncounterOutcomes.stream().map(CharacterEncounterOutcome::getCharacter).distinct().collect(Collectors.toList());
 
-        Map<Character, IntSummaryStatistics> timesAttackedStatsMap = encounterOutcomes.stream()
-                .collect(Collectors.groupingBy(EncounterOutcome::getCharacter, Collectors.summarizingInt(EncounterOutcome::getTimesAttacked)));
-
-
-        Map<Character, IntSummaryStatistics> remainingHpStatsMap = encounterOutcomes.stream()
-                .collect(Collectors.groupingBy(EncounterOutcome::getCharacter, Collectors.summarizingInt(EncounterOutcome::getRemainingHp)));
+        Map<Character, IntSummaryStatistics> timesAttackedStatsMap = characterEncounterOutcomes.stream()
+                .collect(Collectors.groupingBy(CharacterEncounterOutcome::getCharacter, Collectors.summarizingInt(CharacterEncounterOutcome::getTimesAttacked)));
 
 
-        Map<Character, IntSummaryStatistics> totalHitsStatsMap = encounterOutcomes.stream()
-                .collect(Collectors.groupingBy(EncounterOutcome::getCharacter, Collectors.summarizingInt(EncounterOutcome::getTimesHit)));
+        Map<Character, IntSummaryStatistics> totalHitsStatsMap = characterEncounterOutcomes.stream()
+                .collect(Collectors.groupingBy(CharacterEncounterOutcome::getCharacter, Collectors.summarizingInt(CharacterEncounterOutcome::getTimesHit)));
 
-        Map<Character, IntSummaryStatistics> damageInflictedStatsMap = encounterOutcomes.stream()
-                .collect(Collectors.groupingBy(EncounterOutcome::getCharacter, Collectors.summarizingInt(EncounterOutcome::getTotalDamageInflicted)));
+        Map<Character, IntSummaryStatistics> damageInflictedStatsMap = characterEncounterOutcomes.stream()
+                .collect(Collectors.groupingBy(CharacterEncounterOutcome::getCharacter, Collectors.summarizingInt(CharacterEncounterOutcome::getTotalDamageInflicted)));
 
 
-        Map<Character, IntSummaryStatistics> turnsTakenStatsMap = encounterOutcomes.stream()
-                .collect(Collectors.groupingBy(EncounterOutcome::getCharacter, Collectors.summarizingInt(EncounterOutcome::getTurnsTaken)));
+        Map<Character, IntSummaryStatistics> turnsTakenStatsMap = characterEncounterOutcomes.stream()
+                .collect(Collectors.groupingBy(CharacterEncounterOutcome::getCharacter, Collectors.summarizingInt(CharacterEncounterOutcome::getTurnsTaken)));
 
 
         for(Character character : characters) {
 
-            long deaths = encounterOutcomes.stream()
-                    .filter(e -> e.getCharacter() == character &&  e.getRemainingHp() == 0)
-                    .count();
 
             LOGGER.info("{} stats:", character.getName());
-            LOGGER.info("Deaths: {}", deaths);
             LOGGER.info("Attacks: {}", timesAttackedStatsMap.get(character));
             LOGGER.info("Hits: {}", totalHitsStatsMap.get(character));
             LOGGER.info("Hit percent: {}%", 100*(totalHitsStatsMap.get(character).getSum()/(double)timesAttackedStatsMap.get(character).getSum()));

@@ -18,19 +18,19 @@ public class Encounter {
 
     private Collection<Character> participants;
 
-    private Map<Character, EncounterOutcome> outcomeMap;
+    private EncounterOutcome outcome;
 
-    // TODO: Refactor this to take in teams? Or even a EncounterSettings object?
     public Encounter(ActionResolver actionResolver, DamageResolver damageResolver, Character... participants) {
         this.actionResolver = actionResolver;
         this.damageResolver = damageResolver;
         this.participants = Arrays.asList(participants);
     }
 
-    public Collection<EncounterOutcome> startEncounter() {
+    public EncounterOutcome startEncounter() {
         LOGGER.debug("Starting encounter");
-        outcomeMap = new HashMap<>();
-        participants.forEach(p -> outcomeMap.put(p, new EncounterOutcome(p)));
+        outcome = new EncounterOutcome();
+
+        participants.forEach(p -> outcome.addParticipant(p));
 
         // Create a list of turns, sorted by initiative
         Map<Character, Integer> charactersByInitiative = new HashMap<>();
@@ -47,8 +47,9 @@ public class Encounter {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
-
+        // TODO: Change this once multiple characters allowed
         while(participants.stream().allMatch(p -> p.getHp() > 0)) {
+            // TODO: Add RoundStatistics entity? I.e. so that HP changes can be graphed
             rounds++;
             for(Character character : characters) {
 
@@ -59,13 +60,13 @@ public class Encounter {
                 TurnOutcome turnOutcome = turn.doTurn();
 
                 // Update the encounter outcome
-                EncounterOutcome encounterOutcome = outcomeMap.get(turn.getCharacter());
+                CharacterEncounterOutcome characterEncounterOutcome = outcome.getCharacterEncounterOutcome(turn.getCharacter());
 
-                encounterOutcome.incrementTurnsTaken();
-                encounterOutcome.incrementTimesAttacked();
-                encounterOutcome.incrementTotalDamageInflicted(turnOutcome.getDamage());
+                characterEncounterOutcome.incrementTurnsTaken();
+                characterEncounterOutcome.incrementTimesAttacked();
+                characterEncounterOutcome.incrementTotalDamageInflicted(turnOutcome.getDamage());
                 if(turnOutcome.isHit()) {
-                    encounterOutcome.incrementTimesHit();
+                    characterEncounterOutcome.incrementTimesHit();
                 }
 
                 if (participants.stream().anyMatch(p -> p.getHp() == 0)) {
@@ -74,11 +75,9 @@ public class Encounter {
             }
         }
 
-        participants.forEach(p -> outcomeMap.get(p).setRemainingHp(p.getHp()));
-
         LOGGER.debug("Finishing encounter");
 
-        return outcomeMap.values();
+        return outcome;
     }
 
     // TODO: Choose target based on team.
