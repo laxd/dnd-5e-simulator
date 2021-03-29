@@ -31,6 +31,7 @@ public class Turn {
 
         AttackAction attackAction = new AttackAction(character, character.getWeapon(), target);
 
+        // TODO: Update to add EncounterEvents - add this to the TurnOutcome so they can be collated in the EncounterOutcome
         actionResolver.resolve(attackAction);
         damageResolver.resolve(attackAction);
 
@@ -40,6 +41,7 @@ public class Turn {
         outcome.setHit(attackAction.getOutcome() == AttackOutcome.HIT || attackAction.getOutcome() == AttackOutcome.CRIT);
         outcome.setDamage(attackAction.getAttackDamage().getDamageMap().values().stream().mapToInt(e -> e).sum());
         outcome.setTarget(attackAction.getTarget());
+        outcome.addEvents(attackAction.getEvents());
 
         return outcome;
     }

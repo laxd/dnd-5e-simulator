@@ -5,6 +5,7 @@ import uk.laxd.dndSimulator.dice.Die;
 import uk.laxd.dndSimulator.dice.Roll;
 import uk.laxd.dndSimulator.dice.RollResult;
 import uk.laxd.dndSimulator.equipment.Weapon;
+import uk.laxd.dndSimulator.event.EncounterEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,6 +29,8 @@ public class AttackAction {
 
     private RollResult attackRollResult;
     private Damage attackDamage = new Damage();
+
+    private Collection<EncounterEvent> events = new ArrayList<>();
 
     public AttackAction(Character performer, Weapon weapon, Character target) {
         this.performer = performer;
@@ -105,6 +108,14 @@ public class AttackAction {
 
     public void setWithDisadvantage(boolean withDisadvantage) {
         this.withDisadvantage = withDisadvantage;
+    }
+
+    public void addEvent(EncounterEvent event) {
+        this.events.add(event);
+    }
+
+    public Collection<EncounterEvent> getEvents() {
+        return new ArrayList<>(events);
     }
 
     @Override

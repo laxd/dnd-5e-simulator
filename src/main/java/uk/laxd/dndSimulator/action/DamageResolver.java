@@ -6,6 +6,7 @@ import uk.laxd.dndSimulator.dice.Die;
 import uk.laxd.dndSimulator.dice.Roll;
 import uk.laxd.dndSimulator.dice.RollResult;
 import uk.laxd.dndSimulator.equipment.Weapon;
+import uk.laxd.dndSimulator.event.EncounterEventFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,6 +56,8 @@ public class DamageResolver {
         }
 
         attackAction.getTarget().applyDamage(attackAction.getAttackDamage());
+
+        attackAction.addEvent(new EncounterEventFactory().createNewDamageEvent(attackAction));
 
         // Resolve all post-damage features;
         performer.getFeatures().forEach(f -> f.onDamageInflicted(attackAction));

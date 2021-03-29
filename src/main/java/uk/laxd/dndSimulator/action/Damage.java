@@ -29,6 +29,11 @@ public class Damage {
         damageMap.put(damageType, currentAmount + amount);
     }
 
+    public int getTotalAmount() {
+        return damageMap.values().stream()
+                .mapToInt(v -> v).sum();
+    }
+
     @Override
     public String toString() {
         return damageMap.entrySet().stream()

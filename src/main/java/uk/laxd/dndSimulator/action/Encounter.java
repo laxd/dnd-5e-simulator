@@ -69,6 +69,8 @@ public class Encounter {
                     characterEncounterOutcome.incrementTimesHit();
                 }
 
+                characterEncounterOutcome.addEvents(turnOutcome.getEvents());
+
                 if (participants.stream().anyMatch(p -> p.getHp() == 0)) {
                     break;
                 }
