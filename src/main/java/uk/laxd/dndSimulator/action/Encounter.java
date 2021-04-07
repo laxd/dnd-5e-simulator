@@ -3,6 +3,7 @@ package uk.laxd.dndSimulator.action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.laxd.dndSimulator.character.Character;
+import uk.laxd.dndSimulator.event.EncounterEventFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,8 +14,8 @@ public class Encounter {
 
     private int rounds;
 
-    private ActionResolver actionResolver;
-    private DamageResolver damageResolver;
+    private final ActionResolver actionResolver;
+    private final DamageResolver damageResolver;
 
     private Collection<Character> participants;
 
@@ -29,6 +30,7 @@ public class Encounter {
     public EncounterOutcome startEncounter() {
         LOGGER.debug("Starting encounter");
         outcome = new EncounterOutcome();
+        outcome.addEvent(new EncounterEventFactory().createEncounterStartEvent());
 
         participants.forEach(p -> outcome.addParticipant(p));
 
@@ -43,13 +45,12 @@ public class Encounter {
         }
 
         List<Character> characters = charactersByInitiative.entrySet().stream()
-                .sorted(Comparator.comparing(Map.Entry::getValue))
+                .sorted(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
         // TODO: Change this once multiple characters allowed
         while(participants.stream().allMatch(p -> p.getHp() > 0)) {
-            // TODO: Add RoundStatistics entity? I.e. so that HP changes can be graphed
             rounds++;
             for(Character character : characters) {
 
@@ -59,18 +60,9 @@ public class Encounter {
 
                 TurnOutcome turnOutcome = turn.doTurn();
 
-                // Update the encounter outcome
-                CharacterEncounterOutcome characterEncounterOutcome = outcome.getCharacterEncounterOutcome(turn.getCharacter());
+                outcome.addEvents(turnOutcome.getEvents());
 
-                characterEncounterOutcome.incrementTurnsTaken();
-                characterEncounterOutcome.incrementTimesAttacked();
-                characterEncounterOutcome.incrementTotalDamageInflicted(turnOutcome.getDamage());
-                if(turnOutcome.isHit()) {
-                    characterEncounterOutcome.incrementTimesHit();
-                }
-
-                characterEncounterOutcome.addEvents(turnOutcome.getEvents());
-
+                // If anyone is dead, end the encounter
                 if (participants.stream().anyMatch(p -> p.getHp() == 0)) {
                     break;
                 }
@@ -94,6 +86,10 @@ public class Encounter {
     public void reset() {
         this.rounds = 0;
         this.participants.forEach(p -> p.reset());
+    }
+
+    public Collection<Character> getParticipants() {
+        return participants;
     }
 
     public int getRounds() {

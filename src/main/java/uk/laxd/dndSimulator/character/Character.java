@@ -7,10 +7,7 @@ import uk.laxd.dndSimulator.equipment.Weapon;
 import uk.laxd.dndSimulator.feature.Feature;
 import uk.laxd.dndSimulator.ability.Ability;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public abstract class Character {
 
@@ -127,6 +124,19 @@ public abstract class Character {
         this.armorClass = 10;
 
         features.forEach(Feature::reset);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Character)) return false;
+        Character character = (Character) o;
+        return Objects.equals(name, character.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 
     @Override

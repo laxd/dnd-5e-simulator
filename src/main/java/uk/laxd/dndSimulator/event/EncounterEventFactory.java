@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import uk.laxd.dndSimulator.action.AttackAction;
 import uk.laxd.dndSimulator.action.Damage;
+import uk.laxd.dndSimulator.action.Turn;
 import uk.laxd.dndSimulator.character.Character;
 import uk.laxd.dndSimulator.equipment.Weapon;
 
@@ -13,7 +14,35 @@ public class EncounterEventFactory {
 
     private int count;
 
-    public EncounterEvent createNewDamageEvent(AttackAction attackAction) {
+    public EncounterEvent createEncounterStartEvent() {
+        EncounterEvent event = new EncounterEvent(count);
+        event.type = EncounterEventType.ENCOUNTER_START;
+
+        count++;
+
+        return event;
+    }
+
+    public EncounterEvent createRoundStartEvent() {
+        EncounterEvent event = new EncounterEvent(count);
+        event.type = EncounterEventType.ROUND_START;
+
+        count++;
+
+        return event;
+    }
+
+    public EncounterEvent createTurnStartEvent(Turn turn) {
+        EncounterEvent event = new EncounterEvent(count);
+        event.type = EncounterEventType.TURN_START;
+        event.actor = turn.getCharacter();
+
+        count++;
+
+        return event;
+    }
+
+    public EncounterEvent createNewMeleeAttackEvent(AttackAction attackAction) {
         EncounterEvent event = new EncounterEvent(count);
         event.actor = attackAction.getPerformer();
         event.target = attackAction.getTarget();
@@ -26,5 +55,4 @@ public class EncounterEventFactory {
 
         return event;
     }
-
 }

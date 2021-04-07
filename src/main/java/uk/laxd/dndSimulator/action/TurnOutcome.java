@@ -40,6 +40,10 @@ public class TurnOutcome {
         this.events.addAll(events);
     }
 
+    public void addEvent(EncounterEvent event) {
+        this.events.add(event);
+    }
+
     public Collection<EncounterEvent> getEvents() {
         return new ArrayList<>(events);
     }

@@ -16,8 +16,6 @@ public class CharacterEncounterOutcome {
     private int totalDamageTaken = 0;
     private int totalDamageHealed = 0;
 
-    private Collection<EncounterEvent> events = new ArrayList<>();
-
     public CharacterEncounterOutcome(Character character) {
         this.character = character;
     }
@@ -76,13 +74,5 @@ public class CharacterEncounterOutcome {
 
     public void incrementTotalDamageHealed(int totalDamageHealed) {
         this.totalDamageHealed += totalDamageHealed;
-    }
-
-    public Collection<EncounterEvent> getEvents() {
-        return events;
-    }
-
-    public void addEvents(Collection<EncounterEvent> events) {
-        this.events.addAll(events);
     }
 }

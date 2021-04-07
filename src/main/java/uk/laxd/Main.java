@@ -24,8 +24,8 @@ public class Main implements CommandLineRunner {
         SpringApplication.run(Main.class, args);
     }
 
-    private ActionResolver actionResolver;
-    private DamageResolver damageResolver;
+    private final ActionResolver actionResolver;
+    private final DamageResolver damageResolver;
 
     @Autowired
     public Main(ActionResolver actionResolver, DamageResolver damageResolver) {

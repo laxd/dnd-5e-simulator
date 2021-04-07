@@ -3,6 +3,7 @@ package uk.laxd.dndSimulator.action;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.laxd.dndSimulator.character.Character;
+import uk.laxd.dndSimulator.event.EncounterEventFactory;
 
 public class Turn {
 
@@ -22,22 +23,23 @@ public class Turn {
     }
 
     public TurnOutcome doTurn() {
+        TurnOutcome outcome = new TurnOutcome();
+        outcome.addEvent(new EncounterEventFactory().createTurnStartEvent(this));
+
         Character target = targetSelector.getTarget();
 
         if(target == null) {
             LOGGER.info("Nothing to attack");
-            return new TurnOutcome();
+            return outcome;
         }
 
         AttackAction attackAction = new AttackAction(character, character.getWeapon(), target);
 
-        // TODO: Update to add EncounterEvents - add this to the TurnOutcome so they can be collated in the EncounterOutcome
         actionResolver.resolve(attackAction);
         damageResolver.resolve(attackAction);
 
         LOGGER.debug(attackAction.toString());
 
-        TurnOutcome outcome = new TurnOutcome();
         outcome.setHit(attackAction.getOutcome() == AttackOutcome.HIT || attackAction.getOutcome() == AttackOutcome.CRIT);
         outcome.setDamage(attackAction.getAttackDamage().getDamageMap().values().stream().mapToInt(e -> e).sum());
         outcome.setTarget(attackAction.getTarget());

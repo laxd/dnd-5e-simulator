@@ -1,6 +1,7 @@
 package uk.laxd.dndSimulator.action;
 
 import uk.laxd.dndSimulator.character.Character;
+import uk.laxd.dndSimulator.event.EncounterEvent;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,22 +10,23 @@ import java.util.Map;
 
 public class EncounterOutcome {
 
-    private int rounds = 0;
     private Collection<Character> participants = new ArrayList<>();
-    private Map<Character, CharacterEncounterOutcome> characterOutcomes = new HashMap<>();
+    private Collection<EncounterEvent> events = new ArrayList<>();
 
     public void addParticipant(Character character) {
         this.participants.add(character);
-
-        this.characterOutcomes.put(character, new CharacterEncounterOutcome(character));
     }
 
-    public CharacterEncounterOutcome getCharacterEncounterOutcome(Character character) {
-        return this.characterOutcomes.get(character);
+    public Collection<EncounterEvent> getEvents() {
+        return events;
     }
 
-    public Collection<CharacterEncounterOutcome> getCharacterEncounterOutcomes() {
-        return characterOutcomes.values();
+    public void addEvents(Collection<EncounterEvent> events) {
+        this.events.addAll(events);
+    }
+
+    public void addEvent(EncounterEvent event) {
+        this.events.add(event);
     }
 
 }

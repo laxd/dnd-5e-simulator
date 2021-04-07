@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uk.laxd.dndSimulator.character.Character;
 import uk.laxd.dndSimulator.dice.RollResult;
 import uk.laxd.dndSimulator.equipment.Weapon;
+import uk.laxd.dndSimulator.event.EncounterEventFactory;
 
 @Component
 public class ActionResolver {
