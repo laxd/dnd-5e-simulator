@@ -13,6 +13,9 @@ import uk.laxd.dndSimulator.ability.AbilityCheck;
 import uk.laxd.dndSimulator.ability.AbilityCheckOutcome;
 import uk.laxd.dndSimulator.character.CharacterBuilder;
 import uk.laxd.dndSimulator.equipment.Greatsword;
+import uk.laxd.dndSimulator.event.EncounterEventFactory;
+import uk.laxd.dndSimulator.event.EventLogger;
+import uk.laxd.dndSimulator.statistics.StatsPrinter;
 
 @SpringBootApplication
 public class Main implements CommandLineRunner {
@@ -24,13 +27,17 @@ public class Main implements CommandLineRunner {
         SpringApplication.run(Main.class, args);
     }
 
-    private final ActionResolver actionResolver;
-    private final DamageResolver damageResolver;
+    private final StatsPrinter statsPrinter;
+    private final TurnFactory turnFactory;
+    private final EventLogger eventLogger;
+    private final EncounterEventFactory eventFactory;
 
     @Autowired
-    public Main(ActionResolver actionResolver, DamageResolver damageResolver) {
-        this.actionResolver = actionResolver;
-        this.damageResolver = damageResolver;
+    public Main(StatsPrinter statsPrinter, TurnFactory turnFactory, EventLogger eventLogger, EncounterEventFactory eventFactory) {
+        this.statsPrinter = statsPrinter;
+        this.turnFactory = turnFactory;
+        this.eventLogger = eventLogger;
+        this.eventFactory = eventFactory;
     }
 
     @Override
@@ -52,10 +59,12 @@ public class Main implements CommandLineRunner {
 
         LOGGER.info("{} did a {} check: {}", character.getName(), abilityCheck.getType(), outcome);
 
-        Encounter encounter = new Encounter(actionResolver, damageResolver, character, target);
+        Encounter encounter = new Encounter(turnFactory, eventFactory, eventLogger, character, target);
 
         Simulation simulation = new Simulation();
 
-        simulation.runSimulation(encounter, 10000);
+        simulation.runSimulation(encounter, 100);
+
+        statsPrinter.printStats();
     }
 }

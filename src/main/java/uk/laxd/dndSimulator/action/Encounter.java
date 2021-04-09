@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.laxd.dndSimulator.character.Character;
 import uk.laxd.dndSimulator.event.EncounterEventFactory;
+import uk.laxd.dndSimulator.event.EventLogger;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -12,27 +13,21 @@ public class Encounter {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Encounter.class);
 
-    private int rounds;
+    private final TurnFactory turnFactory;
+    private final EncounterEventFactory eventFactory;
+    private final EventLogger eventLogger;
+    private final Collection<Character> participants;
 
-    private final ActionResolver actionResolver;
-    private final DamageResolver damageResolver;
-
-    private Collection<Character> participants;
-
-    private EncounterOutcome outcome;
-
-    public Encounter(ActionResolver actionResolver, DamageResolver damageResolver, Character... participants) {
-        this.actionResolver = actionResolver;
-        this.damageResolver = damageResolver;
+    public Encounter(TurnFactory turnFactory, EncounterEventFactory eventFactory, EventLogger eventLogger, Character... participants) {
+        this.turnFactory = turnFactory;
+        this.eventFactory = eventFactory;
+        this.eventLogger = eventLogger;
         this.participants = Arrays.asList(participants);
     }
 
-    public EncounterOutcome startEncounter() {
+    public void startEncounter() {
         LOGGER.debug("Starting encounter");
-        outcome = new EncounterOutcome();
-        outcome.addEvent(new EncounterEventFactory().createEncounterStartEvent());
-
-        participants.forEach(p -> outcome.addParticipant(p));
+        eventLogger.logEvent(eventFactory.createEncounterStartEvent());
 
         // Create a list of turns, sorted by initiative
         Map<Character, Integer> charactersByInitiative = new HashMap<>();
@@ -51,16 +46,15 @@ public class Encounter {
 
         // TODO: Change this once multiple characters allowed
         while(participants.stream().allMatch(p -> p.getHp() > 0)) {
-            rounds++;
+            eventLogger.logEvent(eventFactory.createRoundStartEvent());
+
             for(Character character : characters) {
 
                 // TODO: Remove instantiation here, move to factory?
                 // Should a character be able to contain its own target selector?
-                Turn turn = new Turn(actionResolver, damageResolver, character, new SimpleTargetSelector(this.getTarget(character)));
+                Turn turn = turnFactory.createTurn(character, new SimpleTargetSelector(this.getTarget(character)));
 
-                TurnOutcome turnOutcome = turn.doTurn();
-
-                outcome.addEvents(turnOutcome.getEvents());
+                turn.doTurn();
 
                 // If anyone is dead, end the encounter
                 if (participants.stream().anyMatch(p -> p.getHp() == 0)) {
@@ -70,8 +64,6 @@ public class Encounter {
         }
 
         LOGGER.debug("Finishing encounter");
-
-        return outcome;
     }
 
     // TODO: Choose target based on team.
@@ -84,15 +76,6 @@ public class Encounter {
     }
 
     public void reset() {
-        this.rounds = 0;
-        this.participants.forEach(p -> p.reset());
-    }
-
-    public Collection<Character> getParticipants() {
-        return participants;
-    }
-
-    public int getRounds() {
-        return rounds;
+        this.participants.forEach(Character::reset);
     }
 }

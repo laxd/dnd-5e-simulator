@@ -8,8 +8,13 @@ import org.mockito.junit.MockitoJUnitRunner;
 import uk.laxd.dndSimulator.character.Barbarian;
 import uk.laxd.dndSimulator.character.Character;
 import uk.laxd.dndSimulator.character.GenericCharacter;
+import uk.laxd.dndSimulator.event.EncounterEventFactory;
+import uk.laxd.dndSimulator.event.EncounterEventType;
+import uk.laxd.dndSimulator.event.EventLogger;
+import uk.laxd.dndSimulator.event.SimpleEventLogger;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -19,6 +24,10 @@ public class TurnTest {
     private Character target;
 
     private TargetSelector targetSelector;
+
+    private EncounterEventFactory eventFactory = new EncounterEventFactory();
+
+    private EventLogger eventLogger = new SimpleEventLogger();
 
     @Mock
     private ActionResolver actionResolver;
@@ -36,11 +45,12 @@ public class TurnTest {
 
     @Test
     public void testNoTargetResultsInNoHit() throws Exception {
-        when(targetSelector.getTarget()).thenReturn(null);
-        Turn turn = new Turn(actionResolver, damageResolver, character, targetSelector);
+        this.targetSelector = new SimpleTargetSelector(null);
+        Turn turn = new Turn(eventFactory, eventLogger, actionResolver, damageResolver, character, targetSelector);
 
-        TurnOutcome turnOutcome = turn.doTurn();
+        turn.doTurn();
 
-        assertFalse(turnOutcome.isHit());
+        assertTrue(eventLogger.getEvents().stream()
+                .noneMatch(e -> e.getType() == EncounterEventType.MELEE_ATTACK));
     }
 }
