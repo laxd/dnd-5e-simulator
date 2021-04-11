@@ -1,55 +1,42 @@
 package uk.laxd.dndSimulator.event;
 
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import uk.laxd.dndSimulator.action.AttackAction;
+import uk.laxd.dndSimulator.action.Action;
+import uk.laxd.dndSimulator.action.MeleeAttackAction;
 import uk.laxd.dndSimulator.action.Turn;
 
 @Component
-@Scope("singleton")
 public class EncounterEventFactory {
 
-    private int count;
-
-    public EncounterEvent createEncounterStartEvent() {
-        EncounterEvent event = new EncounterEvent(count);
-        event.type = EncounterEventType.ENCOUNTER_START;
-
-        count++;
-
-        return event;
-    }
-
-    public EncounterEvent createRoundStartEvent() {
-        EncounterEvent event = new EncounterEvent(count);
-        event.type = EncounterEventType.ROUND_START;
-
-        count++;
-
-        return event;
-    }
-
     public EncounterEvent createTurnStartEvent(Turn turn) {
-        EncounterEvent event = new EncounterEvent(count);
+        EncounterEvent event = new EncounterEvent();
         event.type = EncounterEventType.TURN_START;
         event.actor = turn.getCharacter();
 
-        count++;
-
         return event;
     }
 
-    public EncounterEvent createNewMeleeAttackEvent(AttackAction attackAction) {
-        EncounterEvent event = new EncounterEvent(count);
-        event.actor = attackAction.getPerformer();
-        event.target = attackAction.getTarget();
-        event.amount = attackAction.getAttackDamage();
-        event.weapon = attackAction.getWeapon();
-        event.type = EncounterEventType.MELEE_ATTACK;
-        event.eventOutcome = attackAction.getOutcome();
+    public EncounterEvent createNewActionEvent(Action action) {
+        // TODO: Handle movement, reactions, spells etc
 
-        count++;
+        if(action.getEventType() == EncounterEventType.MELEE_ATTACK) {
+            MeleeAttackAction meleeAttackAction = (MeleeAttackAction) action;
 
-        return event;
+            EncounterEvent event = new EncounterEvent();
+            event.actor = meleeAttackAction.getPerformer();
+            event.target = meleeAttackAction.getTarget();
+            event.amount = meleeAttackAction.getAttackDamage();
+            event.weapon = meleeAttackAction.getWeapon();
+            event.type = EncounterEventType.MELEE_ATTACK;
+            event.eventOutcome = meleeAttackAction.getOutcome();
+
+            return event;
+        }
+        else {
+            EncounterEvent event = new EncounterEvent();
+            event.type = action.getEventType();
+
+            return event;
+        }
     }
 }

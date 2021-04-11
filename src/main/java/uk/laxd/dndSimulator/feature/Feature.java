@@ -1,8 +1,7 @@
 package uk.laxd.dndSimulator.feature;
 
 import uk.laxd.dndSimulator.Effect;
-import uk.laxd.dndSimulator.action.AttackAction;
-import uk.laxd.dndSimulator.character.Character;
+import uk.laxd.dndSimulator.character.CharacterClass;
 
 /**
  * A {@code Feature} is a specific type of {@link Effect} that
@@ -29,6 +28,7 @@ public abstract class Feature extends Effect {
     }
 
     public abstract boolean isActiveSkill();
+    public abstract CharacterClass getCharacterClassRequired();
 
     public boolean isActive() {
         return isActive;

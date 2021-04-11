@@ -8,13 +8,14 @@ import uk.laxd.dndSimulator.feature.Feature;
 import uk.laxd.dndSimulator.ability.Ability;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
-public abstract class Character {
+public class Character {
 
     private String name;
     private int hp;
     private int maxHp;
-    private int level;
+    private Map<CharacterClass, Integer> characterClassLevels = new HashMap<>();
     private Map<Ability, Integer> abilities = new HashMap<>();
     private int attackCount = 1;
     private int armorClass = 10;
@@ -23,8 +24,8 @@ public abstract class Character {
     // TODO: Add support for TWF
     private Weapon weapon = new UnarmedAttack();
 
-    public Character(int level, String name) {
-        this.level = level;
+    public Character(String name, CharacterClass characterClass, int level) {
+        this.characterClassLevels.put(characterClass, level);
         this.name = name;
     }
 
@@ -40,12 +41,18 @@ public abstract class Character {
         this.hp = hp;
     }
 
-    public int getLevel() {
-        return level;
+    public void addLevel(CharacterClass characterClass, int level) {
+        this.characterClassLevels.compute(characterClass, (k, v) -> v == null ? level : level + v);
     }
 
-    public void setLevel(int level) {
-        this.level = level;
+    public int getLevel(CharacterClass characterClass) {
+        return this.characterClassLevels.get(characterClass);
+    }
+
+    public int getLevel() {
+        return this.characterClassLevels.values()
+                .stream().mapToInt(i -> i)
+                .sum();
     }
 
     public void setAbilityScore(Ability ability, int score) {
@@ -57,7 +64,7 @@ public abstract class Character {
     }
 
     public int getAbilityModifier(Ability ability) {
-        return (int) Math.floor((abilities.get(ability) - 10)/2);
+        return (int) Math.floor((abilities.get(ability) - 10)/2.0);
     }
 
     public int getAttackCount() {
@@ -85,7 +92,7 @@ public abstract class Character {
     }
 
     public int getProficiencyBonus() {
-        return (int) (1 + Math.ceil(level/4));
+        return (int) (1 + Math.ceil(getLevel()/4.0));
     }
 
     public int getInitiativeModifier() {
@@ -95,7 +102,7 @@ public abstract class Character {
     public void applyDamage(Damage damage) {
         // TODO: Apply vulnerabilities/resistances/different types of damage
         int sumDamage = damage.getDamageMap().values().stream().mapToInt(e -> e).sum();
-        int totalDamage = (sumDamage > this.hp ? this.hp : sumDamage);
+        int totalDamage = (Math.min(sumDamage, this.hp));
 
         this.hp -= totalDamage;
     }
@@ -116,14 +123,14 @@ public abstract class Character {
         this.weapon = weapon;
     }
 
-    public abstract Die getHitDie();
+    public Collection<CharacterClass> getCharacterClasses() {
+        return characterClassLevels.keySet();
+    }
 
-    public void reset() {
-        this.hp = maxHp;
-        this.attackCount = 1;
-        this.armorClass = 10;
-
-        features.forEach(Feature::reset);
+    public Collection<Die> getHitDice() {
+        return this.characterClassLevels.entrySet().stream()
+                .flatMap(e -> Collections.nCopies(e.getValue(), e.getKey().getHitDie()).stream())
+                .collect(Collectors.toList());
     }
 
     @Override

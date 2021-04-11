@@ -13,16 +13,14 @@ public class Turn {
     private final EncounterEventFactory eventFactory;
     private final EventLogger eventLogger;
     private final ActionResolver actionResolver;
-    private final DamageResolver damageResolver;
     private final TargetSelector targetSelector;
 
     private Character character;
 
-    public Turn(EncounterEventFactory eventFactory, EventLogger eventLogger, ActionResolver actionResolver, DamageResolver damageResolver, Character character, TargetSelector targetSelector) {
+    public Turn(EncounterEventFactory eventFactory, EventLogger eventLogger, ActionResolver actionResolver, Character character, TargetSelector targetSelector) {
         this.eventFactory = eventFactory;
         this.eventLogger = eventLogger;
         this.actionResolver = actionResolver;
-        this.damageResolver = damageResolver;
         this.character = character;
         this.targetSelector = targetSelector;
     }
@@ -37,10 +35,9 @@ public class Turn {
             return;
         }
 
-        AttackAction attackAction = new AttackAction(character, character.getWeapon(), target);
+        MeleeAttackAction attackAction = new MeleeAttackAction(character, character.getWeapon(), target);
 
         actionResolver.resolve(attackAction);
-        damageResolver.resolve(attackAction);
 
         LOGGER.debug(attackAction.toString());
     }

@@ -1,7 +1,8 @@
 package uk.laxd.dndSimulator.feature.rogue;
 
-import uk.laxd.dndSimulator.action.AttackAction;
+import uk.laxd.dndSimulator.action.MeleeAttackAction;
 import uk.laxd.dndSimulator.character.Character;
+import uk.laxd.dndSimulator.character.CharacterClass;
 import uk.laxd.dndSimulator.dice.Die;
 import uk.laxd.dndSimulator.dice.Roll;
 import uk.laxd.dndSimulator.equipment.WeaponProperty;
@@ -21,7 +22,7 @@ public class SneakAttack extends StaticFeature {
     }
 
     @Override
-    public void onDamageRoll(AttackAction action) {
+    public void onDamageRoll(MeleeAttackAction action) {
         if(!(action.getWeapon().hasProperty(WeaponProperty.FINESSE) || action.getWeapon().hasProperty(WeaponProperty.RANGE))) {
             // Sneak attack only applies to finesse/ranged attacks
             return;
@@ -52,5 +53,10 @@ public class SneakAttack extends StaticFeature {
     @Override
     public void onTurnEnd(Character character) {
         this.hasSneakAttacked = false;
+    }
+
+    @Override
+    public CharacterClass getCharacterClassRequired() {
+        return CharacterClass.ROGUE;
     }
 }

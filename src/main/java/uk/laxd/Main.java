@@ -11,11 +11,13 @@ import uk.laxd.dndSimulator.character.Character;
 import uk.laxd.dndSimulator.ability.Ability;
 import uk.laxd.dndSimulator.ability.AbilityCheck;
 import uk.laxd.dndSimulator.ability.AbilityCheckOutcome;
-import uk.laxd.dndSimulator.character.CharacterBuilder;
+import uk.laxd.dndSimulator.character.CharacterClass;
+import uk.laxd.dndSimulator.character.CharacterConfigBuilder;
+import uk.laxd.dndSimulator.character.CharacterConfig;
 import uk.laxd.dndSimulator.equipment.Greatsword;
-import uk.laxd.dndSimulator.event.EncounterEventFactory;
-import uk.laxd.dndSimulator.event.EventLogger;
 import uk.laxd.dndSimulator.statistics.StatsPrinter;
+
+import java.util.Arrays;
 
 @SpringBootApplication
 public class Main implements CommandLineRunner {
@@ -28,42 +30,34 @@ public class Main implements CommandLineRunner {
     }
 
     private final StatsPrinter statsPrinter;
-    private final TurnFactory turnFactory;
-    private final EventLogger eventLogger;
-    private final EncounterEventFactory eventFactory;
+    private final EncounterFactory encounterFactory;
 
     @Autowired
-    public Main(StatsPrinter statsPrinter, TurnFactory turnFactory, EventLogger eventLogger, EncounterEventFactory eventFactory) {
+    public Main(StatsPrinter statsPrinter, EncounterFactory encounterFactory) {
         this.statsPrinter = statsPrinter;
-        this.turnFactory = turnFactory;
-        this.eventLogger = eventLogger;
-        this.eventFactory = eventFactory;
+        this.encounterFactory = encounterFactory;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        Character character = CharacterBuilder.barbarian(3,"Magnus")
+        CharacterConfig character = CharacterConfigBuilder.newCharacter("Magnus")
+                .withLevels(4, CharacterClass.BARBARIAN)
                 .withAbilityScores(19, 14, 16, 6, 13, 11)
                 .withWeapon(new Greatsword())
+                .withHp((short) 50)
                 .build();
 
-        Character target = CharacterBuilder.newCharacter(5,"Target")
-                .withArmorClass(10)
-                .withHp(30)
+        CharacterConfig target = CharacterConfigBuilder.newCharacter("Target")
+                .withLevels(5, CharacterClass.BARBARIAN)
+                .withArmourClass((short) 10)
+                .withHp((short) 30)
                 .withWeapon(null)
                 .build();
 
-        AbilityCheck abilityCheck = new AbilityCheck(Ability.STRENGTH, 15, character);
+        EncounterConfig config = new EncounterConfig(Arrays.asList(character, target));
 
-        AbilityCheckOutcome outcome = abilityCheck.perform();
-
-        LOGGER.info("{} did a {} check: {}", character.getName(), abilityCheck.getType(), outcome);
-
-        Encounter encounter = new Encounter(turnFactory, eventFactory, eventLogger, character, target);
-
-        Simulation simulation = new Simulation();
-
-        simulation.runSimulation(encounter, 100);
+        Simulation simulation = new Simulation(encounterFactory);
+        simulation.runSimulation(config, 10000);
 
         statsPrinter.printStats();
     }

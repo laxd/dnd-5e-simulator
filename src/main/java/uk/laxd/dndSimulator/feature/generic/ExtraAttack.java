@@ -1,6 +1,7 @@
 package uk.laxd.dndSimulator.feature.generic;
 
 import uk.laxd.dndSimulator.character.Character;
+import uk.laxd.dndSimulator.character.CharacterClass;
 import uk.laxd.dndSimulator.feature.Feature;
 import uk.laxd.dndSimulator.feature.StaticFeature;
 
@@ -13,5 +14,10 @@ public class ExtraAttack extends StaticFeature {
     @Override
     public void onCreate(Character character) {
         character.setAttackCount(2);
+    }
+
+    @Override
+    public CharacterClass getCharacterClassRequired() {
+        return CharacterClass.BARBARIAN;
     }
 }

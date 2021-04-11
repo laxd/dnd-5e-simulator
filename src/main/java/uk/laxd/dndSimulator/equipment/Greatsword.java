@@ -1,7 +1,7 @@
 package uk.laxd.dndSimulator.equipment;
 
 import uk.laxd.dndSimulator.ability.Ability;
-import uk.laxd.dndSimulator.action.AttackAction;
+import uk.laxd.dndSimulator.action.MeleeAttackAction;
 import uk.laxd.dndSimulator.action.DamageType;
 import uk.laxd.dndSimulator.dice.Die;
 
@@ -10,12 +10,12 @@ import java.util.Collection;
 
 public class Greatsword extends Weapon {
     @Override
-    public int getToHitModifier(AttackAction attackAction) {
+    public int getToHitModifier(MeleeAttackAction attackAction) {
         return attackAction.getPerformer().getAbilityModifier(Ability.STRENGTH) + attackAction.getPerformer().getProficiencyBonus() + 1;
     }
 
     @Override
-    public Collection<Die> getDamageDice(AttackAction attackAction) {
+    public Collection<Die> getDamageDice(MeleeAttackAction attackAction) {
         return Arrays.asList(
                 Die.D6,
                 Die.D6
@@ -23,7 +23,7 @@ public class Greatsword extends Weapon {
     }
 
     @Override
-    public int getDamage(AttackAction attackAction) {
+    public int getDamage(MeleeAttackAction attackAction) {
         return attackAction.getPerformer().getAbilityModifier(Ability.STRENGTH);
     }
 

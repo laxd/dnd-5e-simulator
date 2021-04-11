@@ -1,6 +1,6 @@
 package uk.laxd.dndSimulator.equipment;
 
-import uk.laxd.dndSimulator.action.AttackAction;
+import uk.laxd.dndSimulator.action.MeleeAttackAction;
 import uk.laxd.dndSimulator.action.DamageType;
 import uk.laxd.dndSimulator.dice.Die;
 
@@ -9,9 +9,9 @@ import java.util.Collections;
 
 public abstract class Weapon {
 
-    public abstract int getToHitModifier(AttackAction attackAction);
+    public abstract int getToHitModifier(MeleeAttackAction attackAction);
 
-    public abstract Collection<Die> getDamageDice(AttackAction attackAction);
+    public abstract Collection<Die> getDamageDice(MeleeAttackAction attackAction);
 
     /**
      * The additional damage portion of the weapon ONLY.
@@ -20,7 +20,7 @@ public abstract class Weapon {
      * @param attackAction
      * @return
      */
-    public abstract int getDamage(AttackAction attackAction);
+    public abstract int getDamage(MeleeAttackAction attackAction);
 
     public abstract DamageType getDamageType();
 
@@ -32,11 +32,11 @@ public abstract class Weapon {
         return getProperties().contains(weaponProperty);
     }
 
-    public void onAttack(AttackAction attackAction) {
+    public void onAttack(MeleeAttackAction attackAction) {
 
     }
 
-    public void onHit(AttackAction attackAction) {
+    public void onHit(MeleeAttackAction attackAction) {
 
     }
 

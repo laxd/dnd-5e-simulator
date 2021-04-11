@@ -1,9 +1,8 @@
 package uk.laxd.dndSimulator;
 
-import uk.laxd.dndSimulator.action.AttackAction;
+import uk.laxd.dndSimulator.action.MeleeAttackAction;
 import uk.laxd.dndSimulator.action.InitiativeRoll;
 import uk.laxd.dndSimulator.character.Character;
-import uk.laxd.dndSimulator.dice.Roll;
 
 /**
  * An {@code Effect} is any change to a character that impacts game play. This includes for example:
@@ -34,19 +33,19 @@ public class Effect {
 
     public void onTurnEnd(Character character) {}
 
-    public void onAttackRoll(AttackAction action) {}
+    public void onAttackRoll(MeleeAttackAction action) {}
 
-    public void onDamageRoll(AttackAction action) {}
+    public void onDamageRoll(MeleeAttackAction action) {}
 
-    public void onAttackRollReceiving(AttackAction action) {}
+    public void onAttackRollReceiving(MeleeAttackAction action) {}
 
-    public void onDamageRollReceived(AttackAction action) {}
+    public void onDamageRollReceived(MeleeAttackAction action) {}
 
-    public void onDamageInflicted(AttackAction action) {}
+    public void onDamageInflicted(MeleeAttackAction action) {}
 
-    public void onDamageReceived(AttackAction action) {}
+    public void onDamageReceived(MeleeAttackAction action) {}
 
-    public void onSavingThrow(AttackAction action) {}
+    public void onSavingThrow(MeleeAttackAction action) {}
 
     public void onAbilityCheck(Character character) {}
 

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import uk.laxd.dndSimulator.character.Character;
 import uk.laxd.dndSimulator.event.EncounterEventFactory;
+import uk.laxd.dndSimulator.event.EncounterEventType;
 import uk.laxd.dndSimulator.event.EventLogger;
 
 import java.util.*;
@@ -19,15 +20,19 @@ public class Encounter {
     private final Collection<Character> participants;
 
     public Encounter(TurnFactory turnFactory, EncounterEventFactory eventFactory, EventLogger eventLogger, Character... participants) {
+        this(turnFactory, eventFactory, eventLogger, Arrays.asList(participants));
+    }
+
+    public Encounter(TurnFactory turnFactory, EncounterEventFactory eventFactory, EventLogger eventLogger, Collection<Character> participants) {
         this.turnFactory = turnFactory;
         this.eventFactory = eventFactory;
         this.eventLogger = eventLogger;
-        this.participants = Arrays.asList(participants);
+        this.participants = participants;
     }
 
     public void startEncounter() {
         LOGGER.debug("Starting encounter");
-        eventLogger.logEvent(eventFactory.createEncounterStartEvent());
+        eventLogger.logEvent(EncounterEventType.ENCOUNTER_START);
 
         // Create a list of turns, sorted by initiative
         Map<Character, Integer> charactersByInitiative = new HashMap<>();
@@ -46,7 +51,7 @@ public class Encounter {
 
         // TODO: Change this once multiple characters allowed
         while(participants.stream().allMatch(p -> p.getHp() > 0)) {
-            eventLogger.logEvent(eventFactory.createRoundStartEvent());
+            eventLogger.logEvent(EncounterEventType.ROUND_START);
 
             for(Character character : characters) {
 
@@ -73,9 +78,5 @@ public class Encounter {
                 .filter(c -> c != forCharacter)
                 .findFirst()
                 .orElse(null);
-    }
-
-    public void reset() {
-        this.participants.forEach(Character::reset);
     }
 }

@@ -1,69 +1,50 @@
 package uk.laxd.dndSimulator.action;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import uk.laxd.dndSimulator.character.Character;
-import uk.laxd.dndSimulator.dice.RollResult;
-import uk.laxd.dndSimulator.equipment.Weapon;
 import uk.laxd.dndSimulator.event.EncounterEventFactory;
+import uk.laxd.dndSimulator.event.EventLogger;
 
+/**
+ * <p>
+ * Resolves an action, which may involve any of the following:
+ * </p>
+ *
+ * <ol>
+ *     <li>An action</li>
+ *     <li>A bonus action</li>
+ *     <li>Movement</li>
+ *     <li>A free action</li>
+ * </ol>
+ *
+ * <p>
+ * Resolving an action plays out the intended action, recording the result
+ * and resolving all outcomes from that actions (i.e. for attacks, applies
+ * damage to the creature being attacked).
+ * </p>
+ * <p>
+ * Reactions as a result of the action resolving (i.e. Opportunity attacks, etc)
+ * are resolved as part of this class, and will log their own events etc.
+ * </p>
+ */
 @Component
 public class ActionResolver {
 
-    public void resolve(AttackAction attackAction) {
-        Character performer = attackAction.getPerformer();
-        Character target = attackAction.getTarget();
+    private final EventLogger eventLogger;
+    private final EncounterEventFactory eventFactory;
 
-        Weapon weapon = attackAction.getWeapon();
+    @Autowired
+    public ActionResolver(EventLogger eventLogger, EncounterEventFactory eventFactory) {
+        this.eventLogger = eventLogger;
+        this.eventFactory = eventFactory;
+    }
 
-        if (weapon == null) {
-            // No attack
-            return;
-        }
+    public void resolve(Action action) {
+        action.performAction();
 
-        // Resolve all features
-        performer.getFeatures().forEach(feature -> feature.onAttackRoll(attackAction));
-        target.getFeatures().forEach(feature -> feature.onAttackRollReceiving(attackAction));
+        eventLogger.logEvent(eventFactory.createNewActionEvent(action));
 
-        // See if the attack hits
-        // Roll the dice
-        RollResult rollResult = attackAction.getAttackRoll().roll();
-
-        if (attackAction.isWithAdvantage()) {
-            RollResult rollResult2 = attackAction.getAttackRoll().roll();
-
-            // Replace roll if advantage roll was greater than the first roll
-            if(rollResult2.getOutcome() > rollResult.getOutcome()) {
-                rollResult = rollResult2;
-            }
-        }
-        else if(attackAction.isWithDisadvantage()) {
-            RollResult rollResult2 = attackAction.getAttackRoll().roll();
-
-            // Replace roll if advantage roll was greater than the first roll
-            if(rollResult2.getOutcome() < rollResult.getOutcome()) {
-                rollResult = rollResult2;
-            }
-        }
-
-        attackAction.setAttackRollResult(rollResult);
-
-        if(rollResult.getDieOutcome() == 1) {
-            attackAction.setOutcome(AttackOutcome.MISS);
-        }
-        else if(rollResult.getDieOutcome() == 20) {
-            attackAction.setOutcome(AttackOutcome.CRIT);
-        }
-
-
-        // If it wasn't a crit or a crit fail, see if it hits
-        if(attackAction.getOutcome() == null) {
-            if(rollResult.getOutcome() >= target.getArmorClass()) {
-                attackAction.setOutcome(AttackOutcome.HIT);
-            }
-            else {
-                attackAction.setOutcome(AttackOutcome.MISS);
-            }
-        }
+        // TODO: Reactions
     }
 
 }

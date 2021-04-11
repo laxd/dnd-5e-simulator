@@ -12,18 +12,16 @@ public class TurnFactory {
     private final EncounterEventFactory eventFactory;
     private final EventLogger eventLogger;
     private final ActionResolver actionResolver;
-    private final DamageResolver damageResolver;
 
     @Autowired
-    public TurnFactory(EncounterEventFactory eventFactory, EventLogger eventLogger, ActionResolver actionResolver, DamageResolver damageResolver) {
+    public TurnFactory(EncounterEventFactory eventFactory, EventLogger eventLogger, ActionResolver actionResolver) {
         this.eventFactory = eventFactory;
         this.eventLogger = eventLogger;
         this.actionResolver = actionResolver;
-        this.damageResolver = damageResolver;
     }
 
     public Turn createTurn(Character character, TargetSelector targetSelector) {
-        return new Turn(eventFactory, eventLogger, actionResolver, damageResolver, character, targetSelector);
+        return new Turn(eventFactory, eventLogger, actionResolver, character, targetSelector);
     }
 
 }

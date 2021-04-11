@@ -2,13 +2,8 @@ package uk.laxd.dndSimulator.feature.barbarian;
 
 import uk.laxd.dndSimulator.action.*;
 import uk.laxd.dndSimulator.character.Character;
-import uk.laxd.dndSimulator.dice.Roll;
-import uk.laxd.dndSimulator.dice.RollDecorator;
+import uk.laxd.dndSimulator.character.CharacterClass;
 import uk.laxd.dndSimulator.feature.ActivatedFeature;
-import uk.laxd.dndSimulator.feature.Feature;
-
-import java.util.Arrays;
-import java.util.Collection;
 
 public class Rage extends ActivatedFeature {
 
@@ -71,6 +66,11 @@ public class Rage extends ActivatedFeature {
     }
 
     @Override
+    public CharacterClass getCharacterClassRequired() {
+        return CharacterClass.BARBARIAN;
+    }
+
+    @Override
     public void onTurnStart(Character character) {
         if(isActive()) {
             this.rageRounds++;
@@ -82,7 +82,7 @@ public class Rage extends ActivatedFeature {
     }
 
     @Override
-    public void onDamageRoll(AttackAction action) {
+    public void onDamageRoll(MeleeAttackAction action) {
         // TODO: This just increments the damage of the weapon? Need to find the damage roll
         // for just the weapon somehow, or set it separately
 
@@ -92,7 +92,7 @@ public class Rage extends ActivatedFeature {
     }
 
     @Override
-    public void onDamageRollReceived(AttackAction action) {
+    public void onDamageRollReceived(MeleeAttackAction action) {
         Damage damage = action.getAttackDamage();
 
         damage.addAmount(DamageType.PIERCING, -damage.getAmount(DamageType.PIERCING)/2);

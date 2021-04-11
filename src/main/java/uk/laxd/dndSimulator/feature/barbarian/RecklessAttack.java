@@ -1,9 +1,9 @@
 package uk.laxd.dndSimulator.feature.barbarian;
 
 import uk.laxd.dndSimulator.action.ActionType;
-import uk.laxd.dndSimulator.action.AttackAction;
+import uk.laxd.dndSimulator.action.MeleeAttackAction;
 import uk.laxd.dndSimulator.character.Character;
-import uk.laxd.dndSimulator.dice.Roll;
+import uk.laxd.dndSimulator.character.CharacterClass;
 import uk.laxd.dndSimulator.feature.ActivatedFeature;
 
 public class RecklessAttack extends ActivatedFeature {
@@ -13,7 +13,7 @@ public class RecklessAttack extends ActivatedFeature {
     }
 
     @Override
-    public void onAttackRoll(AttackAction action) {
+    public void onAttackRoll(MeleeAttackAction action) {
         // Attack recklessly every time
 //        reckless = true;
         // Add advantage
@@ -23,7 +23,7 @@ public class RecklessAttack extends ActivatedFeature {
     }
 
     @Override
-    public void onAttackRollReceiving(AttackAction action) {
+    public void onAttackRollReceiving(MeleeAttackAction action) {
         // Add advantage
         if(isActive()) {
             action.setWithAdvantage(true);
@@ -39,6 +39,11 @@ public class RecklessAttack extends ActivatedFeature {
     @Override
     public int getLevelRequirement() {
         return 2;
+    }
+
+    @Override
+    public CharacterClass getCharacterClassRequired() {
+        return CharacterClass.BARBARIAN;
     }
 
     @Override
