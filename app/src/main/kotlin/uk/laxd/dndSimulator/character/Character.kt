@@ -23,7 +23,7 @@ class Character(name: String, characterClass: CharacterClass, level: Int) {
     var weapon: Weapon = UnarmedAttack()
 
     fun addLevel(characterClass: CharacterClass, level: Int) {
-        characterClassLevels.compute(characterClass) { k: CharacterClass?, v: Int? -> if (v == null) level else level + v }
+        characterClassLevels.compute(characterClass) { _: CharacterClass?, v: Int? -> if (v == null) level else level + v }
     }
 
     fun getLevel(characterClass: CharacterClass): Int {

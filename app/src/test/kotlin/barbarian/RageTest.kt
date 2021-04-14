@@ -15,9 +15,9 @@ import java.lang.Exception
 class RageTest {
 
     private val rage = Rage()
-    private var character: Character? = null
-    private var target: Character? = null
-    private var weapon: Weapon? = null
+    private lateinit var character: Character
+    private lateinit var target: Character
+    private lateinit var weapon: Weapon
 
     @Before
     fun setUp() {
@@ -28,7 +28,7 @@ class RageTest {
 
     @Test
     fun testRageDamageIsApplied() {
-        val attackAction = MeleeAttackAction(character!!, weapon, target!!)
+        val attackAction = MeleeAttackAction(character, weapon, target)
         attackAction.addAttackDamage(DamageType.SLASHING, 10)
         rage.onDamageRoll(attackAction)
         Assert.assertEquals(12, attackAction.attackDamage.getAmount(DamageType.SLASHING).toLong())
@@ -36,7 +36,7 @@ class RageTest {
 
     @Test
     fun testRageDamageReductionApplies() {
-        val attackAction = MeleeAttackAction(target!!, weapon, character!!)
+        val attackAction = MeleeAttackAction(target, weapon, character)
         attackAction.addAttackDamage(DamageType.SLASHING, 10)
         rage.onDamageRollReceived(attackAction)
         Assert.assertEquals(5, attackAction.attackDamage.getAmount(DamageType.SLASHING).toLong())
@@ -44,7 +44,7 @@ class RageTest {
 
     @Test
     fun testRageDamageReductionDoesNotApply() {
-        val attackAction = MeleeAttackAction(target!!, weapon, character!!)
+        val attackAction = MeleeAttackAction(target, weapon, character)
         attackAction.addAttackDamage(DamageType.FIRE, 10)
         rage.onDamageRollReceived(attackAction)
         Assert.assertEquals(10, attackAction.attackDamage.getAmount(DamageType.FIRE).toLong())

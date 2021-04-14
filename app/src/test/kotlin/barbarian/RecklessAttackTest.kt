@@ -14,9 +14,9 @@ import java.lang.Exception
 class RecklessAttackTest {
 
     private val recklessAttack = RecklessAttack()
-    private var character: Character? = null
-    private var target: Character? = null
-    private var weapon: Weapon? = null
+    private lateinit var character: Character
+    private lateinit var target: Character
+    private lateinit var weapon: Weapon
 
     @Before
     fun setUp() {
@@ -27,18 +27,18 @@ class RecklessAttackTest {
 
     @Test
     fun testAttackingRecklesslyAddsAdvantage() {
-        val attackAction = MeleeAttackAction(character!!, weapon, target!!)
+        val attackAction = MeleeAttackAction(character, weapon, target)
         recklessAttack.activate()
         recklessAttack.onAttackRoll(attackAction)
-        Assert.assertTrue(attackAction.isWithAdvantage())
+        Assert.assertTrue(attackAction.withAdvantage)
     }
 
     @Test
     fun testBeingAttackedRecklesslyAddsAdvantage() {
-        val attackAction = MeleeAttackAction(target!!, weapon, character!!)
+        val attackAction = MeleeAttackAction(target, weapon, character)
         recklessAttack.activate()
         recklessAttack.onAttackRollReceiving(attackAction)
-        Assert.assertTrue(attackAction.isWithAdvantage())
+        Assert.assertTrue(attackAction.withAdvantage)
     }
 
     @Test

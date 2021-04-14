@@ -7,28 +7,28 @@ import uk.laxd.dndSimulator.feature.barbarian.RecklessAttack
 import uk.laxd.dndSimulator.feature.barbarian.UnarmoredDefence
 import uk.laxd.dndSimulator.feature.rogue.SneakAttack
 import java.util.*
+import java.util.stream.Collectors
+import kotlin.reflect.KClass
 
 @Component
 class FeatureFactory {
 
-    private val features: MutableCollection<Class<out Feature>> = ArrayList()
+    private val features: MutableCollection<KClass<out Feature>> = ArrayList()
 
     fun createFeatures(config: CharacterConfig): Collection<Feature> {
-        // TODO: Fix this to return features as required
         // TODO: Also populate manually added features via CharacterConfig
-//        return features.stream()
-//                .map { f: Feature -> Class.forName(f).newInstance() }
-//                .filter { f: Feature -> config.characterClasses.contains(f.characterClassRequired) }
-//                .filter { f: Feature -> f.levelRequirement <= config.getLevel(f.characterClassRequired) }
-//                .collect(Collectors.toList())
-        return Collections.emptyList();
+        return features.stream()
+                .map { f -> f.java.newInstance() }
+                .filter { f: Feature -> config.characterClasses.contains(f.characterClassRequired) }
+                .filter { f: Feature -> f.levelRequirement <= config.getLevel(f.characterClassRequired) }
+                .collect(Collectors.toList())
     }
 
     // TODO: Load all features via reflection instead?
     init {
-        features.add(Rage::class.java)
-        features.add(RecklessAttack::class.java)
-        features.add(UnarmoredDefence::class.java)
-        features.add(SneakAttack::class.java)
+        features.add(Rage::class)
+        features.add(RecklessAttack::class)
+        features.add(UnarmoredDefence::class)
+        features.add(SneakAttack::class)
     }
 }

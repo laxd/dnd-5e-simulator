@@ -1,17 +1,15 @@
 package uk.laxd.dndSimulator.action
 
-import junit.framework.Assert.assertEquals
-import org.junit.Assert
-import org.junit.runner.RunWith
-import org.mockito.Mock
+import io.mockk.every
+import io.mockk.justRun
+import io.mockk.mockk
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import org.mockito.junit.MockitoJUnitRunner
 import uk.laxd.dndSimulator.character.CharacterClass
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.event.*
 
-@RunWith(MockitoJUnitRunner::class)
 class TurnTest {
     private var character: Character? = null
     private var target: Character? = null
@@ -19,8 +17,7 @@ class TurnTest {
     private val eventFactory = EncounterEventFactory()
     private val eventLogger: EventLogger = SimpleEventLogger()
 
-    @Mock
-    private val actionResolver: ActionResolver? = null
+    private val actionResolver: ActionResolver = mockk()
 
     @Before
     fun setUp() {
@@ -32,17 +29,20 @@ class TurnTest {
     @Test
     fun testNoTargetResultsInNoHit() {
         targetSelector = SimpleTargetSelector(null)
-        val turn = Turn(eventFactory, eventLogger, actionResolver!!, character!!, targetSelector!!)
+        val turn = Turn(eventFactory, eventLogger, actionResolver, character!!, targetSelector!!)
         turn.doTurn()
-        Assert.assertTrue(eventLogger.events.stream()
+        assertTrue(eventLogger.events.stream()
             .noneMatch { e -> e.type === EncounterEventType.MELEE_ATTACK })
     }
 
     @Test
     fun testTurnStartEventIsLoggedAtStartOfTurn() {
-        val turn = Turn(eventFactory, eventLogger, actionResolver!!, character!!, targetSelector!!)
+        val turn = Turn(eventFactory, eventLogger, actionResolver, character!!, targetSelector!!)
+
+        justRun { actionResolver.resolve(any()) }
+
         turn.doTurn()
-        Assert.assertTrue(eventLogger.events.size > 0)
+        assertTrue(eventLogger.events.size > 0)
         assertEquals(EncounterEventType.TURN_START, eventLogger.events.iterator().next().type)
     }
 }

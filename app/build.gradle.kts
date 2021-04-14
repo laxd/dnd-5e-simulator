@@ -40,8 +40,14 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
     testImplementation("junit:junit:4.13.2")
-    testImplementation("org.mockito:mockito-core:3.8.0")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.32")
+    testImplementation("io.mockk:mockk:1.11.0")
+
+
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 application {

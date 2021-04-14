@@ -21,7 +21,7 @@ abstract class Feature(name: String) : Effect(name) {
         get() = 1
 
     abstract val isActiveSkill: Boolean
-    abstract val characterClassRequired: CharacterClass?
+    abstract val characterClassRequired: CharacterClass
 
     // TODO: onInitiativeRoll
     // TODO: onTurnStart/onTurnEnd for other characters, i.e. flaming orb, if an enemy ends their turn, damage them
