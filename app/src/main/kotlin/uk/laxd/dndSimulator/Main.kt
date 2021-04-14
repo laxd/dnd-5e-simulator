@@ -14,16 +14,22 @@ import java.util.Arrays
 import uk.laxd.dndSimulator.action.Simulation
 import kotlin.jvm.JvmStatic
 import org.springframework.boot.SpringApplication
+import uk.laxd.dndSimulator.event.EventOutputFactory
 import java.lang.Exception
+
+fun main(args: Array<String>) {
+    SpringApplication.run(Main::class.java, *args)
+}
 
 @SpringBootApplication
 open class Main(
-    private val statsPrinter: StatsPrinter,
+    private val eventOutputFactory: EventOutputFactory,
     private val encounterFactory: EncounterFactory
     ) : CommandLineRunner {
 
     @Throws(Exception::class)
     override fun run(vararg args: String) {
+        // TODO: Load these details from json/csv file/xml/whatever
         val character = CharacterConfigBuilder.newCharacter("Magnus")
                 .withLevels(4, CharacterClass.BARBARIAN)
                 .withAbilityScores(19, 14, 16, 6, 13, 11)
@@ -36,18 +42,12 @@ open class Main(
                 .withHp(30.toShort())
                 .build()
         val config = EncounterConfig(listOf(character, target))
+
+        // TODO: SimulationFactory?
         val simulation = Simulation(encounterFactory)
         simulation.runSimulation(config, 10000)
-        statsPrinter.printStats()
-    }
 
-    companion object {
-        private val LOGGER = LoggerFactory.getLogger(Main::class.java)
-
-        // TODO: Load characters from file and run scenarios that way
-        @JvmStatic
-        fun main(args: Array<String>) {
-            SpringApplication.run(Main::class.java, *args)
-        }
+        eventOutputFactory.getEventOutput()
+            .processEvents()
     }
 }

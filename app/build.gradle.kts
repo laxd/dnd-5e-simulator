@@ -52,5 +52,5 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
 
 application {
     // Define the main class for the application.
-    mainClass.set("dnd.simulator.e.AppKt")
+    mainClass.set("uk.laxd.dndSimulator.MainKt")
 }
