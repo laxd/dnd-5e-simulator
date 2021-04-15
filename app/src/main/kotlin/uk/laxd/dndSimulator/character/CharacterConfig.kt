@@ -12,8 +12,8 @@ import java.util.*
 class CharacterConfig {
     // TODO: Allow multi-classing
     var name: String = "Un-named character"
-    var hp: Short = 1
-    var armourClass: Short = 10
+    var hp: Int = 1
+    var armourClass: Int = 10
     val characterClassLevels: MutableMap<CharacterClass, Int> = EnumMap(CharacterClass::class.java)
     val abilityScores: MutableMap<Ability, Int> = EnumMap(Ability::class.java)
 
@@ -25,7 +25,7 @@ class CharacterConfig {
     }
 
     fun getLevel(characterClass: CharacterClass): Int {
-        return characterClassLevels[characterClass]!!
+        return characterClassLevels[characterClass] ?: 0
     }
 
     fun addLevel(level: Int, characterClass: CharacterClass) {

@@ -40,16 +40,16 @@ class CharacterFactory(private val featureFactory: FeatureFactory) {
         return character
     }
 
-    private fun getHp(character: Character, characterConfig: CharacterConfig): Short {
+    private fun getHp(character: Character, characterConfig: CharacterConfig): Int {
         // If HP has been set, use that
         if (character.hp != 0) {
             return characterConfig.hp
         }
 
         // If not, calculate HP from stats, and set it
-        return (character.level * character.getAbilityModifier(Ability.CONSTITUTION) +
+        return character.level * character.getAbilityModifier(Ability.CONSTITUTION) +
                 character.hitDice.stream()
                     .mapToInt { d: Die -> d.maxValue / 2 + 1 }
-                    .sum()).toShort()
+                    .sum()
     }
 }

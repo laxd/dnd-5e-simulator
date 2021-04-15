@@ -1,0 +1,36 @@
+{
+  "simulations": 10000,
+  "characters": [
+    {
+      "name": "Magnus",
+      "AC": 18,
+      "levels": {
+        "BARBARIAN": 4
+      },
+      "abilities": {
+        "STRENGTH": 19,
+        "DEXTERITY": 14,
+        "CONSTITUTION": 16,
+        "INTELLIGENCE": 6,
+        "WISDOM": 13,
+        "CHARISMA": 11
+      },
+      "hp": 50
+    },
+    {
+      "name": "Target",
+      "AC": 10,
+      "levels": {
+        "BARBARIAN": 5
+      },
+      "hp": 30
+    }
+  ],
+  "post": {
+    "printStats": {},
+    "logStats": {
+      "output": "simulation.csv",
+      "type": "csv"
+    }
+  }
+}

@@ -36,9 +36,11 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit")
 
     implementation("org.springframework.boot:spring-boot-starter:2.4.0")
+    implementation("com.beust:klaxon:5.5")
     implementation("org.slf4j:slf4j-api:1.7.30")
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
+
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.32")
     testImplementation("io.mockk:mockk:1.11.0")
