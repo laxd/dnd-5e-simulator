@@ -3,6 +3,7 @@ package uk.laxd.dndSimulator.character
 import org.springframework.stereotype.Component
 import uk.laxd.dndSimulator.feature.FeatureFactory
 import uk.laxd.dndSimulator.ability.Ability
+import uk.laxd.dndSimulator.config.CharacterConfig
 import uk.laxd.dndSimulator.dice.Die
 
 @Component

@@ -42,7 +42,7 @@ class TurnTest {
         justRun { actionResolver.resolve(any()) }
 
         turn.doTurn()
-        assertTrue(eventLogger.events.size > 0)
+        assertTrue(eventLogger.events.isNotEmpty())
         assertEquals(EncounterEventType.TURN_START, eventLogger.events.iterator().next().type)
     }
 }

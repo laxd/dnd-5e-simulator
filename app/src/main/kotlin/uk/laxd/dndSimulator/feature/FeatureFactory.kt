@@ -1,7 +1,7 @@
 package uk.laxd.dndSimulator.feature
 
 import org.springframework.stereotype.Component
-import uk.laxd.dndSimulator.character.CharacterConfig
+import uk.laxd.dndSimulator.config.CharacterConfig
 import uk.laxd.dndSimulator.feature.barbarian.Rage
 import uk.laxd.dndSimulator.feature.barbarian.RecklessAttack
 import uk.laxd.dndSimulator.feature.barbarian.UnarmoredDefence

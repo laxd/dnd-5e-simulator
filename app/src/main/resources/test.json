@@ -26,11 +26,16 @@
       "hp": 30
     }
   ],
-  "post": {
-    "printStats": {},
-    "logStats": {
-      "output": "simulation.csv",
-      "type": "csv"
+  "post": [
+    {
+      "name": "printStats"
+    },
+    {
+      "name": "logStats",
+      "options": {
+        "output": "simulation.csv",
+        "type": "csv"
+      }
     }
-  }
+  ]
 }

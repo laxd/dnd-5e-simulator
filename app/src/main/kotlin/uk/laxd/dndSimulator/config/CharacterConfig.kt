@@ -1,6 +1,7 @@
-package uk.laxd.dndSimulator.character
+package uk.laxd.dndSimulator.config
 
 import uk.laxd.dndSimulator.ability.Ability
+import uk.laxd.dndSimulator.character.CharacterClass
 import uk.laxd.dndSimulator.equipment.UnarmedAttack
 import uk.laxd.dndSimulator.equipment.Weapon
 import java.util.*
