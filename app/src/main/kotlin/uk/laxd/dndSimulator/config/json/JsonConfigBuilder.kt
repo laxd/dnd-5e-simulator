@@ -40,6 +40,6 @@ class JsonConfigBuilder(
             }
         }
 
-        return SimulationConfig(characterConfigs, postSimulationEvents)
+        return SimulationConfig(t.simulationCount, characterConfigs, postSimulationEvents)
     }
 }

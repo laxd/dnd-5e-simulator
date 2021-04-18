@@ -41,7 +41,9 @@ dependencies {
     implementation("ch.qos.logback:logback-classic:1.2.3")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.4.32")
 
-    testImplementation("junit:junit:4.13.2")
+    testCompile("org.assertj:assertj-core:3.11.1")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.4.32")
     testImplementation("io.mockk:mockk:1.11.0")
 
@@ -50,6 +52,12 @@ dependencies {
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+tasks {
+    "test"(Test::class) {
+        useJUnitPlatform()
+    }
 }
 
 application {
