@@ -16,16 +16,14 @@ fun main(args: Array<String>) {
 @SpringBootApplication
 open class Main(
     private val eventOutputFactory: EventOutputFactory,
-    private val encounterFactory: EncounterFactory,
-    private val configParserFactory: ConfigParserFactory
+    private val configParserFactory: ConfigParserFactory,
+    private val simulation: Simulation
     ) : CommandLineRunner {
 
     override fun run(vararg args: String) {
         val encounterConfig = configParserFactory.getConfigParser()
             .getConfig("app/src/main/resources/test.json")
 
-        // TODO: SimulationFactory?
-        val simulation = Simulation(encounterFactory)
         simulation.runSimulation(encounterConfig, 10000)
 
         eventOutputFactory.getEventOutput()
