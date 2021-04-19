@@ -1,11 +1,9 @@
 package uk.laxd.dndSimulator.config.json
 
-class JsonCharacterConfig {
-
-    var name: String = "Un-named character"
-    var hp: Int? = null
-    var AC: Int? = null
-    val levels: Map<String, Int> = mapOf()
+data class JsonCharacterConfig(
+    var name: String = "Un-named character",
+    var hp: Int? = null,
+    var AC: Int? = null,
+    val levels: Map<String, Int> = mapOf(),
     val abilities: Map<String, Int> = mapOf()
-
-}
+)

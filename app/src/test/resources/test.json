@@ -34,7 +34,7 @@
       "type": "logStats",
       "options": {
         "output": "simulation.csv",
-        "type": "csv"
+        "typeFormat": "csv"
       }
     }
   ]

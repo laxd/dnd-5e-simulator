@@ -1,6 +1,5 @@
 package uk.laxd.dndSimulator.config
 
-import org.springframework.context.support.beans
 import org.springframework.stereotype.Component
 import uk.laxd.dndSimulator.statistics.PrintStatsPostSimulationEvent
 
