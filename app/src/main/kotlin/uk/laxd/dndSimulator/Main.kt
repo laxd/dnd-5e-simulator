@@ -24,7 +24,7 @@ open class Main(
         val encounterConfig = configParserFactory.getConfigParser()
             .getConfig("app/src/main/resources/test.json")
 
-        simulation.runSimulation(encounterConfig, 10000)
+        simulation.runSimulation(encounterConfig)
 
         eventOutputFactory.getEventOutput()
             .processEvents()

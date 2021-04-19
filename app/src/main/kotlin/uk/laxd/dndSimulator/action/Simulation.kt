@@ -9,6 +9,6 @@ import uk.laxd.dndSimulator.config.SimulationConfig
  */
 interface Simulation {
 
-    fun runSimulation(config: SimulationConfig, count: Int)
+    fun runSimulation(config: SimulationConfig)
 
 }

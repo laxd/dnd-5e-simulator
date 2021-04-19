@@ -11,7 +11,5 @@ class TurnFactory(
     private val eventLogger: EventLogger,
     private val actionResolver: ActionResolver
 ) {
-    fun createTurn(character: Character, targetSelector: TargetSelector): Turn {
-        return Turn(eventFactory, eventLogger, actionResolver, character, targetSelector)
-    }
+    fun createTurn(character: Character, targetSelector: TargetSelector) = Turn(eventFactory, eventLogger, actionResolver, character, targetSelector)
 }
