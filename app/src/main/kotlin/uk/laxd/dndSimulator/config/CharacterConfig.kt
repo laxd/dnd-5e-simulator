@@ -10,16 +10,17 @@ import java.util.*
  * Defines a [Character] in a configuration style, allowing for repeatable
  * instantiation of a single character from a set configuration.
  */
-class CharacterConfig {
-    // TODO: Allow multi-classing
-    var name: String = "Un-named character"
+class CharacterConfig(
+    val name: String,
+    val team: String
+) {
     var hp: Int = 1
     var armourClass: Int = 10
     val characterClassLevels: MutableMap<CharacterClass, Int> = EnumMap(CharacterClass::class.java)
     val abilityScores: MutableMap<Ability, Int> = EnumMap(Ability::class.java)
 
     // TODO: Change to WeaponConfig and allow building a weapon by type
-    var weapon: Weapon = UnarmedAttack()
+    val weapons: MutableCollection<Weapon> = mutableListOf(UnarmedAttack())
 
     init {
         Ability.values().forEach { a -> abilityScores[a] = 10 }

@@ -3,10 +3,42 @@
   "characters": [
     {
       "name": "Magnus",
+      "team": "Kill 'em all klub",
       "AC": 18,
       "levels": {
         "BARBARIAN": 4
       },
+      "weapons": [
+        {
+          "name": "Greataxe",
+          "damageType": "SLASHING",
+          "diceDamage": 12,
+          "diceCount": 1,
+          "damageBonus": 1,
+          "attackBonus": 1,
+          "properties": [
+            "Heavy"
+          ],
+          "range": 5,
+          "priority": 1.0
+        },
+        {
+          "name": "Shortbow",
+          "damageType": "PIERCING",
+          "diceDamage": 6,
+          "diceCount": 1,
+          "damageBonus": 1,
+          "attackBonus": 1,
+          "properties": [
+            "Ammunition",
+            "Range",
+            "Loading",
+            "Two-handed"
+          ],
+          "range": 60,
+          "priority": 0.5
+        }
+      ],
       "abilities": {
         "STRENGTH": 19,
         "DEXTERITY": 14,
@@ -15,15 +47,60 @@
         "WISDOM": 13,
         "CHARISMA": 11
       },
-      "hp": 50
+      "hp": 50,
+      "targetSelection": "lowestHealth"
     },
     {
-      "name": "Target",
+      "name": "Skeleton 1",
+      "team": "Creatures",
       "AC": 10,
       "levels": {
         "BARBARIAN": 5
       },
-      "hp": 30
+      "weapons": [
+        {
+          "name": "Dagger",
+          "damageType": "PIERCING",
+          "diceDamage": 4,
+          "diceCount": 1,
+          "damageBonus": 1,
+          "attackBonus": 1,
+          "properties": [
+            "Finesse",
+            "Light",
+            "Thrown"
+          ],
+          "range": 5
+        }
+      ],
+      "hp": 30,
+      "targetSelection": "random"
+    },
+    {
+      "name": "Skeleton 2",
+      "team": "Creatures",
+      "AC": 10,
+      "levels": {
+        "BARBARIAN": 2
+      },
+      "weapons": [
+        {
+          "name": "Dagger",
+          "damageType": "PIERCING",
+          "diceDamage": 4,
+          "diceCount": 1,
+          "damageBonus": 1,
+          "attackBonus": 1,
+          "properties": [
+            "Finesse",
+            "Light",
+            "Thrown"
+          ],
+          "range": 5
+        }
+      ],
+      "hp": 30,
+      "targetSelection": "random"
     }
   ],
   "post": [

@@ -5,6 +5,6 @@ import uk.laxd.dndSimulator.config.PostSimulationEventDefinition
 
 data class JsonSimulationConfig(
     @Json(name = "simulations") var simulationCount: Int,
-    var characters: MutableCollection<JsonCharacterConfig> = mutableListOf(),
+    @Json(name = "characters") var characters: MutableCollection<JsonCharacterConfig> = mutableListOf(),
     @Json(name = "post") var postSimulationEventDefinitions: MutableCollection<PostSimulationEventDefinition> = mutableListOf()
 )

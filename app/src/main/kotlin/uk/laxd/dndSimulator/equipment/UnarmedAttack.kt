@@ -19,6 +19,12 @@ class UnarmedAttack : Weapon() {
         return attackAction.performer.getAbilityModifier(Ability.STRENGTH) + 1
     }
 
+    override val name: String
+        get() = "Unarmed attack"
     override val damageType: DamageType
         get() = DamageType.BLUDGEONING
+    override val range: Int
+        get() = 5
+    override val priority: Double
+        get() = 0.01
 }

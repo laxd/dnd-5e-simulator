@@ -26,6 +26,12 @@ class Greatsword : Weapon() {
                 WeaponProperty.HEAVY
         )
 
+    override val name: String
+        get() = "Greatsword"
     override val damageType: DamageType
         get() = DamageType.SLASHING
+    override val range: Int
+        get() = 5
+    override val priority: Double
+        get() = 0.8
 }

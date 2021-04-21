@@ -11,16 +11,13 @@ import java.util.stream.Collectors
 @Component
 class EncounterFactory(
     private val turnFactory: TurnFactory,
-    private val eventFactory: EncounterEventFactory,
     private val eventLogger: EventLogger,
     private val characterFactory: CharacterFactory
 ) {
     fun createEncounter(simulationConfig: SimulationConfig): Encounter {
-        val characters = simulationConfig.characterConfigs
-            .stream()
-            .map { characterConfig: CharacterConfig -> characterFactory.createCharacter(characterConfig) }
-            .collect(Collectors.toList())
+        val characters = characterFactory.createCharacters(simulationConfig.characterConfigs)
 
-        return Encounter(turnFactory, eventLogger, characters)
+        // TODO: Move target selector to character factory, as it be defined externally
+        return Encounter(turnFactory, eventLogger, characters, SimpleTargetSelector(characters))
     }
 }

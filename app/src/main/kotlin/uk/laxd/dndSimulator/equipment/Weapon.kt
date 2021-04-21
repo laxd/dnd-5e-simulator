@@ -18,10 +18,20 @@ abstract class Weapon {
      * @return
      */
     abstract fun getDamage(attackAction: MeleeAttackAction): Int
+    abstract val name: String
     abstract val damageType: DamageType
+    abstract val range: Int
 
-    open val properties: Collection<WeaponProperty>
-        get() = emptyList()
+    /**
+     * Priorities determine the order in which weapons should be attempted to be used.
+     *
+     * This will be used e.g. when we don't have direct control over the weapons provided to a Character,
+     * as we will be able to sort the weapons by priority
+     */
+    abstract val priority: Double
+
+    open val properties: Collection<WeaponProperty> = mutableListOf()
+
 
     fun hasProperty(weaponProperty: WeaponProperty): Boolean {
         return properties.contains(weaponProperty)

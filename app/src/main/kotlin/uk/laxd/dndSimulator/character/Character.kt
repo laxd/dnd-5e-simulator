@@ -9,8 +9,13 @@ import uk.laxd.dndSimulator.feature.Feature
 import java.util.*
 import java.util.stream.Collectors
 
-class Character(name: String, characterClass: CharacterClass, level: Int) {
-    val name: String
+class Character(
+    val name: String,
+    val team: String,
+    characterClass: CharacterClass,
+    level: Int
+) {
+
     var hp = 0
     var maxHp = 0
     private val characterClassLevels: MutableMap<CharacterClass, Int> = EnumMap(CharacterClass::class.java)
@@ -20,7 +25,11 @@ class Character(name: String, characterClass: CharacterClass, level: Int) {
     val features: MutableCollection<Feature> = ArrayList()
 
     // TODO: Add support for TWF (weapons?)
-    var weapon: Weapon = UnarmedAttack()
+    var weapons: MutableList<Weapon> = mutableListOf(UnarmedAttack())
+
+    init {
+        characterClassLevels[characterClass] = level
+    }
 
     fun addLevel(characterClass: CharacterClass, level: Int) {
         characterClassLevels.compute(characterClass) { _: CharacterClass?, v: Int? -> if (v == null) level else level + v }
@@ -83,10 +92,5 @@ class Character(name: String, characterClass: CharacterClass, level: Int) {
 
     override fun toString(): String {
         return "$name (AC=$armorClass, hp=$hp/$maxHp)"
-    }
-
-    init {
-        characterClassLevels[characterClass] = level
-        this.name = name
     }
 }

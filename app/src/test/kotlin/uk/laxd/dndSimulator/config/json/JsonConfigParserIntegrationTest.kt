@@ -41,4 +41,13 @@ class JsonConfigParserIntegrationTest {
 
         assertThat(simulationConfig.postEvents).hasSize(2)
     }
+
+    @Test
+    internal fun `config includes characters weapons`() {
+        val simulationConfig = configParser.getConfig("src/test/resources/test.json")
+
+        assertThat(simulationConfig.characterConfigs.find { c -> c.name == "Magnus" }?.weapons)
+            .extracting("name")
+            .contains("Greataxe", "Unarmed attack")
+    }
 }

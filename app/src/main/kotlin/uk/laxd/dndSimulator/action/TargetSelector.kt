@@ -2,6 +2,8 @@ package uk.laxd.dndSimulator.action
 
 import uk.laxd.dndSimulator.character.Character
 
-abstract class TargetSelector {
-    abstract val target: Character?
+interface TargetSelector {
+
+    fun findTarget(actor: Character): Character?
+
 }

@@ -5,13 +5,22 @@ import uk.laxd.dndSimulator.feature.FeatureFactory
 import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.config.CharacterConfig
 import uk.laxd.dndSimulator.dice.Die
+import java.util.stream.Collectors
 
 @Component
 class CharacterFactory(private val featureFactory: FeatureFactory) {
 
-    fun createCharacter(characterConfig: CharacterConfig): Character {
+    fun createCharacters(characterConfigs: Collection<CharacterConfig>) : Collection<Character> {
+        return characterConfigs
+            .stream()
+            .map { characterConfig: CharacterConfig -> createCharacter(characterConfig) }
+            .collect(Collectors.toList())
+    }
+
+    private fun createCharacter(characterConfig: CharacterConfig): Character {
         val character = Character(
             characterConfig.name,
+            characterConfig.team,
             CharacterClass.BARBARIAN,
             characterConfig.getLevel(CharacterClass.BARBARIAN)
         )
@@ -25,9 +34,9 @@ class CharacterFactory(private val featureFactory: FeatureFactory) {
 
         val hp = getHp(character, characterConfig)
 
-        character.maxHp = hp.toInt()
-        character.hp = hp.toInt()
-        character.armorClass = characterConfig.armourClass.toInt()
+        character.maxHp = hp
+        character.hp = hp
+        character.armorClass = characterConfig.armourClass
 
         featureFactory.createFeatures(characterConfig)
             .forEach { f -> character.addFeature(f) }
@@ -35,11 +44,13 @@ class CharacterFactory(private val featureFactory: FeatureFactory) {
         character.features
             .forEach { f -> f.onCreate(character) }
 
-        // TODO: Delegate to WeaponFactory
-        character.weapon = characterConfig.weapon
+        // TODO: Delegate to WeaponFactory instead of creating weapons in CharacterConfig
+        character.weapons.addAll(characterConfig.weapons)
 
         return character
     }
+
+
 
     private fun getHp(character: Character, characterConfig: CharacterConfig): Int {
         // If HP has been set, use that
