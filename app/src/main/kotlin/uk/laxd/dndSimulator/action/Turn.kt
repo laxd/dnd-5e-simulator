@@ -29,6 +29,10 @@ class Turn(
         val attackAction = MeleeAttackAction(character, weapon, target)
         actionResolver.resolve(attackAction)
         LOGGER.debug(attackAction.toString())
+
+        if(target.isDead()) {
+            eventLogger.logEvent(eventFactory.createCharacterDeathEvent(target, character))
+        }
     }
 
     companion object {

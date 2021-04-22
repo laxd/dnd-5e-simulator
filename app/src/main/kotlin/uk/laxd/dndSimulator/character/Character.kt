@@ -72,6 +72,9 @@ class Character(
         hp -= totalDamage
     }
 
+    fun isAlive() = hp > 0
+    fun isDead() = !isAlive()
+
     val characterClasses: Collection<CharacterClass>
         get() = characterClassLevels.keys
     val hitDice: Collection<Die>

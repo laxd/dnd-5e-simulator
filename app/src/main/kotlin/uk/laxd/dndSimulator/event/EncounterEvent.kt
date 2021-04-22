@@ -29,4 +29,4 @@ class RoundStartEvent : EncounterEvent(null, EncounterEventType.ROUND_START, "Ne
 
 class EncounterStartEvent : EncounterEvent(null, EncounterEventType.ENCOUNTER_START, "New encounter started")
 
-class DeathEvent(character: Character, val killedBy: Character) : EncounterEvent(character, EncounterEventType.DEATH, "$character was killed by $killedBy")
+class DeathEvent(character: Character, killedBy: Character) : EncounterEvent(character, EncounterEventType.DEATH, "$killedBy killed $character!")
