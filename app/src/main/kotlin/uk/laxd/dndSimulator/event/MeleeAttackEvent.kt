@@ -13,13 +13,13 @@ class MeleeAttackEvent(
     val outcome: AttackOutcome, // What happened
     var amount: Damage, // How much
     var effect: Effect? = null
-): EncounterEvent(actor, EncounterEventType.MELEE_ATTACK) {
-    override fun toString(): String {
-        return when (outcome) {
-            AttackOutcome.NOT_PERFORMED -> ""
-            AttackOutcome.MISS -> "$actor attacked $target with $weapon but missed!"
-            AttackOutcome.HIT -> "$actor attacked $target with $weapon dealing $amount damage"
-            AttackOutcome.CRIT -> "$actor attacked $target with $weapon dealing $amount damage (CRIT)"
-        }
+): EncounterEvent(
+    actor,
+    EncounterEventType.MELEE_ATTACK,
+    when (outcome) {
+        AttackOutcome.NOT_PERFORMED -> ""
+        AttackOutcome.MISS -> "$actor attacked $target with $weapon but missed!"
+        AttackOutcome.HIT -> "$actor attacked $target with $weapon dealing $amount damage"
+        AttackOutcome.CRIT -> "$actor attacked $target with $weapon dealing $amount damage (CRIT)"
     }
-}
+)
