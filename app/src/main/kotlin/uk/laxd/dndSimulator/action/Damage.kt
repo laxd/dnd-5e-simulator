@@ -30,6 +30,10 @@ class Damage {
             .mapToInt { v -> v }.sum()
 
     override fun toString(): String {
+        if (damageMap.isEmpty()) {
+            return "0"
+        }
+
         return damageMap.entries.stream()
             .map { e -> "${e.value} ${e.key}"}
             .collect(Collectors.joining(", "))

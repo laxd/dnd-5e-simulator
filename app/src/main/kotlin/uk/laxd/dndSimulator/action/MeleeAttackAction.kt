@@ -15,7 +15,7 @@ import uk.laxd.dndSimulator.feature.Feature
 import java.util.ArrayList
 import java.util.function.Consumer
 
-class MeleeAttackAction(val performer: Character, var weapon: Weapon, val target: Character) : Action {
+class MeleeAttackAction(override val actor: Character, var weapon: Weapon, val target: Character) : Action {
 
     // TODO: Fix this?
     private var _modifier = AttackModifier.NORMAL
@@ -29,13 +29,11 @@ class MeleeAttackAction(val performer: Character, var weapon: Weapon, val target
         get() = _modifier == AttackModifier.DISADVANTAGE
         private set
 
-    var outcome: AttackOutcome? = null
+    var outcome: AttackOutcome = AttackOutcome.NOT_PERFORMED
     var attackRoll: Roll
     val damageRolls: MutableList<Roll> = ArrayList()
     var attackRollResult: RollResult? = null
     val attackDamage = Damage()
-
-    private val events: MutableCollection<EncounterEvent> = ArrayList()
 
     fun addDamageRolls(damageRoll: Roll) {
         damageRolls.add(damageRoll)
@@ -43,14 +41,6 @@ class MeleeAttackAction(val performer: Character, var weapon: Weapon, val target
 
     fun addAttackDamage(type: DamageType, amount: Int) {
         attackDamage.addAmount(type, amount)
-    }
-
-    fun addEvent(event: EncounterEvent) {
-        events.add(event)
-    }
-
-    fun getEvents(): Collection<EncounterEvent> {
-        return ArrayList(events)
     }
 
     fun withAdvantage() {
@@ -71,12 +61,12 @@ class MeleeAttackAction(val performer: Character, var weapon: Weapon, val target
         }    }
 
     override fun toString(): String {
-        return String.format("%s attacked %s (%s) - %s for %s", performer, target, attackRoll, outcome, attackDamage)
+        return String.format("%s attacked %s (%s) - %s for %s", actor, target, attackRoll, outcome, attackDamage)
     }
 
     override fun performAction() {
         // Resolve all features
-        performer.features.forEach(Consumer { feature: Feature -> feature.onAttackRoll(this) })
+        actor.features.forEach(Consumer { feature: Feature -> feature.onAttackRoll(this) })
         target.features.forEach(Consumer { feature: Feature -> feature.onAttackRollReceiving(this) })
 
         // See if the attack hits
@@ -98,21 +88,14 @@ class MeleeAttackAction(val performer: Character, var weapon: Weapon, val target
             }
         }
         attackRollResult = rollResult
-        if (rollResult.dieOutcome == 1) {
-            outcome = AttackOutcome.MISS
-        } else if (rollResult.dieOutcome == 20) {
-            outcome = AttackOutcome.CRIT
+
+        outcome = when(rollResult.dieOutcome) {
+            1 -> AttackOutcome.MISS
+            20 -> AttackOutcome.CRIT
+            in (target.armorClass..19) -> AttackOutcome.HIT
+            else -> AttackOutcome.MISS
         }
 
-
-        // If it wasn't a crit or a crit fail, see if it hits
-        if (outcome == null) {
-            outcome = if (rollResult.outcome >= target.armorClass) {
-                AttackOutcome.HIT
-            } else {
-                AttackOutcome.MISS
-            }
-        }
         if (outcome == AttackOutcome.MISS) {
             return
         }
@@ -120,7 +103,7 @@ class MeleeAttackAction(val performer: Character, var weapon: Weapon, val target
         // TODO: Resolve different types of damage with vulnerabilities and resistances.
 
         // Resolve all pre-damage features
-        performer.features.forEach(Consumer { feature: Feature -> feature.onDamageRoll(this) })
+        actor.features.forEach(Consumer { feature: Feature -> feature.onDamageRoll(this) })
         target.features.forEach(Consumer { feature: Feature -> feature.onDamageRollReceived(this) })
 
         // TODO: Move this to a feature? Or character.onAttack which can then add weapon damage
@@ -143,8 +126,8 @@ class MeleeAttackAction(val performer: Character, var weapon: Weapon, val target
         target.applyDamage(attackDamage)
 
         // Resolve all post-damage features;
-        performer.features.forEach(Consumer { f: Feature -> f.onDamageInflicted(this) })
-        performer.features.forEach(Consumer { f: Feature -> f.onDamageReceived(this) })
+        actor.features.forEach(Consumer { f: Feature -> f.onDamageInflicted(this) })
+        actor.features.forEach(Consumer { f: Feature -> f.onDamageReceived(this) })
     }
 
     override val eventType: EncounterEventType

@@ -18,8 +18,8 @@ class CustomWeapon(
     ) : Weapon() {
 
     override fun getToHitModifier(attackAction: MeleeAttackAction): Int {
-        return attackAction.performer.getAbilityModifier(Ability.STRENGTH) +
-                attackAction.performer.proficiencyBonus +
+        return attackAction.actor.getAbilityModifier(Ability.STRENGTH) +
+                attackAction.actor.proficiencyBonus +
                 attackBonus
     }
 
@@ -36,4 +36,9 @@ class CustomWeapon(
     override fun getDamage(attackAction: MeleeAttackAction): Int {
         return damageBonus
     }
+
+    override fun toString(): String {
+        return name
+    }
+
 }

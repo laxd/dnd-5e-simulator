@@ -1,5 +1,6 @@
 package uk.laxd.dndSimulator.action
 
+import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.event.EncounterEventType
 
 /**
@@ -15,5 +16,6 @@ import uk.laxd.dndSimulator.event.EncounterEventType
  */
 interface Action {
     fun performAction()
-    val eventType: EncounterEventType?
+    val actor: Character
+    val eventType: EncounterEventType
 }

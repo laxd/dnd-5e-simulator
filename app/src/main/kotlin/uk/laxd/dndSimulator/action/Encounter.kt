@@ -1,11 +1,10 @@
 package uk.laxd.dndSimulator.action
 
 import org.slf4j.LoggerFactory
-import uk.laxd.dndSimulator.event.EncounterEventType
 import java.util.HashMap
 import java.util.stream.Collectors
 import uk.laxd.dndSimulator.character.Character
-import uk.laxd.dndSimulator.event.EventLogger
+import uk.laxd.dndSimulator.event.*
 import uk.laxd.dndSimulator.feature.Feature
 import java.util.function.Consumer
 
@@ -18,7 +17,7 @@ class Encounter(
 
     fun startEncounter() {
         LOGGER.debug("Starting encounter")
-        eventLogger.logEvent(EncounterEventType.ENCOUNTER_START)
+        eventLogger.logEvent(EncounterStartEvent())
 
         // Create a list of turns, sorted by initiative
         val charactersByInitiative: MutableMap<Character, Int> = HashMap()
@@ -32,10 +31,12 @@ class Encounter(
 
         // TODO: Change this once multiple characters allowed
         while (!isEncounterFinished()) {
-            eventLogger.logEvent(EncounterEventType.ROUND_START)
+            eventLogger.logEvent(RoundStartEvent())
             for (character in characters) {
-                turnFactory.createTurn(character, targetSelector)
-                    .doTurn()
+                if(character.hp > 0) {
+                    turnFactory.createTurn(character, targetSelector)
+                        .doTurn()
+                }
             }
         }
         LOGGER.debug("Finishing encounter")

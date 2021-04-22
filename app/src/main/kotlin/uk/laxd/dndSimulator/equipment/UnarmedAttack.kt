@@ -7,7 +7,7 @@ import uk.laxd.dndSimulator.action.DamageType
 
 class UnarmedAttack : Weapon() {
     override fun getToHitModifier(attackAction: MeleeAttackAction): Int {
-        val attacker = attackAction.performer
+        val attacker = attackAction.actor
         return attacker.getAbilityModifier(Ability.STRENGTH) + attacker.proficiencyBonus
     }
 
@@ -16,7 +16,7 @@ class UnarmedAttack : Weapon() {
     }
 
     override fun getDamage(attackAction: MeleeAttackAction): Int {
-        return attackAction.performer.getAbilityModifier(Ability.STRENGTH) + 1
+        return attackAction.actor.getAbilityModifier(Ability.STRENGTH) + 1
     }
 
     override val name: String

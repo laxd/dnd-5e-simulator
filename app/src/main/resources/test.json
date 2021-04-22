@@ -13,7 +13,7 @@
           "name": "Greataxe",
           "damageType": "SLASHING",
           "diceDamage": 12,
-          "diceCount": 100,
+          "diceCount": 1,
           "damageBonus": 1,
           "attackBonus": 1,
           "properties": [

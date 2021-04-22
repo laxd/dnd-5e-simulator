@@ -1,55 +1,45 @@
 package uk.laxd.dndSimulator.event
 
-import uk.laxd.dndSimulator.feature.Effect
-import uk.laxd.dndSimulator.equipment.Weapon
-import uk.laxd.dndSimulator.action.Damage
-import uk.laxd.dndSimulator.action.AttackOutcome
 import uk.laxd.dndSimulator.character.Character
 
 /**
  * A collection of EncounterEvents can be used to describe an entire encounter
  * and may contain:
  *
- * Attacks
+ * - Melee attacks
+ * - Spells
+ * - Movement
+ * - Generic events (Encounter start, turn start, deaths, etc)
  *
  */
 // TODO: Subclass this with DamageEvent, HealingEvent, ItemUseEvent etc
-class EncounterEvent : Comparable<EncounterEvent> {
-    // Index of the event
-    var index = 0
+open class EncounterEvent(
+    val actor: Character?,
+    val type: EncounterEventType
+)
 
-    // What happened
-    @JvmField
-    var type: EncounterEventType? = null
+class GeneralEncounterEvent(actor: Character, type: EncounterEventType) : EncounterEvent(actor, type)
 
-    // With what
-    @JvmField
-    var weapon: Weapon? = null
-
-    // How much
-    @JvmField
-    var amount: Damage? = null
-
-    // Why did it happen?
-    var effect: Effect? = null
-
-    // Who did it
-    @JvmField
-    var actor: Character? = null
-
-    // To who
-    @JvmField
-    var target: Character? = null
-
-    // Did it work? (TODO: Generalise)
-    @JvmField
-    var eventOutcome: AttackOutcome? = null
-
+class TurnStartEvent(actor: Character) : EncounterEvent(actor, EncounterEventType.TURN_START) {
     override fun toString(): String {
-        return "$actor attacked $target with $weapon dealing $amount damage"
+        return "$actor turn started"
     }
+}
 
-    override fun compareTo(other: EncounterEvent): Int {
-        return index - other.index
+class RoundStartEvent : EncounterEvent(null, EncounterEventType.ROUND_START) {
+    override fun toString(): String {
+        return "New round started"
+    }
+}
+
+class EncounterStartEvent : EncounterEvent(null, EncounterEventType.ENCOUNTER_START) {
+    override fun toString(): String {
+        return "New encounter started"
+    }
+}
+
+class DeathEvent(character: Character, val killedBy: Character) : EncounterEvent(character, EncounterEventType.DEATH) {
+    override fun toString(): String {
+        return "$actor was killed by $killedBy"
     }
 }

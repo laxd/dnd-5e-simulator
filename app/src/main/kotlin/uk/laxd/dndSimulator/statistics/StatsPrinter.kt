@@ -8,15 +8,17 @@ import uk.laxd.dndSimulator.event.EncounterEventType
 import uk.laxd.dndSimulator.action.AttackOutcome
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.event.EventLogger
+import uk.laxd.dndSimulator.event.MeleeAttackEvent
 import java.util.HashMap
 import java.util.function.Consumer
 
 @Component
 class StatsPrinter(private val eventLogger: EventLogger) {
     fun printStats() {
-        // Parse all the events to get a list of characters
+        // TODO: For now, this class only generates stats for melee attacks
+        // Parse all the (attack) events to get a list of characters
         val characters = eventLogger.events
-            .map { obj: EncounterEvent -> obj.actor }
+            .map { e -> e.actor }
             .distinct()
             .filterNotNull()
 
@@ -30,16 +32,16 @@ class StatsPrinter(private val eventLogger: EventLogger) {
         // Hits per encounter
         val hitsPerEncounter = getStats(characters,
                 eventLogger.events,
-                { x: EncounterEvent -> x.type == EncounterEventType.MELEE_ATTACK && (x.eventOutcome == AttackOutcome.HIT || x.eventOutcome == AttackOutcome.CRIT) },
+                { x -> x is MeleeAttackEvent && (x.outcome == AttackOutcome.HIT || x.outcome == AttackOutcome.CRIT) },
                 EncounterEventType.ENCOUNTER_START,
                 { 1 })
 
         // Damage by melee attacks per round
         val meleeDamagePerRound = getStats(characters,
                 eventLogger.events,
-                { x -> x.type == EncounterEventType.MELEE_ATTACK && (x.eventOutcome == AttackOutcome.HIT || x.eventOutcome == AttackOutcome.CRIT) },
+                { x -> x is MeleeAttackEvent && (x.outcome == AttackOutcome.HIT || x.outcome == AttackOutcome.CRIT) },
                 EncounterEventType.ROUND_START,
-                { x -> x.amount!!.totalAmount })
+                { x -> (x as MeleeAttackEvent).amount.totalAmount })
 
         for (character in characters) {
             LOGGER.info("{} stats:", character.name)
@@ -74,7 +76,7 @@ class StatsPrinter(private val eventLogger: EventLogger) {
                 var currentTotal = ongoingTotal[event.actor] ?: 0
                 
                 currentTotal += extractor.getAttribute(event)
-                ongoingTotal[event.actor!!] = currentTotal
+                ongoingTotal[event.actor] = currentTotal
             }
         }
 

@@ -4,15 +4,17 @@ import org.springframework.stereotype.Component
 import uk.laxd.dndSimulator.action.Action
 import uk.laxd.dndSimulator.action.Turn
 import uk.laxd.dndSimulator.action.MeleeAttackAction
+import uk.laxd.dndSimulator.character.Character
 
 @Component
 class EncounterEventFactory {
 
     fun createTurnStartEvent(turn: Turn): EncounterEvent {
-        val event = EncounterEvent()
-        event.type = EncounterEventType.TURN_START
-        event.actor = turn.character
-        return event
+        return TurnStartEvent(turn.character)
+    }
+
+    fun createCharacterDeathEvent(character: Character, killedBy: Character): EncounterEvent {
+        return DeathEvent(character, killedBy)
     }
 
     fun createNewActionEvent(action: Action): EncounterEvent {
@@ -21,19 +23,16 @@ class EncounterEventFactory {
         return when (action.eventType) {
             EncounterEventType.MELEE_ATTACK -> {
                 val meleeAttackAction = action as MeleeAttackAction
-                EncounterEvent().apply {
-                    actor = meleeAttackAction.performer
-                    target = meleeAttackAction.target
-                    amount = meleeAttackAction.attackDamage
-                    weapon = meleeAttackAction.weapon
-                    type = EncounterEventType.MELEE_ATTACK
-                    eventOutcome = meleeAttackAction.outcome
-                }
+                MeleeAttackEvent(
+                    meleeAttackAction.actor,
+                    meleeAttackAction.weapon,
+                    meleeAttackAction.target,
+                    meleeAttackAction.outcome,
+                    meleeAttackAction.attackDamage
+                )
             }
             else -> {
-                EncounterEvent().apply {
-                    type = action.eventType
-                }
+                GeneralEncounterEvent(action.actor, action.eventType)
             }
         }
     }

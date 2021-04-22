@@ -15,7 +15,6 @@ class Character(
     characterClass: CharacterClass,
     level: Int
 ) {
-
     var hp = 0
     var maxHp = 0
     private val characterClassLevels: MutableMap<CharacterClass, Int> = EnumMap(CharacterClass::class.java)
@@ -91,6 +90,6 @@ class Character(
     }
 
     override fun toString(): String {
-        return "$name (AC=$armorClass, hp=$hp/$maxHp)"
+        return "$name ($hp/$maxHp)"
     }
 }

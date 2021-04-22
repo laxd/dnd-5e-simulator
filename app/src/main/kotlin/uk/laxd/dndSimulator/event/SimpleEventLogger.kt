@@ -2,25 +2,18 @@ package uk.laxd.dndSimulator.event
 
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Component
-import java.util.ArrayList
+import uk.laxd.dndSimulator.character.Character
 
 @Component
 @Scope("singleton")
 class SimpleEventLogger : EventLogger {
-    private var index = 1
+    override val events: MutableList<EncounterEvent> = mutableListOf()
 
-    override val events: MutableCollection<EncounterEvent> = ArrayList()
-
-    override fun logEvent(eventType: EncounterEventType) {
-        val event = EncounterEvent()
-        event.type = eventType
-        logEvent(event)
+    override fun logEvent(actor: Character, eventType: EncounterEventType) {
+        logEvent(GeneralEncounterEvent(actor, eventType))
     }
 
     override fun logEvent(event: EncounterEvent) {
-        // Set the index.
-        event.index = index
         events.add(event)
-        index++
     }
 }
