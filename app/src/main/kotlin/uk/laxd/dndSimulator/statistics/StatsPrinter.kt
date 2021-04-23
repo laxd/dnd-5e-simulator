@@ -2,13 +2,10 @@ package uk.laxd.dndSimulator.statistics
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import uk.laxd.dndSimulator.event.EncounterEvent
 import java.util.IntSummaryStatistics
-import uk.laxd.dndSimulator.event.EncounterEventType
 import uk.laxd.dndSimulator.action.AttackOutcome
 import uk.laxd.dndSimulator.character.Character
-import uk.laxd.dndSimulator.event.EventLogger
-import uk.laxd.dndSimulator.event.MeleeAttackEvent
+import uk.laxd.dndSimulator.event.*
 import java.util.HashMap
 import java.util.function.Consumer
 
@@ -49,7 +46,19 @@ class StatsPrinter(private val eventLogger: EventLogger) {
             LOGGER.info("Hits per encounter: {}", hitsPerEncounter[character])
             LOGGER.info("Hit percent: {}%", 100 * (hitsPerEncounter[character]!!.sum / attacksPerEncounter[character]!!.sum.toDouble()))
             LOGGER.info("Damage dealt per round: {}", meleeDamagePerRound[character])
-            LOGGER.info("\n\n")
+            LOGGER.info("\n")
+        }
+
+        // Team stats
+        val teams = characters.map { c -> c.team }.distinct()
+
+        val finishEvents = eventLogger.events
+            .filterIsInstance<EncounterFinishedEvent>()
+
+        for (team in teams) {
+            LOGGER.info("{} stats:", team)
+            LOGGER.info("Times won: {}", finishEvents.filter { e -> e.winningTeam == team }.count())
+            LOGGER.info("Times lost: {}", finishEvents.filter { e -> e.winningTeam != team }.count())
         }
     }
 

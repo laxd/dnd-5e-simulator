@@ -5,6 +5,7 @@ import uk.laxd.dndSimulator.action.DamageType
 import uk.laxd.dndSimulator.action.MeleeAttackAction
 import uk.laxd.dndSimulator.dice.Die
 
+// TODO: Increment damage/attack bonus by Str/Dex
 class CustomWeapon(
     override val name: String,
     override val damageType: DamageType,

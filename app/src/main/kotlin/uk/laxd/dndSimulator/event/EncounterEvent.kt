@@ -30,3 +30,5 @@ class RoundStartEvent : EncounterEvent(null, EncounterEventType.ROUND_START, "Ne
 class EncounterStartEvent : EncounterEvent(null, EncounterEventType.ENCOUNTER_START, "New encounter started")
 
 class DeathEvent(character: Character, killedBy: Character) : EncounterEvent(character, EncounterEventType.DEATH, "$killedBy killed $character!")
+
+class EncounterFinishedEvent(val winningTeam : String) : EncounterEvent(null, EncounterEventType.ENCOUNTER_FINISH, "$winningTeam won!")

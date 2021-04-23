@@ -29,7 +29,6 @@ class Encounter(
 
         val characters = charactersByInitiative.keys
 
-        // TODO: Change this once multiple characters allowed
         while (!isEncounterFinished()) {
             eventLogger.logEvent(RoundStartEvent())
             for (character in characters) {
@@ -39,6 +38,13 @@ class Encounter(
                 }
             }
         }
+
+        eventLogger.logEvent(EncounterFinishedEvent(
+            participants.filter { c -> c.hp > 0 }
+                .map { c -> c.team }
+                .first()
+        ))
+
         LOGGER.debug("Finishing encounter")
     }
 
