@@ -3,14 +3,13 @@ package uk.laxd.dndSimulator.statistics
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.util.IntSummaryStatistics
-import uk.laxd.dndSimulator.action.AttackOutcome
-import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.event.*
-import java.util.HashMap
-import java.util.function.Consumer
 
 @Component
 class StatsPrinter(private val eventLogger: EventLogger) {
+
+    private val LOGGER = LoggerFactory.getLogger(this.javaClass)
+
     fun printStats() {
         // TODO: For now, this class only generates stats for melee attacks
         // Parse all the (attack) events to get a list of characters
@@ -22,32 +21,30 @@ class StatsPrinter(private val eventLogger: EventLogger) {
         for (character in characters) {
             LOGGER.info("{} stats:", character.name)
 
-            // Attacks per encounter
-            val attacksPerEncounter = getStats(character,
-                eventLogger.events,
-                { x: EncounterEvent -> x.type == EncounterEventType.MELEE_ATTACK },
-                EncounterEventType.ENCOUNTER_START,
-                { 1 })
+            val attacksPerEncounter = eventLogger.events
+                .splitBy { e -> e.type == EncounterEventType.ENCOUNTER_START }
+                .map { l -> l.filter { e -> e.actor == character && e.type == EncounterEventType.MELEE_ATTACK }.count() }
+                .fold(IntSummaryStatistics()) {i, a -> i.accept(a); i}
 
-            // Hits per encounter
-            val hitsPerEncounter = getStats(character,
-                eventLogger.events,
-                { x -> x is MeleeAttackEvent && (x.outcome == AttackOutcome.HIT || x.outcome == AttackOutcome.CRIT) },
-                EncounterEventType.ENCOUNTER_START,
-                { 1 })
+            val hitsPerEncounter = eventLogger.events
+                .splitBy { e -> e.type == EncounterEventType.ENCOUNTER_START }
+                .map { l -> l.filterIsInstance<MeleeAttackEvent>().filter { e -> e.actor == character && e.outcome.isHit }.count() }
+                .fold(IntSummaryStatistics()) {i, a -> i.accept(a); i}
 
-            // Damage by melee attacks per round
-            val meleeDamagePerRound = getStats(character,
-                eventLogger.events,
-                { x -> x is MeleeAttackEvent && (x.outcome == AttackOutcome.HIT || x.outcome == AttackOutcome.CRIT) },
-                EncounterEventType.ROUND_START,
-                { x -> (x as MeleeAttackEvent).amount.totalAmount })
+            val meleeDamagePerRound = eventLogger.events
+                .splitBy { e -> e.type == EncounterEventType.ROUND_START }
+                .map { l -> l
+                    .filterIsInstance<MeleeAttackEvent>()
+                    .filter { e -> e.actor == character && e.outcome.isHit }
+                    .sumOf { e -> e.amount.totalAmount }
+                }
+                .fold(IntSummaryStatistics()) {i, a -> i.accept(a); i}
 
             LOGGER.info("Attacks per encounter: {}", attacksPerEncounter)
             LOGGER.info("Hits per encounter: {}", hitsPerEncounter)
             LOGGER.info("Hit percent: {}%", 100 * (hitsPerEncounter.sum / attacksPerEncounter.sum.toDouble()))
             LOGGER.info("Damage dealt per round: {}", meleeDamagePerRound)
-            LOGGER.info("\n")
+            LOGGER.info("")
         }
 
         // Team stats
@@ -57,42 +54,31 @@ class StatsPrinter(private val eventLogger: EventLogger) {
             .filterIsInstance<EncounterFinishedEvent>()
 
         for (team in teams) {
+            val wonCount = finishEvents.filter { e -> e.winningTeam == team }.count()
+            val lostCount = finishEvents.filter { e -> e.winningTeam != team }.count()
+
             LOGGER.info("{} stats:", team)
-            LOGGER.info("Times won: {}", finishEvents.filter { e -> e.winningTeam == team }.count())
-            LOGGER.info("Times lost: {}", finishEvents.filter { e -> e.winningTeam != team }.count())
+            LOGGER.info("Times won: {}", wonCount)
+            LOGGER.info("Times lost: {}", lostCount)
+            LOGGER.info("Chance of winning: {}%", wonCount / (wonCount + lostCount).toDouble() * 100 )
+            LOGGER.info("")
         }
     }
 
-    private fun getStats(character: Character,
-                         events: Collection<EncounterEvent>,
-                         filter: EncounterStatsFilter,
-                         groupBy: EncounterEventType,
-                         extractor: EncounterStatsExtractor): IntSummaryStatistics {
-        val stats = IntSummaryStatistics()
-        var count = 0
+    fun <T> Collection<T>.splitBy(splitBy: (T) -> Boolean): Collection<Collection<T>> {
+        val listOflists: MutableCollection<MutableCollection<T>> = mutableListOf()
+        var currentList: MutableCollection<T> = mutableListOf()
 
-        for (event in events) {
-            // Loop over events, every time something matches the filter, add it to the total.
-            // Add total to statistics every time a "ROUND_START" event happens
-            if (event.type == groupBy) {
-                stats.accept(count);
-                count = 0
+        for(item in this) {
+            if(splitBy(item) || this.last() == item) {
+                listOflists.add(currentList)
+                currentList = mutableListOf()
             }
-
-            if (filter.matches(event) && event.actor == character) {
-                count += extractor.getAttribute(event)
+            else {
+                currentList.add(item)
             }
         }
 
-        // As all events has been taken into account, make sure to flush the current ongoingTotals
-        if (count != 0) {
-            stats.accept(count)
-        }
-
-        return stats
-    }
-
-    companion object {
-        private val LOGGER = LoggerFactory.getLogger(StatsPrinter::class.java)
+        return listOflists
     }
 }

@@ -1,5 +1,5 @@
 package uk.laxd.dndSimulator.action
 
-enum class AttackOutcome {
-    HIT, MISS, CRIT, NOT_PERFORMED
+enum class AttackOutcome(val isHit: Boolean) {
+    HIT(true), MISS(false), CRIT(true), NOT_PERFORMED(false)
 }
