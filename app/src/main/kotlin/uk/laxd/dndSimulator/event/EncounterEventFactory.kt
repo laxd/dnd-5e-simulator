@@ -27,6 +27,8 @@ class EncounterEventFactory {
                     meleeAttackAction.actor,
                     meleeAttackAction.weapon,
                     meleeAttackAction.target,
+                    meleeAttackAction.attackRollResult,
+                    meleeAttackAction.damageRollResult,
                     meleeAttackAction.outcome,
                     meleeAttackAction.attackDamage
                 )

@@ -1,7 +1,10 @@
 package uk.laxd.dndSimulator.action
 
 import uk.laxd.dndSimulator.character.Character
+import uk.laxd.dndSimulator.dice.Roll
+import uk.laxd.dndSimulator.dice.RollResult
 import uk.laxd.dndSimulator.event.EncounterEventType
+import java.util.ArrayList
 
 /**
  * An action represents any action that a player (or creature) may take, and
@@ -14,8 +17,56 @@ import uk.laxd.dndSimulator.event.EncounterEventType
  *  5. Reactions
  *
  */
-interface Action {
-    fun performAction()
-    val actor: Character
+abstract class Action(
+    val actor: Character,
     val eventType: EncounterEventType
+) {
+
+    abstract fun performAction()
+
+    // TODO: Fix this?
+    private var _modifier = AttackModifier.NORMAL
+
+    // Don't like this, but as they are mutually exclusive, can't be set via decorator
+    var withAdvantage = false
+        get() = _modifier == AttackModifier.ADVANTAGE
+        private set
+
+    var withDisadvantage = false
+        get() = _modifier == AttackModifier.DISADVANTAGE
+        private set
+
+    fun withAdvantage() {
+        this._modifier = when(_modifier) {
+            AttackModifier.DISADVANTAGE -> AttackModifier.BOTH
+            AttackModifier.BOTH -> AttackModifier.BOTH
+            AttackModifier.NORMAL -> AttackModifier.ADVANTAGE
+            AttackModifier.ADVANTAGE -> AttackModifier.ADVANTAGE
+        }
+    }
+
+    fun withDisadvantage() {
+        this._modifier = when(_modifier) {
+            AttackModifier.DISADVANTAGE -> AttackModifier.DISADVANTAGE
+            AttackModifier.BOTH -> AttackModifier.BOTH
+            AttackModifier.NORMAL -> AttackModifier.DISADVANTAGE
+            AttackModifier.ADVANTAGE -> AttackModifier.BOTH
+        }
+    }
+}
+
+abstract class AttackAction(
+    actor: Character,
+    val target: Character,
+    eventType: EncounterEventType
+): Action(actor, eventType) {
+    val actionResult = ActionResult()
+    var outcome: AttackOutcome = AttackOutcome.NOT_PERFORMED
+
+    var attackRoll: Roll? = null
+    var attackRollResult: RollResult = RollResult()
+    var damageRoll: Roll? = null
+    var damageRollResult: RollResult = RollResult()
+
+    val attackDamage = Damage()
 }

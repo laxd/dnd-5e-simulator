@@ -35,7 +35,7 @@ class Damage {
         }
 
         return damageMap.entries.stream()
-            .map { e -> "${e.value} ${e.key}"}
+            .map { e -> "${e.value} ${e.key.display}"}
             .collect(Collectors.joining(", "))
     }
 }

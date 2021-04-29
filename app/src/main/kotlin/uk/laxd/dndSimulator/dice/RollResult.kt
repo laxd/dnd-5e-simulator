@@ -19,10 +19,14 @@ class RollResult {
         this.modifier += modifier
     }
 
+    override fun toString(): String {
+        return dieResultMap.values.joinToString(",") + (if (modifier > 0) " + $modifier" else "")
+    }
+
     // Return ONLY the sum of the dice
     val dieOutcome: Int
         get() =// Return ONLY the sum of the dice
-            dieResultMap.values.stream().mapToInt { i: Int? -> i!! }.sum()
+            dieResultMap.values.stream().mapToInt { i -> i }.sum()
 
     // TODO: Add modifiers e.g. +2
     // TODO: Add string builder type functionality? Add decorator?

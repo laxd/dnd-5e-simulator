@@ -11,24 +11,16 @@ import java.util.stream.Collectors
 import kotlin.reflect.KClass
 
 @Component
-class FeatureFactory {
-
-    private val features: MutableCollection<KClass<out Feature>> = ArrayList()
+class FeatureFactory(private val registry: FeatureRegistry) {
 
     fun createFeatures(config: CharacterConfig): Collection<Feature> {
         // TODO: Also populate manually added features via CharacterConfig
-        return features.stream()
+        // Add CharacterConfig.preventDefaultFeatures? Or just add a "Class" that doesn't have any features?
+        return registry.features.stream()
                 .map { f -> f.java.newInstance() }
                 .filter { f: Feature -> config.characterClasses.contains(f.characterClassRequired) }
                 .filter { f: Feature -> f.levelRequirement <= config.getLevel(f.characterClassRequired) }
                 .collect(Collectors.toList())
     }
 
-    // TODO: Load all features via reflection instead?
-    init {
-        features.add(Rage::class)
-        features.add(RecklessAttack::class)
-        features.add(UnarmoredDefence::class)
-        features.add(SneakAttack::class)
-    }
 }

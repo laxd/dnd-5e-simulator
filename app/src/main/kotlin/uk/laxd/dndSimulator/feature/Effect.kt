@@ -1,5 +1,6 @@
 package uk.laxd.dndSimulator.feature
 
+import uk.laxd.dndSimulator.action.AttackAction
 import uk.laxd.dndSimulator.action.InitiativeRoll
 import uk.laxd.dndSimulator.action.MeleeAttackAction
 import uk.laxd.dndSimulator.character.Character
@@ -20,13 +21,13 @@ open class Effect(val name: String) {
     open fun onRoundStart(character: Character) {}
     open fun onTurnStart(character: Character) {}
     open fun onTurnEnd(character: Character) {}
-    open fun onAttackRoll(action: MeleeAttackAction) {}
-    open fun onDamageRoll(action: MeleeAttackAction) {}
-    open fun onAttackRollReceiving(action: MeleeAttackAction) {}
-    open fun onDamageRollReceived(action: MeleeAttackAction) {}
-    open fun onDamageInflicted(action: MeleeAttackAction) {}
-    open fun onDamageReceived(action: MeleeAttackAction) {}
-    open fun onSavingThrow(action: MeleeAttackAction) {}
+    open fun onAttackRoll(action: AttackAction) {}
+    open fun onDamageRoll(action: AttackAction) {}
+    open fun onAttackRollReceiving(action: AttackAction) {}
+    open fun onDamageRollReceived(action: AttackAction) {}
+    open fun onDamageInflicted(action: AttackAction) {}
+    open fun onDamageReceived(action: AttackAction) {}
+    open fun onSavingThrow(action: AttackAction) {}
     open fun onAbilityCheck(character: Character) {}
     open fun onShortRest(character: Character) {}
     open fun onLongRest(character: Character) {}

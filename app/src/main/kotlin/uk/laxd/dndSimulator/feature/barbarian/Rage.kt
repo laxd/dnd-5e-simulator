@@ -5,6 +5,7 @@ import uk.laxd.dndSimulator.character.CharacterClass
 import uk.laxd.dndSimulator.action.MeleeAttackAction
 import uk.laxd.dndSimulator.action.DamageType
 import uk.laxd.dndSimulator.action.ActionType
+import uk.laxd.dndSimulator.action.AttackAction
 import uk.laxd.dndSimulator.character.Character
 
 class Rage : ActivatedFeature("Rage") {
@@ -58,14 +59,18 @@ class Rage : ActivatedFeature("Rage") {
         }
     }
 
-    override fun onDamageRoll(action: MeleeAttackAction) {
+    override fun onDamageRoll(action: AttackAction) {
+        if(action !is MeleeAttackAction) {
+            return
+        }
+
         // TODO: This just increments the damage of the weapon? Need to find the damage roll
         // for just the weapon somehow, or set it separately
         val damageType = action.weapon.damageType
         action.attackDamage.addAmount(damageType, 2)
     }
 
-    override fun onDamageRollReceived(action: MeleeAttackAction) {
+    override fun onDamageRollReceived(action: AttackAction) {
         val damage = action.attackDamage
         damage.addAmount(DamageType.PIERCING, -damage.getAmount(DamageType.PIERCING) / 2)
         damage.addAmount(DamageType.SLASHING, -damage.getAmount(DamageType.SLASHING) / 2)

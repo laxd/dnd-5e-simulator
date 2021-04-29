@@ -21,15 +21,15 @@ class RageTest {
 
     @Before
     fun setUp() {
-        character = Character("Steve", CharacterClass.BARBARIAN, 20)
-        target = Character("Alan", CharacterClass.BARBARIAN, 20)
+        character = Character("Steve", "Team A", CharacterClass.BARBARIAN, 20)
+        target = Character("Alan", "Team B", CharacterClass.BARBARIAN, 20)
         weapon = Greatsword()
     }
 
     @Test
     fun testRageDamageIsApplied() {
         val attackAction = MeleeAttackAction(character, weapon, target)
-        attackAction.addAttackDamage(DamageType.SLASHING, 10)
+        attackAction.attackDamage.addAmount(DamageType.SLASHING, 10)
         rage.onDamageRoll(attackAction)
         Assert.assertEquals(12, attackAction.attackDamage.getAmount(DamageType.SLASHING).toLong())
     }
@@ -37,7 +37,7 @@ class RageTest {
     @Test
     fun testRageDamageReductionApplies() {
         val attackAction = MeleeAttackAction(target, weapon, character)
-        attackAction.addAttackDamage(DamageType.SLASHING, 10)
+        attackAction.attackDamage.addAmount(DamageType.SLASHING, 10)
         rage.onDamageRollReceived(attackAction)
         Assert.assertEquals(5, attackAction.attackDamage.getAmount(DamageType.SLASHING).toLong())
     }
@@ -45,7 +45,7 @@ class RageTest {
     @Test
     fun testRageDamageReductionDoesNotApply() {
         val attackAction = MeleeAttackAction(target, weapon, character)
-        attackAction.addAttackDamage(DamageType.FIRE, 10)
+        attackAction.attackDamage.addAmount(DamageType.FIRE, 10)
         rage.onDamageRollReceived(attackAction)
         Assert.assertEquals(10, attackAction.attackDamage.getAmount(DamageType.FIRE).toLong())
     }

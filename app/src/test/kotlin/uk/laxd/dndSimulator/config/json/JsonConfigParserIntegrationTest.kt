@@ -32,7 +32,7 @@ class JsonConfigParserIntegrationTest {
     internal fun `config includes characters`() {
         val simulationConfig = configParser.getConfig("src/test/resources/test.json")
 
-        assertThat(simulationConfig.characterConfigs).hasSize(2)
+        assertThat(simulationConfig.characterConfigs).hasSize(3)
     }
 
     @Test

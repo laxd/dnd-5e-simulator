@@ -1,5 +1,6 @@
 package uk.laxd.dndSimulator.feature.rogue
 
+import uk.laxd.dndSimulator.action.AttackAction
 import uk.laxd.dndSimulator.feature.StaticFeature
 import uk.laxd.dndSimulator.action.MeleeAttackAction
 import uk.laxd.dndSimulator.character.Character
@@ -17,7 +18,11 @@ class SneakAttack : StaticFeature("Sneak Attack") {
         diceCount = ceil((character.level / 2).toDouble()).toInt()
     }
 
-    override fun onDamageRoll(action: MeleeAttackAction) {
+    override fun onDamageRoll(action: AttackAction) {
+        if(action !is MeleeAttackAction) {
+            return
+        }
+
         if (!(action.weapon.hasProperty(WeaponProperty.FINESSE) || action.weapon.hasProperty(WeaponProperty.RANGE))) {
             // Sneak attack only applies to finesse/ranged attacks
             return
@@ -31,11 +36,11 @@ class SneakAttack : StaticFeature("Sneak Attack") {
             // TODO: Or an ally within 5 ft of target
             return
         }
-        val sneakAttackRoll = Roll()
+
         for (i in 0 until diceCount) {
-            sneakAttackRoll.addDie(Die.D6)
+            action.damageRoll?.addDie(Die.D6)
         }
-        action.addDamageRolls(sneakAttackRoll)
+
         hasSneakAttacked = true
     }
 

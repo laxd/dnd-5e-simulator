@@ -17,8 +17,8 @@ class Character(
 ) {
     var hp = 0
     var maxHp = 0
-    private val characterClassLevels: MutableMap<CharacterClass, Int> = EnumMap(CharacterClass::class.java)
-    private val abilities: MutableMap<Ability, Int> = EnumMap(Ability::class.java)
+    val characterClassLevels: MutableMap<CharacterClass, Int> = EnumMap(CharacterClass::class.java)
+    val abilities: MutableMap<Ability, Int> = EnumMap(Ability::class.java)
     var attackCount = 1
     var armorClass = 10
     val features: MutableCollection<Feature> = ArrayList()

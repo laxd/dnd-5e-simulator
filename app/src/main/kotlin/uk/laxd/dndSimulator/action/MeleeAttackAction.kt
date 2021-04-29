@@ -1,95 +1,37 @@
 package uk.laxd.dndSimulator.action
 
+import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.equipment.Weapon
 import uk.laxd.dndSimulator.action.AttackOutcome
-import uk.laxd.dndSimulator.dice.Roll
-import uk.laxd.dndSimulator.dice.RollResult
 import uk.laxd.dndSimulator.action.Damage
 import uk.laxd.dndSimulator.event.EncounterEvent
 import uk.laxd.dndSimulator.action.DamageType
 import uk.laxd.dndSimulator.character.Character
+import uk.laxd.dndSimulator.dice.*
 import uk.laxd.dndSimulator.equipment.UnarmedAttack
+import uk.laxd.dndSimulator.equipment.WeaponProperty
 import uk.laxd.dndSimulator.event.EncounterEventType
-import uk.laxd.dndSimulator.dice.Die
 import uk.laxd.dndSimulator.feature.Feature
 import java.util.ArrayList
 import java.util.function.Consumer
+import kotlin.math.max
 
-class MeleeAttackAction(override val actor: Character, var weapon: Weapon, val target: Character) : Action {
-
-    // TODO: Fix this?
-    private var _modifier = AttackModifier.NORMAL
-
-    // Don't like this, but as they are mutually exclusive, can't be set via decorator
-    var withAdvantage = false
-        get() = _modifier == AttackModifier.ADVANTAGE
-        private set
-
-    var withDisadvantage = false
-        get() = _modifier == AttackModifier.DISADVANTAGE
-        private set
-
-    var outcome: AttackOutcome = AttackOutcome.NOT_PERFORMED
-    var attackRoll: Roll
-    val damageRolls: MutableList<Roll> = ArrayList()
-    var attackRollResult: RollResult? = null
-    val attackDamage = Damage()
-
-    fun addDamageRolls(damageRoll: Roll) {
-        damageRolls.add(damageRoll)
-    }
-
-    fun addAttackDamage(type: DamageType, amount: Int) {
-        attackDamage.addAmount(type, amount)
-    }
-
-    fun withAdvantage() {
-        this._modifier = when(_modifier) {
-            AttackModifier.DISADVANTAGE -> AttackModifier.BOTH
-            AttackModifier.BOTH -> AttackModifier.BOTH
-            AttackModifier.NORMAL -> AttackModifier.ADVANTAGE
-            AttackModifier.ADVANTAGE -> AttackModifier.ADVANTAGE
-        }
-    }
-
-    fun withDisadvantage() {
-        this._modifier = when(_modifier) {
-            AttackModifier.DISADVANTAGE -> AttackModifier.DISADVANTAGE
-            AttackModifier.BOTH -> AttackModifier.BOTH
-            AttackModifier.NORMAL -> AttackModifier.DISADVANTAGE
-            AttackModifier.ADVANTAGE -> AttackModifier.BOTH
-        }    }
+class MeleeAttackAction(
+    actor: Character,
+    var weapon: Weapon,
+    target: Character
+) : AttackAction(actor, target, EncounterEventType.MELEE_ATTACK) {
 
     override fun toString(): String {
-        return String.format("%s attacked %s (%s) - %s for %s", actor, target, attackRoll, outcome, attackDamage)
+        return String.format("%s attacked %s (%s) - %s for %s", actor, target, attackRollResult, outcome, attackDamage)
     }
 
     override fun performAction() {
-        // Resolve all features
-        actor.features.forEach(Consumer { feature: Feature -> feature.onAttackRoll(this) })
-        target.features.forEach(Consumer { feature: Feature -> feature.onAttackRollReceiving(this) })
+        val attackRoll = createAttackRoll()
 
-        // See if the attack hits
-        // Roll the dice
-        var rollResult = attackRoll.roll()
-        if (withAdvantage) {
-            val rollResult2 = attackRoll.roll()
+        attackRollResult = attackRoll.roll()
 
-            // Replace roll if advantage roll was greater than the first roll
-            if (rollResult2.outcome > rollResult.outcome) {
-                rollResult = rollResult2
-            }
-        } else if (withDisadvantage) {
-            val rollResult2 = attackRoll.roll()
-
-            // Replace roll if advantage roll was greater than the first roll
-            if (rollResult2.outcome < rollResult.outcome) {
-                rollResult = rollResult2
-            }
-        }
-        attackRollResult = rollResult
-
-        outcome = when(rollResult.dieOutcome) {
+        outcome = when(attackRollResult.dieOutcome) {
             1 -> AttackOutcome.MISS
             20 -> AttackOutcome.CRIT
             in (target.armorClass..19) -> AttackOutcome.HIT
@@ -101,39 +43,50 @@ class MeleeAttackAction(override val actor: Character, var weapon: Weapon, val t
         }
 
         // TODO: Resolve different types of damage with vulnerabilities and resistances.
-
-        // Resolve all pre-damage features
-        actor.features.forEach(Consumer { feature: Feature -> feature.onDamageRoll(this) })
-        target.features.forEach(Consumer { feature: Feature -> feature.onDamageRollReceived(this) })
-
-        // TODO: Move this to a feature? Or character.onAttack which can then add weapon damage
-        val weaponDamageRoll = Roll(weapon.getDamageDice(this))
-
-        // Roll damage dice
-        val damageRolls: MutableCollection<Roll> = damageRolls
-        damageRolls.add(weaponDamageRoll)
+        val weaponDamageRoll = createDamageRoll()
 
         if (outcome == AttackOutcome.CRIT) {
-            // Roll the dice again if it was a crit!
-            damageRolls.addAll(damageRolls)
+            // Roll the dice again if it was a crit
+            weaponDamageRoll.dice.addAll(weaponDamageRoll.dice);
         }
 
         // TODO: Subclass Roll - DamageRoll should include type of damage
-        for (roll in damageRolls) {
-            val damageRollResult = roll.roll()
-            addAttackDamage(DamageType.PIERCING, damageRollResult.outcome)
+        damageRollResult = weaponDamageRoll.roll()
+        attackDamage.addAmount(weapon.damageType, damageRollResult.outcome)
+    }
+
+    private fun createAttackRoll(): Roll {
+        var mod = weapon.getToHitModifier(this)
+
+        // TODO: Ranged weapons
+        mod += if(weapon.hasProperty(WeaponProperty.FINESSE)) {
+            max(actor.getAbilityModifier(Ability.DEXTERITY), actor.getAbilityModifier(Ability.STRENGTH))
         }
-        target.applyDamage(attackDamage)
+        else {
+            actor.getAbilityModifier(Ability.STRENGTH)
+        }
 
-        // Resolve all post-damage features;
-        actor.features.forEach(Consumer { f: Feature -> f.onDamageInflicted(this) })
-        actor.features.forEach(Consumer { f: Feature -> f.onDamageReceived(this) })
+        // TODO: Check if character is proficient with weapon
+        mod += actor.proficiencyBonus
+
+        return when {
+            withAdvantage -> AdvantageRoll(Roll(Die.D20, modifier = mod))
+            withDisadvantage -> DisadvantageRoll(Roll(Die.D20, modifier = mod))
+            else -> Roll(Die.D20, modifier = mod)
+        }
     }
 
-    override val eventType: EncounterEventType
-        get() = EncounterEventType.MELEE_ATTACK
+    private fun createDamageRoll(): Roll {
+        var mod = if(weapon.hasProperty(WeaponProperty.FINESSE)) {
+            max(actor.getAbilityModifier(Ability.DEXTERITY), actor.getAbilityModifier(Ability.STRENGTH))
+        }
+        else {
+            actor.getAbilityModifier(Ability.STRENGTH)
+        }
 
-    init {
-        attackRoll = Roll(Die.D20)
+        mod += weapon.getDamage(this)
+
+        return Roll(weapon.getDamageDice(this), mod)
     }
+
 }

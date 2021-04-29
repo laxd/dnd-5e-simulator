@@ -10,16 +10,13 @@ import java.util.stream.Collectors
  *
  * 1d20 + 2
  */
-open class Roll(val dice: MutableCollection<Die>) {
-    private val modifier: Collection<RollModifier>? = null
+open class Roll(val dice: MutableCollection<Die>, val modifier: Int = 0) {
     private var result: RollResult? = null
 
-    constructor(vararg dice: Die) : this(mutableListOf(*dice))
+    constructor(vararg dice: Die, modifier: Int = 0) : this(mutableListOf(*dice), modifier)
 
     /**
-     * Can be rolled once, and only once, to set the result of this roll.
-     *
-     * If this method is called multiple times, a [MultipleRollException] is thrown.
+     * Creates a random number between 1 + [modifier] and [Die.maxValue] + [modifier]
      */
     open fun roll(): RollResult {
         // Any RollModifiers that modify the sum of the dice should be included here,
@@ -31,6 +28,8 @@ open class Roll(val dice: MutableCollection<Die>) {
         for(die in dice) {
             result.addDice(die)
         }
+
+        result.addModifier(modifier)
 
         return result
     }
@@ -45,5 +44,24 @@ open class Roll(val dice: MutableCollection<Die>) {
                 .stream()
                 .map { e: Map.Entry<Int, List<Die?>> -> e.value.size.toString() + "d" + e.key }
                 .collect(Collectors.joining(" ")).toString() + "(" + result + ")"
+    }
+}
+
+class AdvantageRoll(val roll: Roll): Roll(roll.dice, roll.modifier) {
+    override fun roll(): RollResult {
+        return listOf(super.roll(), super.roll())
+            .maxByOrNull { r -> r.outcome }!!
+    }
+
+    override fun toString(): String {
+        return "AdvantageRoll(roll=$roll)"
+    }
+
+}
+
+class DisadvantageRoll(val roll: Roll): Roll(roll.dice, roll.modifier) {
+    override fun roll(): RollResult {
+        return listOf(super.roll(), super.roll())
+            .minByOrNull { r -> r.outcome }!!
     }
 }

@@ -21,14 +21,14 @@ class TurnTest {
 
     @Before
     fun setUp() {
-        character = Character("Steve", CharacterClass.BARBARIAN, 20)
-        target = Character("Alan", CharacterClass.GENERIC_CHARACTER, 20)
-        targetSelector = SimpleTargetSelector(target!!)
+        character = Character("Steve", "Team A", CharacterClass.BARBARIAN, 20)
+        target = Character("Alan", "Team B", CharacterClass.GENERIC_CHARACTER, 20)
+        targetSelector = SimpleTargetSelector(listOf(character!!, target!!))
     }
 
     @Test
     fun testNoTargetResultsInNoHit() {
-        targetSelector = SimpleTargetSelector(null)
+        targetSelector = SimpleTargetSelector(listOf())
         val turn = Turn(eventFactory, eventLogger, actionResolver, character!!, targetSelector!!)
         turn.doTurn()
         assertTrue(eventLogger.events.stream()
