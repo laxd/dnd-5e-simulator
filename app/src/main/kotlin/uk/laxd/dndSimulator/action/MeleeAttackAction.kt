@@ -25,8 +25,7 @@ class MeleeAttackAction(
         outcome = when(attackRollResult.dieOutcome) {
             1 -> AttackOutcome.MISS
             20 -> AttackOutcome.CRIT
-            in (target.armorClass..19) -> AttackOutcome.HIT
-            else -> AttackOutcome.MISS
+            else -> if (attackRollResult.outcome >= target.armorClass) AttackOutcome.HIT else AttackOutcome.MISS
         }
 
         val events = mutableListOf<EncounterEvent>()
