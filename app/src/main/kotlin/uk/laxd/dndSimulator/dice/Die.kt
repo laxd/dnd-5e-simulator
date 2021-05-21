@@ -20,6 +20,19 @@ class Die(val maxValue: Int) {
         return "d$maxValue"
     }
 
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Die) return false
+
+        if (maxValue != other.maxValue) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return maxValue
+    }
+
     companion object {
         private val LOGGER = LoggerFactory.getLogger(Die::class.java)
         val D4 = Die(4)

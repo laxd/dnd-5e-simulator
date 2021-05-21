@@ -1,11 +1,12 @@
 package uk.laxd.dndSimulator.equipment
 
+import uk.laxd.dndSimulator.action.AttackAction
 import uk.laxd.dndSimulator.action.MeleeAttackAction
 import uk.laxd.dndSimulator.dice.Die
 import uk.laxd.dndSimulator.action.DamageType
-import uk.laxd.dndSimulator.equipment.WeaponProperty
+import uk.laxd.dndSimulator.feature.Effect
 
-abstract class Weapon {
+abstract class Weapon(name: String) : Effect(name) {
 
     abstract fun getToHitModifier(attackAction: MeleeAttackAction): Int
     abstract fun getDamageDice(attackAction: MeleeAttackAction): MutableCollection<Die>
@@ -18,7 +19,6 @@ abstract class Weapon {
      * @return
      */
     abstract fun getDamage(attackAction: MeleeAttackAction): Int
-    abstract val name: String
     abstract val damageType: DamageType
     abstract val range: Int
 
@@ -37,6 +37,6 @@ abstract class Weapon {
         return properties.contains(weaponProperty)
     }
 
-    fun onAttack(attackAction: MeleeAttackAction) {}
-    fun onHit(attackAction: MeleeAttackAction) {}
+    fun onAttack(attackAction: AttackAction) {}
+    fun onHit(attackAction: AttackAction) {}
 }

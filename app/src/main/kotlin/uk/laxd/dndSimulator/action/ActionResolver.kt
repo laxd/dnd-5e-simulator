@@ -3,9 +3,6 @@ package uk.laxd.dndSimulator.action
 import org.springframework.stereotype.Component
 import uk.laxd.dndSimulator.event.EncounterEventFactory
 import uk.laxd.dndSimulator.event.EventLogger
-import uk.laxd.dndSimulator.feature.Feature
-import uk.laxd.dndSimulator.feature.FeatureEventProcessor
-import uk.laxd.dndSimulator.feature.FeatureRegistry
 
 /**
  * Resolves an action, which may involve any of the following:
@@ -26,37 +23,11 @@ import uk.laxd.dndSimulator.feature.FeatureRegistry
 @Component
 class ActionResolver(
     private val eventLogger: EventLogger,
-    private val eventFactory: EncounterEventFactory,
-    private val featureEventProcessor: FeatureEventProcessor
+    private val eventFactory: EncounterEventFactory
 ) {
     fun resolve(action: Action) {
-        // TODO: Subclass actionResolver to avoid having to do these checks?
-        when(action) {
-            is AttackAction -> resolveAttackAction(action)
-            else -> resolveGeneralAction(action)
-        }
+        eventLogger.logEvents(action.performAction())
 
         // TODO: Reactions
-    }
-
-    private fun resolveGeneralAction(action: Action) {
-        action.performAction()
-        eventLogger.logEvent(eventFactory.createNewActionEvent(action))
-    }
-
-    private fun resolveAttackAction(action: AttackAction) {
-        featureEventProcessor.onAttackRoll(action)
-
-        action.performAction()
-
-        featureEventProcessor.onDamageRoll(action)
-
-        action.target.applyDamage(action.attackDamage)
-
-        if(action.attackDamage.totalAmount > 0) {
-            featureEventProcessor.onDamageDealt(action)
-        }
-
-        eventLogger.logEvent(eventFactory.createNewActionEvent(action))
     }
 }

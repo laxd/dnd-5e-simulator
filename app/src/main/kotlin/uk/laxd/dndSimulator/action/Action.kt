@@ -3,6 +3,7 @@ package uk.laxd.dndSimulator.action
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.dice.Roll
 import uk.laxd.dndSimulator.dice.RollResult
+import uk.laxd.dndSimulator.event.EncounterEvent
 import uk.laxd.dndSimulator.event.EncounterEventType
 import java.util.ArrayList
 
@@ -22,7 +23,7 @@ abstract class Action(
     val eventType: EncounterEventType
 ) {
 
-    abstract fun performAction()
+    abstract fun performAction() : Collection<EncounterEvent>
 
     // TODO: Fix this?
     private var _modifier = AttackModifier.NORMAL
@@ -52,6 +53,13 @@ abstract class Action(
             AttackModifier.NORMAL -> AttackModifier.DISADVANTAGE
             AttackModifier.ADVANTAGE -> AttackModifier.BOTH
         }
+    }
+}
+
+class NoOpAction(actor: Character, eventType: EncounterEventType): Action(actor, eventType) {
+    override fun performAction(): Collection<EncounterEvent> {
+        // Nothing to do!
+        return listOf()
     }
 }
 

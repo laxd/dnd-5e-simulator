@@ -28,22 +28,22 @@ class StatsPrinter(private val eventLogger: EventLogger) {
 
             val hitsPerEncounter = eventLogger.events
                 .splitBy { e -> e.type == EncounterEventType.ENCOUNTER_START }
-                .map { l -> l.filterIsInstance<MeleeAttackEvent>().filter { e -> e.actor == character && e.outcome.isHit }.count() }
+                .map { l -> l.filterIsInstance<DamageEvent>().filter { e -> e.actor == character }.count() }
                 .fold(IntSummaryStatistics()) {i, a -> i.accept(a); i}
 
-            val meleeDamagePerRound = eventLogger.events
+            val damagePerRound = eventLogger.events
                 .splitBy { e -> e.type == EncounterEventType.ROUND_START }
                 .map { l -> l
-                    .filterIsInstance<MeleeAttackEvent>()
-                    .filter { e -> e.actor == character && e.outcome.isHit }
-                    .sumOf { e -> e.amount.totalAmount }
+                    .filterIsInstance<DamageEvent>()
+                    .filter { e -> e.actor == character }
+                    .sumOf { e -> e.damage.totalAmount }
                 }
                 .fold(IntSummaryStatistics()) {i, a -> i.accept(a); i}
 
             LOGGER.info("Attacks per encounter: {}", attacksPerEncounter)
             LOGGER.info("Hits per encounter: {}", hitsPerEncounter)
             LOGGER.info("Hit percent: {}%", 100 * (hitsPerEncounter.sum / attacksPerEncounter.sum.toDouble()))
-            LOGGER.info("Damage dealt per round: {}", meleeDamagePerRound)
+            LOGGER.info("Damage dealt per round: {}", damagePerRound)
             LOGGER.info("")
         }
 

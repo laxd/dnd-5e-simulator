@@ -3,39 +3,31 @@ package uk.laxd.dndSimulator.action
 import org.slf4j.LoggerFactory
 import uk.laxd.dndSimulator.event.EncounterEventFactory
 import uk.laxd.dndSimulator.character.Character
-import uk.laxd.dndSimulator.equipment.UnarmedAttack
 import uk.laxd.dndSimulator.event.EventLogger
+import uk.laxd.dndSimulator.event.TurnEndEvent
+import uk.laxd.dndSimulator.event.TurnStartEvent
 
 class Turn(
+    private val actionFactory: ActionFactory,
     private val eventFactory: EncounterEventFactory,
     private val eventLogger: EventLogger,
     private val actionResolver: ActionResolver,
     val character: Character,
     private val targetSelector: TargetSelector
 ) {
+    private val logger = LoggerFactory.getLogger(Turn::class.java)
+
     fun doTurn() {
-        eventLogger.logEvent(eventFactory.createTurnStartEvent(this))
-        val target = targetSelector.findTarget(character)
-        if (target == null) {
-            LOGGER.info("Nothing to attack")
-            return
+        eventLogger.logEvent(TurnStartEvent(character))
+
+        repeat(character.attackCount) {
+            logger.debug("Attack $it/${character.attackCount}")
+
+            val attackAction = actionFactory.createAction(character, targetSelector)
+            actionResolver.resolve(attackAction)
+            logger.debug(attackAction.toString())
         }
 
-        // Find highest priority weapon with melee range
-        val weapon = character.weapons
-            .filter { w -> w.range <= 5 }
-            .maxByOrNull { w -> w.priority } ?: UnarmedAttack()
-
-        val attackAction = MeleeAttackAction(character, weapon, target)
-        actionResolver.resolve(attackAction)
-        LOGGER.debug(attackAction.toString())
-
-        if(target.isDead()) {
-            eventLogger.logEvent(eventFactory.createCharacterDeathEvent(target, character))
-        }
-    }
-
-    companion object {
-        private val LOGGER = LoggerFactory.getLogger(Turn::class.java)
+        eventLogger.logEvent(TurnEndEvent(character))
     }
 }

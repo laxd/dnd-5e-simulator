@@ -17,9 +17,7 @@ abstract class Feature(name: String) : Effect(name) {
         isActive = false
     }
 
-    open val levelRequirement: Int
-        get() = 1
-
+    open val levelRequirement = 1
     abstract val isActiveSkill: Boolean
     abstract val characterClassRequired: CharacterClass
 

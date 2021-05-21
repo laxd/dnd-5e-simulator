@@ -2,18 +2,10 @@ package uk.laxd.dndSimulator.action
 
 import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.equipment.Weapon
-import uk.laxd.dndSimulator.action.AttackOutcome
-import uk.laxd.dndSimulator.action.Damage
-import uk.laxd.dndSimulator.event.EncounterEvent
-import uk.laxd.dndSimulator.action.DamageType
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.dice.*
-import uk.laxd.dndSimulator.equipment.UnarmedAttack
 import uk.laxd.dndSimulator.equipment.WeaponProperty
-import uk.laxd.dndSimulator.event.EncounterEventType
-import uk.laxd.dndSimulator.feature.Feature
-import java.util.ArrayList
-import java.util.function.Consumer
+import uk.laxd.dndSimulator.event.*
 import kotlin.math.max
 
 class MeleeAttackAction(
@@ -22,12 +14,11 @@ class MeleeAttackAction(
     target: Character
 ) : AttackAction(actor, target, EncounterEventType.MELEE_ATTACK) {
 
-    override fun toString(): String {
-        return String.format("%s attacked %s (%s) - %s for %s", actor, target, attackRollResult, outcome, attackDamage)
-    }
-
-    override fun performAction() {
+    override fun performAction(): Collection<EncounterEvent> {
         val attackRoll = createAttackRoll()
+
+        actor.features.forEach { f -> f.onAttackRoll(this) }
+        target.features.forEach { f -> f.onAttackRollReceiving(this) }
 
         attackRollResult = attackRoll.roll()
 
@@ -38,8 +29,12 @@ class MeleeAttackAction(
             else -> AttackOutcome.MISS
         }
 
+        val events = mutableListOf<EncounterEvent>()
+
+        events.add(MeleeAttackEventOnly(actor, target, attackRollResult, outcome))
+
         if (outcome == AttackOutcome.MISS) {
-            return
+            return events
         }
 
         // TODO: Resolve different types of damage with vulnerabilities and resistances.
@@ -53,6 +48,24 @@ class MeleeAttackAction(
         // TODO: Subclass Roll - DamageRoll should include type of damage
         damageRollResult = weaponDamageRoll.roll()
         attackDamage.addAmount(weapon.damageType, damageRollResult.outcome)
+
+        actor.features.forEach { f -> f.onDamageRoll(this) }
+        actor.features.forEach { f -> f.onDamageRollReceived(this) }
+
+        if(attackDamage.totalAmount > 0) {
+            target.applyDamage(attackDamage)
+
+            events.add(DamageEvent(actor, target, attackDamage, weapon))
+
+            actor.features.forEach { f -> f.onDamageInflicted(this) }
+            actor.features.forEach { f -> f.onDamageReceived(this) }
+        }
+
+        if(target.isDead()) {
+            events.add(DeathEvent(target, actor))
+        }
+
+        return events
     }
 
     private fun createAttackRoll(): Roll {

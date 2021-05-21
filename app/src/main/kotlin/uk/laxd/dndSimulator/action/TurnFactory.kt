@@ -7,9 +7,10 @@ import uk.laxd.dndSimulator.event.EventLogger
 
 @Component
 class TurnFactory(
+    private val actionFactory: ActionFactory,
     private val eventFactory: EncounterEventFactory,
     private val eventLogger: EventLogger,
     private val actionResolver: ActionResolver
 ) {
-    fun createTurn(character: Character, targetSelector: TargetSelector) = Turn(eventFactory, eventLogger, actionResolver, character, targetSelector)
+    fun createTurn(character: Character, targetSelector: TargetSelector) = Turn(actionFactory, eventFactory, eventLogger, actionResolver, character, targetSelector)
 }

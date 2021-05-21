@@ -9,6 +9,7 @@ class ExtraAttack : StaticFeature("Extra Attack") {
         character.attackCount = 2
     }
 
-    override val characterClassRequired: CharacterClass
-        get() = CharacterClass.BARBARIAN
+    // TODO: Ranger/Fighter too
+    override val characterClassRequired: CharacterClass = CharacterClass.BARBARIAN
+    override val levelRequirement: Int = 5
 }

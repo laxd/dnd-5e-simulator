@@ -20,10 +20,10 @@ class CharacterFactory(private val featureFactory: FeatureFactory) {
     private fun createCharacter(characterConfig: CharacterConfig): Character {
         val character = Character(
             characterConfig.name,
-            characterConfig.team,
-            CharacterClass.BARBARIAN,
-            characterConfig.getLevel(CharacterClass.BARBARIAN)
+            characterConfig.team
         )
+
+        characterConfig.characterClassLevels.forEach { t, u -> character.addLevel(t, u) }
 
         characterConfig.abilityScores.forEach { (ability: Ability, score: Int) ->
             character.setAbilityScore(
@@ -49,8 +49,6 @@ class CharacterFactory(private val featureFactory: FeatureFactory) {
 
         return character
     }
-
-
 
     private fun getHp(character: Character, characterConfig: CharacterConfig): Int {
         // If HP has been set, use that

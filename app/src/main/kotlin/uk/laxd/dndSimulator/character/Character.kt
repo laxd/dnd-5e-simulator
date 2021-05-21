@@ -11,9 +11,7 @@ import java.util.stream.Collectors
 
 class Character(
     val name: String,
-    val team: String,
-    characterClass: CharacterClass,
-    level: Int
+    val team: String
 ) {
     var hp = 0
     var maxHp = 0
@@ -25,10 +23,6 @@ class Character(
 
     // TODO: Add support for TWF (weapons?)
     var weapons: MutableList<Weapon> = mutableListOf(UnarmedAttack())
-
-    init {
-        characterClassLevels[characterClass] = level
-    }
 
     fun addLevel(characterClass: CharacterClass, level: Int) {
         characterClassLevels.compute(characterClass) { _: CharacterClass?, v: Int? -> if (v == null) level else level + v }

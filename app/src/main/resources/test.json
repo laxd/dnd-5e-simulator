@@ -6,14 +6,14 @@
       "team": "Kill 'em all klub",
       "AC": 18,
       "levels": {
-        "BARBARIAN": 4
+        "BARBARIAN": 5
       },
       "weapons": [
         {
-          "name": "Greataxe",
+          "name": "Greatsword",
           "damageType": "SLASHING",
-          "diceDamage": 12,
-          "diceCount": 1,
+          "diceDamage": 6,
+          "diceCount": 2,
           "damageBonus": 1,
           "attackBonus": 1,
           "properties": [
@@ -55,7 +55,7 @@
       "team": "Creatures",
       "AC": 10,
       "levels": {
-        "BARBARIAN": 5
+        "BARBARIAN": 4
       },
       "weapons": [
         {
@@ -81,7 +81,7 @@
       "team": "Creatures",
       "AC": 10,
       "levels": {
-        "BARBARIAN": 2
+        "BARBARIAN": 4
       },
       "weapons": [
         {

@@ -1,17 +1,16 @@
 package uk.laxd.dndSimulator
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import uk.laxd.dndSimulator.action.EncounterFactory
 import org.springframework.boot.CommandLineRunner
 import uk.laxd.dndSimulator.action.Simulation
 import org.springframework.boot.SpringApplication
 import uk.laxd.dndSimulator.config.ConfigParserFactory
-import uk.laxd.dndSimulator.config.json.JsonConfigParser
 import uk.laxd.dndSimulator.event.EventOutputFactory
 import uk.laxd.dndSimulator.feature.FeatureRegistry
 import uk.laxd.dndSimulator.feature.barbarian.Rage
 import uk.laxd.dndSimulator.feature.barbarian.RecklessAttack
 import uk.laxd.dndSimulator.feature.barbarian.UnarmoredDefence
+import uk.laxd.dndSimulator.feature.generic.ExtraAttack
 import uk.laxd.dndSimulator.feature.rogue.SneakAttack
 
 fun main(args: Array<String>) {
@@ -33,6 +32,7 @@ open class Main(
         registry.register(RecklessAttack::class)
         registry.register(UnarmoredDefence::class)
         registry.register(SneakAttack::class)
+        registry.register(ExtraAttack::class)
 
         val encounterConfig = configParserFactory.getConfigParser()
             .getConfig(args[0])

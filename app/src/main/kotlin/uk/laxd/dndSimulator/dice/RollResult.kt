@@ -1,18 +1,15 @@
 package uk.laxd.dndSimulator.dice
 
-import java.util.HashMap
-import java.util.Arrays
-import java.util.function.Consumer
-
 class RollResult {
-    private val dieResultMap: MutableMap<Die, Int> = HashMap()
+    private val dieResults = mutableListOf<Pair<Die, Int>>()
     private var modifier = 0
 
     // TODO: Include a way to add dice with a pre-determined roll? i.e. for skills that
     // set the outcome to full amount
     fun addDice(vararg dice: Die) {
-        Arrays.stream(dice)
-                .forEach { d: Die -> dieResultMap[d] = d.roll() }
+        for(die in dice) {
+            dieResults.add(Pair(die, die.roll()))
+        }
     }
 
     fun addModifier(modifier: Int) {
@@ -20,15 +17,21 @@ class RollResult {
     }
 
     override fun toString(): String {
-        return dieResultMap.values.joinToString(",") + (if (modifier > 0) " + $modifier" else "")
+        val dieString = dieResults.groupingBy { it.first }
+            .eachCount()
+            .map { e -> e.value.toString() + e.key }
+            .joinToString()
+
+        val dieResultString = dieResults.map { it.second }.joinToString()
+
+        return "$dieString [$outcome] ($dieResultString" + if (modifier > 0) " + $modifier)" else ")"
     }
 
     // Return ONLY the sum of the dice
     val dieOutcome: Int
         get() =// Return ONLY the sum of the dice
-            dieResultMap.values.stream().mapToInt { i -> i }.sum()
+            dieResults.map { it.second }.toIntArray().sum()
 
-    // TODO: Add modifiers e.g. +2
     // TODO: Add string builder type functionality? Add decorator?
     val outcome: Int
         get() = dieOutcome + modifier

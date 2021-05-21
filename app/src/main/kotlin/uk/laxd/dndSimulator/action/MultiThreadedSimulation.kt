@@ -13,15 +13,17 @@ class MultiThreadedSimulation(private val encounterFactory: EncounterFactory): S
     private val LOGGER = LoggerFactory.getLogger(this.javaClass)
 
     override fun runSimulation(config: SimulationConfig) {
-            runBlocking {
-                (1..config.simulationCount).map {
-                    async {
-                        val encounter = encounterFactory.createEncounter(config)
-                        encounter.startEncounter()
-                        LOGGER.info("Completed simulation {}/{}", ++currentSimulation, config.simulationCount)
-                    }
-                }.awaitAll()
-            }
+        LOGGER.info("Starting simulation: $config");
+
+        runBlocking {
+            (1..config.simulationCount).map {
+                async {
+                    val encounter = encounterFactory.createEncounter(config)
+                    encounter.startEncounter()
+                    LOGGER.info("Completed simulation {}/{}", ++currentSimulation, config.simulationCount)
+                }
+            }.awaitAll()
+        }
 
         LOGGER.info("Finished simulations")
     }
