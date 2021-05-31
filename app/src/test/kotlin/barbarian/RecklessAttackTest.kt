@@ -20,8 +20,8 @@ class RecklessAttackTest {
 
     @Before
     fun setUp() {
-        character = Character("Steve", "Team A", CharacterClass.BARBARIAN, 20)
-        target = Character("Alan", "Team B", CharacterClass.BARBARIAN, 20)
+        character = Character("Steve", "Team A")
+        target = Character("Alan", "Team B")
         weapon = Greatsword()
     }
 

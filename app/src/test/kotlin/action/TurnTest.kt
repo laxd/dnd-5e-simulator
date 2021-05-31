@@ -16,20 +16,20 @@ class TurnTest {
     private var targetSelector: TargetSelector? = null
     private val eventFactory = EncounterEventFactory()
     private val eventLogger: EventLogger = SimpleEventLogger()
-
+    private val actionFactory = ActionFactory()
     private val actionResolver: ActionResolver = mockk()
 
     @Before
     fun setUp() {
-        character = Character("Steve", "Team A", CharacterClass.BARBARIAN, 20)
-        target = Character("Alan", "Team B", CharacterClass.GENERIC_CHARACTER, 20)
+        character = Character("Steve", "Team A")
+        target = Character("Alan", "Team B")
         targetSelector = SimpleTargetSelector(listOf(character!!, target!!))
     }
 
     @Test
     fun testNoTargetResultsInNoHit() {
         targetSelector = SimpleTargetSelector(listOf())
-        val turn = Turn(eventFactory, eventLogger, actionResolver, character!!, targetSelector!!)
+        val turn = Turn(actionFactory, eventFactory, eventLogger, actionResolver, character!!, targetSelector!!)
         turn.doTurn()
         assertTrue(eventLogger.events.stream()
             .noneMatch { e -> e.type === EncounterEventType.MELEE_ATTACK })
@@ -37,7 +37,7 @@ class TurnTest {
 
     @Test
     fun testTurnStartEventIsLoggedAtStartOfTurn() {
-        val turn = Turn(eventFactory, eventLogger, actionResolver, character!!, targetSelector!!)
+        val turn = Turn(actionFactory, eventFactory, eventLogger, actionResolver, character!!, targetSelector!!)
 
         justRun { actionResolver.resolve(any()) }
 
