@@ -1,41 +1,36 @@
 package uk.laxd.dndSimulator.action
 
-import uk.laxd.dndSimulator.action.DamageType
-import java.util.*
-import java.util.function.ToIntFunction
-import java.util.stream.Collectors
+import uk.laxd.dndSimulator.dice.RollResult
+import kotlin.math.ceil
 
 /**
- * Defines the damage caused by an attack, which
- * may consist of many different types
+ * A [Damage] represents some damage caused to a [Character]
+ * by a single [Effect]. Multiple [Damage] may be grouped into an
+ * [AttackDamage] to represent a single attack causing [Damage] from
+ * multiple sources
+ *
+ * A [Damage] CANNOT consist of more than one damage type
  */
-class Damage {
+open class Damage(
+    val damageType: DamageType,
+    protected val rollResult: RollResult
+) {
 
-    val damageMap: MutableMap<DamageType, Int> = EnumMap(DamageType::class.java)
+    constructor(damage: Damage) : this(damage.damageType, damage.rollResult)
 
-    fun getAmount(damageType: DamageType): Int {
-        return damageMap.getOrDefault(damageType, 0)
-    }
+    open fun getTotalDamage() = rollResult.outcome
 
-    fun addAmount(damageType: DamageType, amount: Int) {
-        if (amount == 0) {
-            return
-        }
-        val currentAmount = getAmount(damageType)
-        damageMap[damageType] = currentAmount + amount
-    }
+    override fun toString() = "$rollResult = ${getTotalDamage()} $damageType"
+}
 
-    val totalAmount: Int
-        get() = damageMap.values.stream()
-            .mapToInt { v -> v }.sum()
+class VulnerableDamage(damage: Damage): Damage(damage) {
+    override fun getTotalDamage() = 2 * super.getTotalDamage()
 
-    override fun toString(): String {
-        if (damageMap.isEmpty()) {
-            return "0"
-        }
+    override fun toString() = "$rollResult = ${getTotalDamage()} (2x, vulnerable) $damageType "
+}
 
-        return damageMap.entries.stream()
-            .map { e -> "${e.value} ${e.key.display}"}
-            .collect(Collectors.joining(", "))
-    }
+class ResistantDamage(damage: Damage): Damage(damage) {
+    override fun getTotalDamage() = ceil(0.5 * super.getTotalDamage()).toInt()
+
+    override fun toString() = "$rollResult = ${getTotalDamage()} (1/2x, resistant) $damageType "
 }

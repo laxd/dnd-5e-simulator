@@ -3,9 +3,11 @@ package uk.laxd.dndSimulator.action
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.dice.Roll
 import uk.laxd.dndSimulator.dice.RollResult
+import uk.laxd.dndSimulator.event.DamageEvent
+import uk.laxd.dndSimulator.event.DeathEvent
 import uk.laxd.dndSimulator.event.EncounterEvent
 import uk.laxd.dndSimulator.event.EncounterEventType
-import java.util.ArrayList
+import uk.laxd.dndSimulator.feature.Effect
 
 /**
  * An action represents any action that a player (or creature) may take, and
@@ -22,6 +24,8 @@ abstract class Action(
     val actor: Character,
     val eventType: EncounterEventType
 ) {
+
+    val events = mutableListOf<EncounterEvent>()
 
     abstract fun performAction() : Collection<EncounterEvent>
 
@@ -76,5 +80,57 @@ abstract class AttackAction(
     var damageRoll: Roll? = null
     var damageRollResult: RollResult = RollResult()
 
-    val attackDamage = Damage()
+    val attackDamage = AttackDamage()
+
+    fun applyDamage() {
+        actor.features.forEach { f -> f.onDamageRoll(this) }
+        actor.features.forEach { f -> f.onDamageRollReceived(this) }
+
+        if(attackDamage.totalAmount == 0) {
+            return
+        }
+
+        applyDamageModifiers()
+
+        for(effect in attackDamage.damageMap.keys) {
+            target.applyDamage(attackDamage.damageMap[effect]!!)
+            events.add(DamageEvent(actor, target, attackDamage.damageMap[effect]!!, effect))
+        }
+
+        actor.features.forEach { f -> f.onDamageInflicted(this) }
+        actor.features.forEach { f -> f.onDamageReceived(this) }
+
+        if(target.isDead()) {
+            events.add(DeathEvent(target, actor))
+        }
+    }
+
+    private fun applyDamageModifiers() {
+        val vulns = actor.features
+            .flatMap { f -> f.getVulnerabilities() }
+            .distinct().toMutableList()
+
+        val resistances = actor.features
+            .flatMap { f -> f.getResistances() }
+            .distinct().toMutableList()
+
+        // If something is vulnerable AND resistant to a form of
+        // damage, they cancel each other out
+        val both = vulns.intersect(resistances)
+
+        vulns.removeAll(both)
+        resistances.removeAll(both)
+
+        for(effectSource in attackDamage.damageMap.keys) {
+            val dmg = attackDamage.damageMap[effectSource]!!
+
+            if(dmg.damageType in vulns) {
+                attackDamage.damageMap[effectSource] = VulnerableDamage(dmg)
+            }
+
+            if(dmg.damageType in resistances) {
+                attackDamage.damageMap[effectSource] = ResistantDamage(dmg)
+            }
+        }
+    }
 }

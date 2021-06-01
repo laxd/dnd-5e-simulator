@@ -3,11 +3,13 @@ package uk.laxd.dndSimulator.character
 import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.equipment.Weapon
 import uk.laxd.dndSimulator.equipment.UnarmedAttack
+import uk.laxd.dndSimulator.action.AttackDamage
 import uk.laxd.dndSimulator.action.Damage
 import uk.laxd.dndSimulator.dice.Die
 import uk.laxd.dndSimulator.feature.Feature
 import java.util.*
 import java.util.stream.Collectors
+import kotlin.math.min
 
 class Character(
     val name: String,
@@ -60,9 +62,7 @@ class Character(
         get() = getAbilityModifier(Ability.DEXTERITY)
 
     fun applyDamage(damage: Damage) {
-        // TODO: Apply vulnerabilities/resistances/different types of damage
-        val sumDamage = damage.damageMap.values.stream().mapToInt { e: Int? -> e!! }.sum()
-        val totalDamage = Math.min(sumDamage, hp)
+        val totalDamage = min(damage.getTotalDamage(), hp)
         hp -= totalDamage
     }
 

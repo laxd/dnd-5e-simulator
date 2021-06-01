@@ -15,29 +15,25 @@ class Rage : ActivatedFeature("Rage") {
     private var rageRounds = 0
 
     override fun onCreate(character: Character) {
+        // TODO: Change to activating as a bonus action
         // Assume we are ALWAYS raging
         activate()
-        val level = character!!.level
-        if (level <= 2) {
-            ragesPerDay = 2
-        } else if (level <= 5) {
-            ragesPerDay = 3
-        } else if (level <= 11) {
-            ragesPerDay = 4
-        } else if (level <= 16) {
-            ragesPerDay = 5
-        } else if (level <= 19) {
-            ragesPerDay = 6
-        } else if (level == 20) {
-            ragesPerDay = -1
+        val level = character!!.characterClassLevels[CharacterClass.BARBARIAN] ?: 0
+        ragesPerDay = when (level) {
+            in 1..2 -> 2
+            in 3..5 -> 3
+            in 6..11 -> 4
+            in 12..16 -> 5
+            in 17..19 -> 6
+            20 -> -1
+            else -> 0
         }
         ragesRemaining = ragesPerDay
-        rageDamageBonus = if (level <= 8) {
-            2
-        } else if (level <= 15) {
-            3
-        } else {
-            4
+        rageDamageBonus = when (level) {
+            0 -> 0
+            in 1..8 -> 2
+            in 9..15 -> 3
+            else -> 4
         }
     }
 
@@ -64,17 +60,20 @@ class Rage : ActivatedFeature("Rage") {
             return
         }
 
-        // TODO: This just increments the damage of the weapon? Need to find the damage roll
-        // for just the weapon somehow, or set it separately
         val damageType = action.weapon.damageType
-        action.attackDamage.addAmount(damageType, 2)
+        action.attackDamage.addDamage(this, damageType, 2)
     }
 
-    override fun onDamageRollReceived(action: AttackAction) {
-        val damage = action.attackDamage
-        damage.addAmount(DamageType.PIERCING, -damage.getAmount(DamageType.PIERCING) / 2)
-        damage.addAmount(DamageType.SLASHING, -damage.getAmount(DamageType.SLASHING) / 2)
-        damage.addAmount(DamageType.BLUDGEONING, -damage.getAmount(DamageType.BLUDGEONING) / 2)
+    override fun getResistances(): Collection<DamageType> {
+        if(isActive) {
+            return listOf(
+                DamageType.PIERCING,
+                DamageType.SLASHING,
+                DamageType.BLUDGEONING
+            )
+        }
+
+        return listOf()
     }
 
     override fun onAbilityCheck(character: Character) {

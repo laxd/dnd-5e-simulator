@@ -36,7 +36,7 @@ class StatsPrinter(private val eventLogger: EventLogger) {
                 .map { l -> l
                     .filterIsInstance<DamageEvent>()
                     .filter { e -> e.actor == character }
-                    .sumOf { e -> e.damage.totalAmount }
+                    .sumOf { e -> e.damage.getTotalDamage() }
                 }
                 .fold(IntSummaryStatistics()) {i, a -> i.accept(a); i}
 

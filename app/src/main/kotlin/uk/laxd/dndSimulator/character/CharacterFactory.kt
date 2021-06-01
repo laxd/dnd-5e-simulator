@@ -52,7 +52,7 @@ class CharacterFactory(private val featureFactory: FeatureFactory) {
 
     private fun getHp(character: Character, characterConfig: CharacterConfig): Int {
         // If HP has been set, use that
-        if (character.hp != 0) {
+        if (characterConfig.hp != 0) {
             return characterConfig.hp
         }
 

@@ -53,10 +53,8 @@
     {
       "name": "Skeleton 1",
       "team": "Creatures",
-      "AC": 10,
-      "levels": {
-        "BARBARIAN": 4
-      },
+      "AC": 15,
+      "levels": {},
       "weapons": [
         {
           "name": "Dagger",
@@ -79,10 +77,8 @@
     {
       "name": "Skeleton 2",
       "team": "Creatures",
-      "AC": 10,
-      "levels": {
-        "BARBARIAN": 4
-      },
+      "AC": 20,
+      "levels": {},
       "weapons": [
         {
           "name": "Dagger",
@@ -99,7 +95,7 @@
           "range": 5
         }
       ],
-      "hp": 30,
+      "hp": 50,
       "targetSelection": "random"
     }
   ],

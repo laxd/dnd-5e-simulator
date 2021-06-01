@@ -28,8 +28,6 @@ class MeleeAttackAction(
             else -> if (attackRollResult.outcome >= target.armorClass) AttackOutcome.HIT else AttackOutcome.MISS
         }
 
-        val events = mutableListOf<EncounterEvent>()
-
         events.add(MeleeAttackEventOnly(actor, target, attackRollResult, outcome))
 
         if (outcome == AttackOutcome.MISS) {
@@ -46,23 +44,9 @@ class MeleeAttackAction(
 
         // TODO: Subclass Roll - DamageRoll should include type of damage
         damageRollResult = weaponDamageRoll.roll()
-        attackDamage.addAmount(weapon.damageType, damageRollResult.outcome)
+        attackDamage.addDamage(weapon, weapon.damageType, damageRollResult)
 
-        actor.features.forEach { f -> f.onDamageRoll(this) }
-        actor.features.forEach { f -> f.onDamageRollReceived(this) }
-
-        if(attackDamage.totalAmount > 0) {
-            target.applyDamage(attackDamage)
-
-            events.add(DamageEvent(actor, target, attackDamage, weapon))
-
-            actor.features.forEach { f -> f.onDamageInflicted(this) }
-            actor.features.forEach { f -> f.onDamageReceived(this) }
-        }
-
-        if(target.isDead()) {
-            events.add(DeathEvent(target, actor))
-        }
+        applyDamage()
 
         return events
     }

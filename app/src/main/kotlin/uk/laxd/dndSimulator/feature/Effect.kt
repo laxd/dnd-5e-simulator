@@ -1,6 +1,7 @@
 package uk.laxd.dndSimulator.feature
 
 import uk.laxd.dndSimulator.action.AttackAction
+import uk.laxd.dndSimulator.action.DamageType
 import uk.laxd.dndSimulator.action.InitiativeRoll
 import uk.laxd.dndSimulator.action.MeleeAttackAction
 import uk.laxd.dndSimulator.character.Character
@@ -131,6 +132,21 @@ open class Effect(val name: String) {
      * Called when a [Character] gets a killing blow on another Character
      */
     open fun onKill(killed: Character, killedBy: Character) {}
+
+    /**
+     * Get all resistances for a given [Character] provided by this [Effect]
+     */
+    open fun getResistances(): Collection<DamageType> {
+        return listOf()
+    }
+
+    /**
+     * Get all resistances for a given [Character] provided by this [Effect]
+     */
+    open fun getVulnerabilities(): Collection<DamageType> {
+        return listOf()
+    }
+
     override fun toString() = name
 
 }
