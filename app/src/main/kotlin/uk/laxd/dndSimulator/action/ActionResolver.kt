@@ -21,12 +21,9 @@ import uk.laxd.dndSimulator.event.EventLogger
  *
  */
 @Component
-class ActionResolver(
-    private val eventLogger: EventLogger,
-    private val eventFactory: EncounterEventFactory
-) {
+class ActionResolver() {
     fun resolve(action: Action) {
-        eventLogger.logEvents(action.performAction())
+        action.performAction()
 
         // TODO: Reactions
     }

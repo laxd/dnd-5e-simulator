@@ -5,9 +5,12 @@ import kotlin.math.ceil
 
 /**
  * A [Damage] represents some damage caused to a [Character]
- * by a single [Effect]. Multiple [Damage] may be grouped into an
- * [AttackDamage] to represent a single attack causing [Damage] from
- * multiple sources
+ * by a single [Effect], inflicted by a single other [Character].
+ *
+ * Multiple [Damage]s may be grouped into an [AttackDamage] to represent
+ * a single attack causing [Damage] from multiple sources (i.e. a sword dealing
+ * slashing damage and fire damage would be one [AttackDamage] containing
+ * 2 [Damage] objects.
  *
  * A [Damage] CANNOT consist of more than one damage type
  */

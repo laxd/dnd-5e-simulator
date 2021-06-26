@@ -5,6 +5,7 @@ import uk.laxd.dndSimulator.action.DamageType
 import uk.laxd.dndSimulator.action.InitiativeRoll
 import uk.laxd.dndSimulator.action.MeleeAttackAction
 import uk.laxd.dndSimulator.character.Character
+import uk.laxd.dndSimulator.event.EncounterEvent
 
 /**
  * An `Effect` is any change to a character that impacts game play. This includes for example:

@@ -14,7 +14,7 @@ class MeleeAttackAction(
     target: Character
 ) : AttackAction(actor, target, EncounterEventType.MELEE_ATTACK) {
 
-    override fun performAction(): Collection<EncounterEvent> {
+    override fun performAction() {
         val attackRoll = createAttackRoll()
 
         actor.features.forEach { f -> f.onAttackRoll(this) }
@@ -28,10 +28,10 @@ class MeleeAttackAction(
             else -> if (attackRollResult.outcome >= target.armorClass) AttackOutcome.HIT else AttackOutcome.MISS
         }
 
-        events.add(MeleeAttackEventOnly(actor, target, attackRollResult, outcome))
+        EventLogger.instance.logEvent(MeleeAttackEventOnly(actor, target, attackRollResult, outcome))
 
         if (outcome == AttackOutcome.MISS) {
-            return events
+            return
         }
 
         // TODO: Resolve different types of damage with vulnerabilities and resistances.
@@ -47,8 +47,6 @@ class MeleeAttackAction(
         attackDamage.addDamage(weapon, weapon.damageType, damageRollResult)
 
         applyDamage()
-
-        return events
     }
 
     private fun createAttackRoll(): Roll {

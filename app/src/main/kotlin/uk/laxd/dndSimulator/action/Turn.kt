@@ -9,8 +9,6 @@ import uk.laxd.dndSimulator.event.TurnStartEvent
 
 class Turn(
     private val actionFactory: ActionFactory,
-    private val eventFactory: EncounterEventFactory,
-    private val eventLogger: EventLogger,
     private val actionResolver: ActionResolver,
     val character: Character,
     private val targetSelector: TargetSelector
@@ -18,7 +16,7 @@ class Turn(
     private val logger = LoggerFactory.getLogger(Turn::class.java)
 
     fun doTurn() {
-        eventLogger.logEvent(TurnStartEvent(character))
+        EventLogger.instance.logEvent(TurnStartEvent(character))
 
         repeat(character.attackCount) {
             logger.debug("Attack $it/${character.attackCount}")
@@ -28,6 +26,6 @@ class Turn(
             logger.debug(attackAction.toString())
         }
 
-        eventLogger.logEvent(TurnEndEvent(character))
+        EventLogger.instance.logEvent(TurnEndEvent(character))
     }
 }

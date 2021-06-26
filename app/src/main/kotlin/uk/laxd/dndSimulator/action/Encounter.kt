@@ -6,14 +6,13 @@ import uk.laxd.dndSimulator.event.*
 
 class Encounter(
     private val turnFactory: TurnFactory,
-    private val eventLogger: EventLogger,
     private val participants: Collection<Character>,
     private val targetSelector: TargetSelector
 ) {
 
     fun startEncounter() {
         LOGGER.debug("Starting encounter")
-        eventLogger.logEvent(EncounterStartEvent())
+        EventLogger.instance.logEvent(EncounterStartEvent())
 
         // Create a list of characters, sorted by initiative
         val characters = participants.sortedBy { getInitiative(it) }
@@ -21,7 +20,7 @@ class Encounter(
         characters.forEach { c -> c.features.forEach { f -> f.onCombatStart(c) } }
 
         while (!isEncounterFinished()) {
-            eventLogger.logEvent(RoundStartEvent())
+            EventLogger.instance.logEvent(RoundStartEvent())
             for (character in characters) {
                 if(character.hp > 0) {
                     // TODO: Notify ALL characters about a character's turn start?
@@ -35,7 +34,7 @@ class Encounter(
             }
         }
 
-        eventLogger.logEvent(EncounterFinishedEvent(
+        EventLogger.instance.logEvent(EncounterFinishedEvent(
             participants.filter { c -> c.hp > 0 }
                 .map { c -> c.team }
                 .first()

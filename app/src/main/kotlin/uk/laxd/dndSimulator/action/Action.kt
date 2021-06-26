@@ -3,10 +3,7 @@ package uk.laxd.dndSimulator.action
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.dice.Roll
 import uk.laxd.dndSimulator.dice.RollResult
-import uk.laxd.dndSimulator.event.DamageEvent
-import uk.laxd.dndSimulator.event.DeathEvent
-import uk.laxd.dndSimulator.event.EncounterEvent
-import uk.laxd.dndSimulator.event.EncounterEventType
+import uk.laxd.dndSimulator.event.*
 import uk.laxd.dndSimulator.feature.Effect
 
 /**
@@ -25,9 +22,7 @@ abstract class Action(
     val eventType: EncounterEventType
 ) {
 
-    val events = mutableListOf<EncounterEvent>()
-
-    abstract fun performAction() : Collection<EncounterEvent>
+    abstract fun performAction()
 
     // TODO: Fix this?
     private var _modifier = AttackModifier.NORMAL
@@ -61,9 +56,8 @@ abstract class Action(
 }
 
 class NoOpAction(actor: Character, eventType: EncounterEventType): Action(actor, eventType) {
-    override fun performAction(): Collection<EncounterEvent> {
+    override fun performAction() {
         // Nothing to do!
-        return listOf()
     }
 }
 
@@ -93,15 +87,17 @@ abstract class AttackAction(
         applyDamageModifiers()
 
         for(effect in attackDamage.damageMap.keys) {
-            target.applyDamage(attackDamage.damageMap[effect]!!)
-            events.add(DamageEvent(actor, target, attackDamage.damageMap[effect]!!, effect))
+            target.applyDamage(
+                actor,
+                effect,
+                attackDamage.damageMap[effect]!!)
         }
 
         actor.features.forEach { f -> f.onDamageInflicted(this) }
         actor.features.forEach { f -> f.onDamageReceived(this) }
 
         if(target.isDead()) {
-            events.add(DeathEvent(target, actor))
+            EventLogger.instance.logEvent(DeathEvent(target, actor))
         }
     }
 

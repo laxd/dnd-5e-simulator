@@ -5,7 +5,6 @@ import uk.laxd.dndSimulator.action.DamageType
 import uk.laxd.dndSimulator.action.MeleeAttackAction
 import uk.laxd.dndSimulator.dice.Die
 
-// TODO: Increment damage/attack bonus by Str/Dex
 class CustomWeapon(
     name: String,
     override val damageType: DamageType,
@@ -23,7 +22,7 @@ class CustomWeapon(
     override fun getDamageDice(attackAction: MeleeAttackAction): MutableCollection<Die> {
         val dice = mutableListOf<Die>()
 
-        (0..diceCount).map {
+        repeat(diceCount) {
             dice.add(Die(diceDamage))
         }
 

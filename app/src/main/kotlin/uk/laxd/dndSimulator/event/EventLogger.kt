@@ -12,4 +12,8 @@ interface EventLogger {
             logEvent(event)
         }
     }
+
+    companion object {
+        val instance = SimpleEventLogger()
+    }
 }

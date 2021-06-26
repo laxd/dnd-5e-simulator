@@ -7,6 +7,8 @@ enum class EncounterEventType {
     TURN_START,
     TURN_END,
     MELEE_ATTACK,
+    BONUS_ACTION,
+    FREE_ACTION,
     DAMAGE,
     DEATH,
     HOLD_TURN

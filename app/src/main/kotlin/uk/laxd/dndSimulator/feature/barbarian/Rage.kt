@@ -7,6 +7,9 @@ import uk.laxd.dndSimulator.action.DamageType
 import uk.laxd.dndSimulator.action.ActionType
 import uk.laxd.dndSimulator.action.AttackAction
 import uk.laxd.dndSimulator.character.Character
+import uk.laxd.dndSimulator.event.EncounterEvent
+import uk.laxd.dndSimulator.event.EncounterEventType
+import uk.laxd.dndSimulator.event.EventLogger
 
 class Rage : ActivatedFeature("Rage") {
     private var ragesPerDay = 0
@@ -15,10 +18,7 @@ class Rage : ActivatedFeature("Rage") {
     private var rageRounds = 0
 
     override fun onCreate(character: Character) {
-        // TODO: Change to activating as a bonus action
-        // Assume we are ALWAYS raging
-        activate()
-        val level = character!!.characterClassLevels[CharacterClass.BARBARIAN] ?: 0
+        val level = character.characterClassLevels[CharacterClass.BARBARIAN] ?: 0
         ragesPerDay = when (level) {
             in 1..2 -> 2
             in 3..5 -> 3
@@ -38,6 +38,10 @@ class Rage : ActivatedFeature("Rage") {
     }
 
     override fun activate() {
+        if(ragesRemaining == 0) {
+            return
+        }
+
         super.activate()
         rageRounds = 0
         ragesRemaining--
@@ -51,7 +55,13 @@ class Rage : ActivatedFeature("Rage") {
             rageRounds++
             if (rageRounds >= MAX_RAGE_ROUNDS) {
                 deactivate()
+                EventLogger.instance.logEvent(EncounterEvent(character, EncounterEventType.FREE_ACTION, "$character's Rage finished"))
             }
+        }
+        else {
+            // Assume we always want to be raging if we can
+            activate()
+            EventLogger.instance.logEvent(EncounterEvent(character, EncounterEventType.BONUS_ACTION, "$character used Rage"))
         }
     }
 

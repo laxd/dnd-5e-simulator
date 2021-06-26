@@ -6,8 +6,9 @@ import java.util.IntSummaryStatistics
 import uk.laxd.dndSimulator.event.*
 
 @Component
-class StatsPrinter(private val eventLogger: EventLogger) {
+class StatsPrinter() {
 
+    private val eventLogger = EventLogger.instance
     private val LOGGER = LoggerFactory.getLogger(this.javaClass)
 
     fun printStats() {

@@ -3,9 +3,11 @@ package uk.laxd.dndSimulator.character
 import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.equipment.Weapon
 import uk.laxd.dndSimulator.equipment.UnarmedAttack
-import uk.laxd.dndSimulator.action.AttackDamage
 import uk.laxd.dndSimulator.action.Damage
 import uk.laxd.dndSimulator.dice.Die
+import uk.laxd.dndSimulator.event.DamageEvent
+import uk.laxd.dndSimulator.event.EventLogger
+import uk.laxd.dndSimulator.feature.Effect
 import uk.laxd.dndSimulator.feature.Feature
 import java.util.*
 import java.util.stream.Collectors
@@ -61,7 +63,9 @@ class Character(
     val initiativeModifier: Int
         get() = getAbilityModifier(Ability.DEXTERITY)
 
-    fun applyDamage(damage: Damage) {
+    fun applyDamage(causedBy: Character, causedByEffect: Effect, damage: Damage) {
+        EventLogger.instance.logEvent(DamageEvent(causedBy, this, damage, causedByEffect))
+
         val totalDamage = min(damage.getTotalDamage(), hp)
         hp -= totalDamage
     }
