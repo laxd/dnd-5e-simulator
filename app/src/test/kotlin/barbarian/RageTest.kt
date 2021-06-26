@@ -1,16 +1,16 @@
 package uk.laxd.dndSimulator.feature.barbarian
 
 import org.junit.Assert
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import uk.laxd.dndSimulator.equipment.Weapon
 import uk.laxd.dndSimulator.action.MeleeAttackAction
-import org.junit.Before
-import org.junit.Test
-import kotlin.Throws
-import uk.laxd.dndSimulator.character.CharacterClass
 import uk.laxd.dndSimulator.equipment.Greatsword
 import uk.laxd.dndSimulator.action.DamageType
 import uk.laxd.dndSimulator.character.Character
-import java.lang.Exception
+import uk.laxd.dndSimulator.character.CharacterClass
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class RageTest {
 
@@ -19,34 +19,40 @@ class RageTest {
     private lateinit var target: Character
     private lateinit var weapon: Weapon
 
-    @Before
+    @BeforeEach
     fun setUp() {
         character = Character("Steve", "Team A")
         target = Character("Alan", "Team B")
         weapon = Greatsword()
+
+        character.addLevel(CharacterClass.BARBARIAN, 1)
+
+        rage.onCreate(character)
     }
 
     @Test
-    fun testRageDamageIsApplied() {
+    fun `Rage damage bonus is applied`() {
         val attackAction = MeleeAttackAction(character, weapon, target)
-        attackAction.attackDamage.addAmount(DamageType.SLASHING, 10)
+        attackAction.attackDamage.addDamage(weapon, DamageType.SLASHING, 10)
         rage.onDamageRoll(attackAction)
-        Assert.assertEquals(12, attackAction.attackDamage.getAmount(DamageType.SLASHING).toLong())
+        assertEquals(12, attackAction.attackDamage.getAmount(DamageType.SLASHING).toLong())
     }
 
     @Test
-    fun testRageDamageReductionApplies() {
-        val attackAction = MeleeAttackAction(target, weapon, character)
-        attackAction.attackDamage.addAmount(DamageType.SLASHING, 10)
-        rage.onDamageRollReceived(attackAction)
-        Assert.assertEquals(5, attackAction.attackDamage.getAmount(DamageType.SLASHING).toLong())
+    fun `Rage provides resistance to slashing bludgeoning and piercing damage when active`() {
+        rage.activate()
+        val resistances = rage.getResistances()
+
+        assertEquals(3, resistances.size)
+        assertTrue(resistances.contains(DamageType.PIERCING))
+        assertTrue(resistances.contains(DamageType.BLUDGEONING))
+        assertTrue(resistances.contains(DamageType.SLASHING))
     }
 
     @Test
-    fun testRageDamageReductionDoesNotApply() {
-        val attackAction = MeleeAttackAction(target, weapon, character)
-        attackAction.attackDamage.addAmount(DamageType.FIRE, 10)
-        rage.onDamageRollReceived(attackAction)
-        Assert.assertEquals(10, attackAction.attackDamage.getAmount(DamageType.FIRE).toLong())
+    fun `Rage provides no resistances when not active`() {
+        val resistances = rage.getResistances()
+
+        assertTrue(resistances.isEmpty())
     }
 }

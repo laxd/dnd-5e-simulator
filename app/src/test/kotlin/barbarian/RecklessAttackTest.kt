@@ -1,15 +1,12 @@
 package uk.laxd.dndSimulator.feature.barbarian
 
 import org.junit.Assert
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import uk.laxd.dndSimulator.equipment.Weapon
 import uk.laxd.dndSimulator.action.MeleeAttackAction
-import org.junit.Before
-import org.junit.Test
 import uk.laxd.dndSimulator.character.Character
-import kotlin.Throws
-import uk.laxd.dndSimulator.character.CharacterClass
 import uk.laxd.dndSimulator.equipment.Greatsword
-import java.lang.Exception
 
 class RecklessAttackTest {
 
@@ -18,7 +15,7 @@ class RecklessAttackTest {
     private lateinit var target: Character
     private lateinit var weapon: Weapon
 
-    @Before
+    @BeforeEach
     fun setUp() {
         character = Character("Steve", "Team A")
         target = Character("Alan", "Team B")
