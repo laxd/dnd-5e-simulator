@@ -1,16 +1,15 @@
 package uk.laxd.dndSimulator.dice
 
 import org.slf4j.LoggerFactory
-import uk.laxd.dndSimulator.dice.Die
 import java.util.*
 
 /**
  * Represents a single die, which can be rolled to get a random number
  * within its range
  */
-class Die(val maxValue: Int) {
+open class Die(val maxValue: Int) {
 
-    fun roll(): Int {
+    open fun roll(): Int {
         val result = Random().nextInt(maxValue) + 1
         LOGGER.debug("Rolled a {} = {}", this, result)
         return result
@@ -44,5 +43,9 @@ class Die(val maxValue: Int) {
         val D12 = Die(12)
         @JvmField
         val D20 = Die(20)
+
+        fun fixedRoll(value: Int, maxValue: Int): Die {
+            return FixedDie(value, maxValue)
+        }
     }
 }

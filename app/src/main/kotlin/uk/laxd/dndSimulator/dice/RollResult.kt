@@ -12,8 +12,6 @@ class RollResult {
         this.modifier = modifier
     }
 
-    // TODO: Include a way to add dice with a pre-determined roll? i.e. for skills that
-    // set the outcome to full amount
     fun addDice(vararg dice: Die) {
         for(die in dice) {
             dieResults.add(Pair(die, die.roll()))
@@ -30,15 +28,27 @@ class RollResult {
             return "$modifier"
         }
 
-        val dieString = dieResults.groupingBy { it.first }
-            .eachCount()
-            .map { e -> e.value.toString() + e.key }
-            .joinToString()
+        var dieStrings = mutableListOf<String>()
 
-        val dieResultString = dieResults.map { it.second }.joinToString()
+        // Group by die type, i.e. group d20s, d12s etc
+        for(type in listOf(Die.D20, Die.D12, Die.D8, Die.D6, Die.D4)) {
+            val dice = dieResults.filter { it.first == type }
+
+            if(dice.isEmpty()) {
+                continue
+            }
+
+            var dieString = dice.count().toString() + type.toString()
+
+            dieString += dice.map { it.second }
+                .joinToString(separator = ", ", prefix = " (", postfix = ")")
+
+            dieStrings.add(dieString)
+        }
+
         val modifierString = if (modifier < 0) "- $modifier" else "+ $modifier"
 
-        return "$dieString ($dieResultString) $modifierString"
+        return "${dieStrings.joinToString(separator = ", ")} $modifierString"
     }
 
     // Return ONLY the sum of the dice
