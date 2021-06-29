@@ -9,13 +9,14 @@ import uk.laxd.dndSimulator.event.*
 import kotlin.math.max
 
 class MeleeAttackAction(
+    val attackRollFactory: WeaponAttackRollFactory,
     actor: Character,
     var weapon: Weapon,
     target: Character
 ) : AttackAction(actor, target, EncounterEventType.MELEE_ATTACK) {
 
     override fun performAction() {
-        val attackRoll = createAttackRoll()
+        val attackRoll = attackRollFactory.createAttackRoll(weapon, actor, withAdvantage, withDisadvantage)
 
         actor.features.forEach { f -> f.onAttackRoll(this) }
         target.features.forEach { f -> f.onAttackRollReceiving(this) }
@@ -49,27 +50,7 @@ class MeleeAttackAction(
         applyDamage()
     }
 
-    private fun createAttackRoll(): Roll {
-        var mod = weapon.getToHitModifier(this)
-
-        // TODO: Ranged weapons
-        mod += if(weapon.hasProperty(WeaponProperty.FINESSE)) {
-            max(actor.getAbilityModifier(Ability.DEXTERITY), actor.getAbilityModifier(Ability.STRENGTH))
-        }
-        else {
-            actor.getAbilityModifier(Ability.STRENGTH)
-        }
-
-        // TODO: Check if character is proficient with weapon
-        mod += actor.proficiencyBonus
-
-        return when {
-            withAdvantage -> AdvantageRoll(Roll(Die.D20, modifier = mod))
-            withDisadvantage -> DisadvantageRoll(Roll(Die.D20, modifier = mod))
-            else -> Roll(Die.D20, modifier = mod)
-        }
-    }
-
+    // TODO: Move to WeaponAttackDamageRollFactory
     private fun createDamageRoll(): Roll {
         var mod = if(weapon.hasProperty(WeaponProperty.FINESSE)) {
             max(actor.getAbilityModifier(Ability.DEXTERITY), actor.getAbilityModifier(Ability.STRENGTH))

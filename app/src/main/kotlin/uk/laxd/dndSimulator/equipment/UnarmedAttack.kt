@@ -6,10 +6,7 @@ import uk.laxd.dndSimulator.dice.Die
 import uk.laxd.dndSimulator.action.DamageType
 
 class UnarmedAttack : Weapon("Unarmed attack") {
-    override fun getToHitModifier(attackAction: MeleeAttackAction): Int {
-        val attacker = attackAction.actor
-        return attacker.getAbilityModifier(Ability.STRENGTH) + attacker.proficiencyBonus
-    }
+    override fun getToHitModifier(): Int = 0
 
     override fun getDamageDice(attackAction: MeleeAttackAction): MutableCollection<Die> {
         return mutableListOf()

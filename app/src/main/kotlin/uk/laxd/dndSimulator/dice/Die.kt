@@ -2,16 +2,19 @@ package uk.laxd.dndSimulator.dice
 
 import org.slf4j.LoggerFactory
 import java.util.*
+import kotlin.math.max
+import kotlin.math.min
 
 /**
  * Represents a single die, which can be rolled to get a random number
  * within its range
  */
 open class Die(val maxValue: Int) {
+    private val logger = LoggerFactory.getLogger(Die::class.java)
 
     open fun roll(): Int {
         val result = Random().nextInt(maxValue) + 1
-        LOGGER.debug("Rolled a {} = {}", this, result)
+        logger.debug("Rolled a {} = {}", this, result)
         return result
     }
 
@@ -33,7 +36,6 @@ open class Die(val maxValue: Int) {
     }
 
     companion object {
-        private val LOGGER = LoggerFactory.getLogger(Die::class.java)
         val D4 = Die(4)
         @JvmField
         val D6 = Die(6)
@@ -44,8 +46,42 @@ open class Die(val maxValue: Int) {
         @JvmField
         val D20 = Die(20)
 
+        @JvmField
+        val D20_Advantage = AdvantageDie(D20)
+
+        @JvmField
+        val D20_Disadvantage = DisadvantageDie(D20)
+
         fun fixedRoll(value: Int, maxValue: Int): Die {
             return FixedDie(value, maxValue)
         }
+    }
+}
+
+class AdvantageDie(val die: Die): Die(die.maxValue) {
+    private val logger = LoggerFactory.getLogger(AdvantageDie::class.java)
+    override fun roll(): Int {
+        val die1 = die.roll()
+        val die2 = die.roll()
+
+        val result = max(die1, die2)
+
+        logger.debug("Rolled a {} with advantage = {} and {} = {}", this, die1, die2, result)
+
+        return result
+    }
+}
+
+class DisadvantageDie(val die: Die): Die(die.maxValue) {
+    private val logger = LoggerFactory.getLogger(DisadvantageDie::class.java)
+    override fun roll(): Int {
+        val die1 = die.roll()
+        val die2 = die.roll()
+
+        val result = min(die1, die2)
+
+        logger.debug("Rolled a {} with disadvantage = {} and {} = {}", this, die1, die2, result)
+
+        return result
     }
 }

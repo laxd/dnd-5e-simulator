@@ -1,13 +1,16 @@
 package uk.laxd.dndSimulator.action
 
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.equipment.UnarmedAttack
 import uk.laxd.dndSimulator.event.EncounterEventType
 
 @Component
-class ActionFactory {
+class ActionFactory(
+    @Autowired val weaponAttackRollFactory: WeaponAttackRollFactory
+) {
 
     private val logger = LoggerFactory.getLogger(ActionFactory::class.java)
 
@@ -26,7 +29,7 @@ class ActionFactory {
             .filter { w -> w.range <= 5 }
             .maxByOrNull { w -> w.priority } ?: UnarmedAttack()
 
-        return MeleeAttackAction(character, weapon, target)
+        return MeleeAttackAction(weaponAttackRollFactory, character, weapon, target)
     }
 
 }

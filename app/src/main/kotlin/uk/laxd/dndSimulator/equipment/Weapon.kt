@@ -8,7 +8,11 @@ import uk.laxd.dndSimulator.feature.Effect
 
 abstract class Weapon(name: String) : Effect(name) {
 
-    abstract fun getToHitModifier(attackAction: MeleeAttackAction): Int
+    /**
+     * Returns the + to hit modifier a weapon has, without taking into
+     * account Str/Dex scores, proficiency scores or any other modifiers.
+     */
+    abstract fun getToHitModifier(): Int
     abstract fun getDamageDice(attackAction: MeleeAttackAction): MutableCollection<Die>
 
     /**

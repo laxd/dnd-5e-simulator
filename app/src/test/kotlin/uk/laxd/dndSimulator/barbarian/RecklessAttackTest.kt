@@ -1,14 +1,18 @@
 package uk.laxd.dndSimulator.feature.barbarian
 
+import io.mockk.mockk
 import org.junit.Assert
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import uk.laxd.dndSimulator.equipment.Weapon
 import uk.laxd.dndSimulator.action.MeleeAttackAction
+import uk.laxd.dndSimulator.action.WeaponAttackRollFactory
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.equipment.Greatsword
 
 class RecklessAttackTest {
+
+    private val attackRollFactory: WeaponAttackRollFactory = mockk()
 
     private val recklessAttack = RecklessAttack()
     private lateinit var character: Character
@@ -24,7 +28,7 @@ class RecklessAttackTest {
 
     @Test
     fun testAttackingRecklesslyAddsAdvantage() {
-        val attackAction = MeleeAttackAction(character, weapon, target)
+        val attackAction = MeleeAttackAction(attackRollFactory, character, weapon, target)
         recklessAttack.activate()
         recklessAttack.onAttackRoll(attackAction)
         Assert.assertTrue(attackAction.withAdvantage)
@@ -32,7 +36,7 @@ class RecklessAttackTest {
 
     @Test
     fun testBeingAttackedRecklesslyAddsAdvantage() {
-        val attackAction = MeleeAttackAction(target, weapon, character)
+        val attackAction = MeleeAttackAction(attackRollFactory, target, weapon, character)
         recklessAttack.activate()
         recklessAttack.onAttackRollReceiving(attackAction)
         Assert.assertTrue(attackAction.withAdvantage)

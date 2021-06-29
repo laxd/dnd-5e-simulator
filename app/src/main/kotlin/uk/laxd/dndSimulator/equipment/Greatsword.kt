@@ -6,9 +6,7 @@ import uk.laxd.dndSimulator.dice.Die
 import uk.laxd.dndSimulator.action.DamageType
 
 class Greatsword : Weapon("Greatsword") {
-    override fun getToHitModifier(attackAction: MeleeAttackAction): Int {
-        return attackAction.actor.getAbilityModifier(Ability.STRENGTH) + attackAction.actor.proficiencyBonus + 1
-    }
+    override fun getToHitModifier(): Int = 1
 
     override fun getDamageDice(attackAction: MeleeAttackAction): MutableCollection<Die> {
         return mutableListOf(

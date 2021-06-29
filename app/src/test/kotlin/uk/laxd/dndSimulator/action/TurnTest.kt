@@ -14,7 +14,8 @@ class TurnTest {
     private var target: Character? = null
     private var targetSelector: TargetSelector? = null
     private val eventLogger: EventLogger = EventLogger.instance
-    private val actionFactory = ActionFactory()
+    private val attackRollFactory: WeaponAttackRollFactory = mockk()
+    private val actionFactory = ActionFactory(attackRollFactory)
     private val actionResolver: ActionResolver = mockk()
 
     @BeforeEach

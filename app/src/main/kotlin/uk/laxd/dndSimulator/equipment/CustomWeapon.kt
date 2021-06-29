@@ -1,6 +1,5 @@
 package uk.laxd.dndSimulator.equipment
 
-import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.action.DamageType
 import uk.laxd.dndSimulator.action.MeleeAttackAction
 import uk.laxd.dndSimulator.dice.Die
@@ -17,7 +16,7 @@ class CustomWeapon(
     override val priority: Double
     ) : Weapon(name) {
 
-    override fun getToHitModifier(attackAction: MeleeAttackAction) = attackBonus
+    override fun getToHitModifier() = attackBonus
 
     override fun getDamageDice(attackAction: MeleeAttackAction): MutableCollection<Die> {
         val dice = mutableListOf<Die>()

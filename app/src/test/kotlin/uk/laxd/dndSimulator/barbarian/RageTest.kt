@@ -1,5 +1,6 @@
 package uk.laxd.dndSimulator.feature.barbarian
 
+import io.mockk.mockk
 import org.junit.Assert
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -7,12 +8,15 @@ import uk.laxd.dndSimulator.equipment.Weapon
 import uk.laxd.dndSimulator.action.MeleeAttackAction
 import uk.laxd.dndSimulator.equipment.Greatsword
 import uk.laxd.dndSimulator.action.DamageType
+import uk.laxd.dndSimulator.action.WeaponAttackRollFactory
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.character.CharacterClass
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class RageTest {
+
+    private val attackRollFactory: WeaponAttackRollFactory = mockk()
 
     private val rage = Rage()
     private lateinit var character: Character
@@ -32,7 +36,7 @@ class RageTest {
 
     @Test
     fun `Rage damage bonus is applied`() {
-        val attackAction = MeleeAttackAction(character, weapon, target)
+        val attackAction = MeleeAttackAction(attackRollFactory, character, weapon, target)
         attackAction.attackDamage.addDamage(weapon, DamageType.SLASHING, 10)
         rage.onDamageRoll(attackAction)
         assertEquals(12, attackAction.attackDamage.getAmount(DamageType.SLASHING).toLong())

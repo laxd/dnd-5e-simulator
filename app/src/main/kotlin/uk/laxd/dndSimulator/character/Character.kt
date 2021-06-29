@@ -33,7 +33,7 @@ class Character(
     }
 
     fun getLevel(characterClass: CharacterClass): Int {
-        return characterClassLevels[characterClass]!!
+        return characterClassLevels[characterClass] ?: 0
     }
 
     val level: Int
@@ -46,11 +46,11 @@ class Character(
     }
 
     fun getAbilityScore(ability: Ability): Int {
-        return abilities[ability]!!
+        return abilities[ability] ?: 10
     }
 
     fun getAbilityModifier(ability: Ability): Int {
-        return Math.floor((abilities[ability]!! - 10) / 2.0).toInt()
+        return Math.floor((abilities[ability] ?: 10 - 10) / 2.0).toInt()
     }
 
     fun addFeature(feature: Feature) {
