@@ -3,6 +3,7 @@ package uk.laxd.dndSimulator.action
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.dice.Roll
 import uk.laxd.dndSimulator.dice.RollResult
+import uk.laxd.dndSimulator.dice.RollType
 import uk.laxd.dndSimulator.event.*
 import uk.laxd.dndSimulator.feature.Effect
 
@@ -27,13 +28,15 @@ abstract class Action(
     // TODO: Fix this?
     private var _modifier = AttackModifier.NORMAL
 
-    // Don't like this, but as they are mutually exclusive, can't be set via decorator
-    var withAdvantage = false
-        get() = _modifier == AttackModifier.ADVANTAGE
-        private set
-
-    var withDisadvantage = false
-        get() = _modifier == AttackModifier.DISADVANTAGE
+    var rollType = RollType.NORMAL_ROLL
+        get() {
+            return when(_modifier) {
+                AttackModifier.NORMAL -> RollType.NORMAL_ROLL
+                AttackModifier.ADVANTAGE -> RollType.ADVANTAGE
+                AttackModifier.DISADVANTAGE -> RollType.DISADVANTAGE
+                AttackModifier.BOTH -> RollType.NORMAL_ROLL
+            }
+        }
         private set
 
     fun withAdvantage() {

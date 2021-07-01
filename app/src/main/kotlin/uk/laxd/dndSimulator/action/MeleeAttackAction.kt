@@ -16,7 +16,7 @@ class MeleeAttackAction(
 ) : AttackAction(actor, target, EncounterEventType.MELEE_ATTACK) {
 
     override fun performAction() {
-        val attackRoll = attackRollFactory.createAttackRoll(weapon, actor, withAdvantage, withDisadvantage)
+        val attackRoll = attackRollFactory.createAttackRoll(weapon, actor, rollType)
 
         actor.features.forEach { f -> f.onAttackRoll(this) }
         target.features.forEach { f -> f.onAttackRollReceiving(this) }

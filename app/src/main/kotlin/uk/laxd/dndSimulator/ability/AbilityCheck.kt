@@ -1,16 +1,13 @@
 package uk.laxd.dndSimulator.ability
 
 import org.slf4j.LoggerFactory
-import kotlin.jvm.JvmOverloads
-import uk.laxd.dndSimulator.dice.RollModifier
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.dice.Die
 
-class AbilityCheck @JvmOverloads constructor(
+class AbilityCheck constructor(
     val type: Ability,
     val difficultyCheck: Int,
     val performer: Character,
-    private val modifier: RollModifier? = null
 ) {
     fun perform(): AbilityCheckOutcome {
         LOGGER.debug("Performing ability check: {} - DC: {}", type, difficultyCheck)

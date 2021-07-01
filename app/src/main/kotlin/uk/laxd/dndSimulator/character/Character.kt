@@ -23,6 +23,8 @@ class Character(
     val abilities: MutableMap<Ability, Int> = EnumMap(Ability::class.java)
     var attackCount = 1
     var armorClass = 10
+    var proficiencyBonus: Int = 1
+    var initiativeModifier: Int = 0
     val features: MutableCollection<Feature> = ArrayList()
 
     // TODO: Add support for TWF (weapons?)
@@ -50,18 +52,12 @@ class Character(
     }
 
     fun getAbilityModifier(ability: Ability): Int {
-        return Math.floor((abilities[ability] ?: 10 - 10) / 2.0).toInt()
+        return Math.floor(((abilities[ability] ?: 10) - 10) / 2.0).toInt()
     }
 
     fun addFeature(feature: Feature) {
         features.add(feature)
     }
-
-    val proficiencyBonus: Int
-        get() = (1 + Math.ceil(level / 4.0)).toInt()
-
-    val initiativeModifier: Int
-        get() = getAbilityModifier(Ability.DEXTERITY)
 
     fun applyDamage(causedBy: Character, causedByEffect: Effect, damage: Damage) {
         EventLogger.instance.logEvent(DamageEvent(causedBy, this, damage, causedByEffect))

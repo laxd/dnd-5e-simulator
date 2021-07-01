@@ -44,6 +44,9 @@ class CharacterFactory(private val featureFactory: FeatureFactory) {
         character.features
             .forEach { f -> f.onCreate(character) }
 
+        character.proficiencyBonus = (1 + Math.ceil(character.level / 4.0)).toInt()
+        character.initiativeModifier = character.getAbilityModifier(Ability.DEXTERITY)
+
         // TODO: Delegate to WeaponFactory instead of creating weapons in CharacterConfig
         character.weapons.addAll(characterConfig.weapons)
 

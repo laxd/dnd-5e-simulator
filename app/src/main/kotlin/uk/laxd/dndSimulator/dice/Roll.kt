@@ -10,7 +10,7 @@ import java.util.stream.Collectors
  *
  * 1d20 + 2
  */
-open class Roll(val dice: MutableCollection<Die>, val modifier: Int = 0) {
+open class Roll(val dice: MutableList<Die>, val modifier: Int = 0) {
     private var result: RollResult? = null
 
     constructor(vararg dice: Die, modifier: Int = 0) : this(mutableListOf(*dice), modifier)

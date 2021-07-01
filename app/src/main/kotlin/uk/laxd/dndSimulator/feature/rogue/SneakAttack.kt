@@ -8,6 +8,7 @@ import uk.laxd.dndSimulator.equipment.WeaponProperty
 import uk.laxd.dndSimulator.dice.Roll
 import uk.laxd.dndSimulator.dice.Die
 import uk.laxd.dndSimulator.character.CharacterClass
+import uk.laxd.dndSimulator.dice.RollType
 import kotlin.math.ceil
 
 class SneakAttack : StaticFeature("Sneak Attack") {
@@ -31,7 +32,7 @@ class SneakAttack : StaticFeature("Sneak Attack") {
             // 1 sneak attack per turn
             return
         }
-        if (!action.withAdvantage) {
+        if (action.rollType != RollType.ADVANTAGE) {
             // Sneak attack only applies if you have adv
             // TODO: Or an ally within 5 ft of target
             return

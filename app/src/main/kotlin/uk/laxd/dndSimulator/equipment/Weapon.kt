@@ -12,8 +12,8 @@ abstract class Weapon(name: String) : Effect(name) {
      * Returns the + to hit modifier a weapon has, without taking into
      * account Str/Dex scores, proficiency scores or any other modifiers.
      */
-    abstract fun getToHitModifier(): Int
-    abstract fun getDamageDice(attackAction: MeleeAttackAction): MutableCollection<Die>
+    abstract val toHitModifier: Int
+    abstract fun getDamageDice(attackAction: MeleeAttackAction): MutableList<Die>
 
     /**
      * The additional damage portion of the weapon ONLY.
@@ -36,11 +36,7 @@ abstract class Weapon(name: String) : Effect(name) {
 
     open val properties: Collection<WeaponProperty> = mutableListOf()
 
-
     fun hasProperty(weaponProperty: WeaponProperty): Boolean {
         return properties.contains(weaponProperty)
     }
-
-    fun onAttack(attackAction: AttackAction) {}
-    fun onHit(attackAction: AttackAction) {}
 }

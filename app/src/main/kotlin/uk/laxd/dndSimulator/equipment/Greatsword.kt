@@ -6,9 +6,9 @@ import uk.laxd.dndSimulator.dice.Die
 import uk.laxd.dndSimulator.action.DamageType
 
 class Greatsword : Weapon("Greatsword") {
-    override fun getToHitModifier(): Int = 1
+    override var toHitModifier = 1
 
-    override fun getDamageDice(attackAction: MeleeAttackAction): MutableCollection<Die> {
+    override fun getDamageDice(attackAction: MeleeAttackAction): MutableList<Die> {
         return mutableListOf(
                 Die.D6,
                 Die.D6

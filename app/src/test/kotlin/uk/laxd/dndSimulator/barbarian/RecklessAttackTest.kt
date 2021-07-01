@@ -8,6 +8,7 @@ import uk.laxd.dndSimulator.equipment.Weapon
 import uk.laxd.dndSimulator.action.MeleeAttackAction
 import uk.laxd.dndSimulator.action.WeaponAttackRollFactory
 import uk.laxd.dndSimulator.character.Character
+import uk.laxd.dndSimulator.dice.RollType
 import uk.laxd.dndSimulator.equipment.Greatsword
 
 class RecklessAttackTest {
@@ -31,7 +32,7 @@ class RecklessAttackTest {
         val attackAction = MeleeAttackAction(attackRollFactory, character, weapon, target)
         recklessAttack.activate()
         recklessAttack.onAttackRoll(attackAction)
-        Assert.assertTrue(attackAction.withAdvantage)
+        Assert.assertEquals(RollType.ADVANTAGE, attackAction.rollType)
     }
 
     @Test
@@ -39,7 +40,7 @@ class RecklessAttackTest {
         val attackAction = MeleeAttackAction(attackRollFactory, target, weapon, character)
         recklessAttack.activate()
         recklessAttack.onAttackRollReceiving(attackAction)
-        Assert.assertTrue(attackAction.withAdvantage)
+        Assert.assertEquals(RollType.ADVANTAGE, attackAction.rollType)
     }
 
     @Test

@@ -16,9 +16,9 @@ class CustomWeapon(
     override val priority: Double
     ) : Weapon(name) {
 
-    override fun getToHitModifier() = attackBonus
+    override var toHitModifier = attackBonus
 
-    override fun getDamageDice(attackAction: MeleeAttackAction): MutableCollection<Die> {
+    override fun getDamageDice(attackAction: MeleeAttackAction): MutableList<Die> {
         val dice = mutableListOf<Die>()
 
         repeat(diceCount) {
