@@ -10,7 +10,7 @@ import java.util.stream.Collectors
 @Component
 class CharacterFactory(private val featureFactory: FeatureFactory) {
 
-    fun createCharacters(characterConfigs: Collection<CharacterConfig>) : Collection<Character> {
+    fun createCharacters(characterConfigs: Collection<CharacterConfig>) : List<Character> {
         return characterConfigs
             .stream()
             .map { characterConfig: CharacterConfig -> createCharacter(characterConfig) }
@@ -36,6 +36,8 @@ class CharacterFactory(private val featureFactory: FeatureFactory) {
 
         character.maxHp = hp
         character.hp = hp
+
+        // TODO: Armour class should be able to be calculated through equipment/features
         character.armorClass = characterConfig.armourClass
 
         featureFactory.createFeatures(characterConfig)
