@@ -16,7 +16,7 @@ class FeatureFactory(
     private val registry: FeatureRegistry
 ) {
 
-    fun createFeatures(config: CharacterConfig): Collection<Feature> {
+    fun createFeatures(config: CharacterConfig): List<Feature> {
         // TODO: Also populate manually added features via CharacterConfig
         // Add CharacterConfig.preventDefaultFeatures? Or just add a "Class" that doesn't have any features?
         return registry.features.stream()
