@@ -3,26 +3,25 @@ package uk.laxd.dndSimulator.ability
 import org.slf4j.LoggerFactory
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.dice.Die
+import uk.laxd.dndSimulator.dice.Roll
 
-class AbilityCheck constructor(
+open class AbilityCheck constructor(
     val type: Ability,
     val difficultyCheck: Int,
     val performer: Character,
 ) {
+    private val logger = LoggerFactory.getLogger(AbilityCheck::class.java)
+
     fun perform(): AbilityCheckOutcome {
-        LOGGER.debug("Performing ability check: {} - DC: {}", type, difficultyCheck)
-        val modifier = performer.getAbilityModifier(type)
-        val d20Roll = Die.D20.roll()
-        return if (d20Roll + modifier >= difficultyCheck) {
-            LOGGER.info("$type check passed: $d20Roll + $modifier >= DC of $difficultyCheck")
+        logger.debug("Performing ability check: {} - DC: {}", type, difficultyCheck)
+        val rollResult = Roll(Die.D20, modifier = performer.getAbilityModifier(type)).roll()
+
+        return if (rollResult.outcome >= difficultyCheck) {
+            logger.info("$type check passed: $rollResult >= DC of $difficultyCheck")
             AbilityCheckOutcome.PASS
         } else {
-            LOGGER.info("$type check failed: $d20Roll + $modifier < DC of $difficultyCheck")
+            logger.info("$type check failed: $rollResult < DC of $difficultyCheck")
             AbilityCheckOutcome.FAIL
         }
-    }
-
-    companion object {
-        private val LOGGER = LoggerFactory.getLogger(AbilityCheck::class.java)
     }
 }

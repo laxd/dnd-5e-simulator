@@ -39,6 +39,18 @@
           "priority": 0.5
         }
       ],
+      "armour": [
+        {
+          "type": "LOOKUP",
+          "name": "Studded leather armour"
+        },
+        {
+          "type": "CUSTOM",
+          "name": "My super awesome armour",
+          "ac": 20,
+          "category": "LIGHT"
+        }
+      ],
       "abilities": {
         "STRENGTH": 19,
         "DEXTERITY": 14,

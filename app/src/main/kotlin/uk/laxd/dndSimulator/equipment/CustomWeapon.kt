@@ -11,7 +11,7 @@ class CustomWeapon(
     val diceCount: Int,
     val damageBonus: Int,
     val attackBonus: Int,
-    override val properties: Collection<WeaponProperty>,
+    override val properties: List<WeaponProperty>,
     override val range: Int,
     override val priority: Double
     ) : Weapon(name) {
@@ -28,12 +28,5 @@ class CustomWeapon(
         return dice
     }
 
-    override fun getDamage(attackAction: MeleeAttackAction): Int {
-        return damageBonus
-    }
-
-    override fun toString(): String {
-        return name
-    }
-
+    override fun getDamage(attackAction: MeleeAttackAction): Int = damageBonus
 }

@@ -1,9 +1,9 @@
-package uk.laxd.dndSimulator.character
+package uk.laxd.dndSimulator.config
 
 import org.springframework.stereotype.Component
 import uk.laxd.dndSimulator.feature.FeatureFactory
 import uk.laxd.dndSimulator.ability.Ability
-import uk.laxd.dndSimulator.config.CharacterConfig
+import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.dice.Die
 import java.util.stream.Collectors
 
@@ -48,6 +48,8 @@ class CharacterFactory(private val featureFactory: FeatureFactory) {
 
         character.proficiencyBonus = (1 + Math.ceil(character.level / 4.0)).toInt()
         character.initiativeModifier = character.getAbilityModifier(Ability.DEXTERITY)
+
+        // TODO: Look through equipment, find the best armour we can wear calculate our armour class from that
 
         // TODO: Delegate to WeaponFactory instead of creating weapons in CharacterConfig
         character.weapons.addAll(characterConfig.weapons)

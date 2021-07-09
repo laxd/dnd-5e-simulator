@@ -5,6 +5,7 @@ import uk.laxd.dndSimulator.equipment.Weapon
 import uk.laxd.dndSimulator.equipment.UnarmedAttack
 import uk.laxd.dndSimulator.action.Damage
 import uk.laxd.dndSimulator.dice.Die
+import uk.laxd.dndSimulator.equipment.Armour
 import uk.laxd.dndSimulator.event.DamageEvent
 import uk.laxd.dndSimulator.event.EventLogger
 import uk.laxd.dndSimulator.feature.Effect
@@ -25,8 +26,10 @@ class Character(
     var armorClass = 10
     var proficiencyBonus: Int = 1
     var initiativeModifier: Int = 0
-    val features: MutableCollection<Feature> = ArrayList()
+    val features: MutableList<Feature> = mutableListOf()
 
+    // TODO: Combine armour and weapons into equipment list?
+    val armour: MutableList<Armour> = mutableListOf()
     // TODO: Add support for TWF (weapons?)
     var weapons: MutableList<Weapon> = mutableListOf(UnarmedAttack())
 

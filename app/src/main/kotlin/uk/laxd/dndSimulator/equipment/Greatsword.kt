@@ -19,7 +19,7 @@ class Greatsword : Weapon("Greatsword") {
         return attackAction.actor.getAbilityModifier(Ability.STRENGTH)
     }
 
-    override val properties: Collection<WeaponProperty>
+    override val properties: List<WeaponProperty>
         get() = listOf(
                 WeaponProperty.HEAVY
         )

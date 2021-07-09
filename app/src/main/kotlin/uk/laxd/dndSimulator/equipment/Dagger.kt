@@ -5,25 +5,12 @@ import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.dice.Die
 import uk.laxd.dndSimulator.action.DamageType
 
-class Dagger : Weapon("Greatsword") {
-    override var toHitModifier: Int = 1
+class Dagger : MeleeWeapon("Dagger") {
+    override var toHitModifier: Int = 0
 
-    override fun getDamageDice(attackAction: MeleeAttackAction): MutableList<Die> {
-        return mutableListOf(
-                Die.D4
-        )
-    }
-
-    override fun getDamage(attackAction: MeleeAttackAction): Int {
-        return 1
-    }
-
-    override val properties: Collection<WeaponProperty>
-        get() = listOf(
-                WeaponProperty.FINESSE
-        )
-
+    override fun getDamageDice(attackAction: MeleeAttackAction) = mutableListOf(Die.D4)
+    override fun getDamage(attackAction: MeleeAttackAction) = 1
+    override val properties = listOf(WeaponProperty.FINESSE)
     override val damageType = DamageType.PIERCING
-    override val range = 5
     override val priority = 0.8
 }

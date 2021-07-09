@@ -11,6 +11,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import uk.laxd.dndSimulator.config.CharacterConfig
+import uk.laxd.dndSimulator.config.CharacterFactory
 import uk.laxd.dndSimulator.feature.Feature
 import uk.laxd.dndSimulator.feature.FeatureFactory
 import uk.laxd.dndSimulator.feature.barbarian.Rage
@@ -18,15 +19,13 @@ import java.util.stream.Stream
 
 internal class CharacterFactoryTest {
 
-    val featureFactory: FeatureFactory = mockk()
+    private val featureFactory: FeatureFactory = mockk(relaxed = true)
 
-    lateinit var characterFactory: CharacterFactory
+    private lateinit var characterFactory: CharacterFactory
 
     @BeforeEach
     internal fun setUp() {
         characterFactory = CharacterFactory(featureFactory)
-
-        every { featureFactory.createFeatures(any()) }.returns(listOf())
     }
 
     @Test
@@ -88,7 +87,7 @@ internal class CharacterFactoryTest {
 
         every { featureFactory.createFeatures(config) }.returns(listOf(feature))
 
-        val characters = characterFactory.createCharacters(listOf(config))
+        characterFactory.createCharacters(listOf(config))
 
         verify { feature.onCreate(any()) }
     }

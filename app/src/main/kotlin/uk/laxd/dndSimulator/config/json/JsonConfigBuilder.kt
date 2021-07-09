@@ -5,8 +5,7 @@ import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.action.DamageType
 import uk.laxd.dndSimulator.character.CharacterClass
 import uk.laxd.dndSimulator.config.*
-import uk.laxd.dndSimulator.equipment.CustomWeapon
-import uk.laxd.dndSimulator.equipment.WeaponProperty
+import uk.laxd.dndSimulator.equipment.*
 
 @Component
 class JsonConfigBuilder(
@@ -45,6 +44,29 @@ class JsonConfigBuilder(
                 )
 
                 config.weapons.add(weapon)
+            }
+
+            for(jsonArmour in characterConfig.armour) {
+                val armour: Armour
+                when(jsonArmour.type) {
+                    ArmourType.LOOKUP -> {
+                        // TODO: Lookup armour from existing list and create an instance
+                        armour = StuddedLeatherArmour()
+                    }
+                    ArmourType.CUSTOM -> {
+                        jsonArmour as CustomJsonArmour
+                        armour = CustomArmour(
+                            name = jsonArmour.name,
+                            additionalArmourClass = 0,
+                            armourClass = jsonArmour.ac,
+                            requiredStrength = jsonArmour.requiredStrength,
+                            disadvantageOnStealth = jsonArmour.disadvantageOnStealth,
+                            armourCategory = jsonArmour.category
+                        )
+                    }
+                }
+
+                config.armour.add(armour)
             }
 
             characterConfigs.add(config)

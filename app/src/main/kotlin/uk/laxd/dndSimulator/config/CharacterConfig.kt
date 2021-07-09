@@ -2,6 +2,7 @@ package uk.laxd.dndSimulator.config
 
 import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.character.CharacterClass
+import uk.laxd.dndSimulator.equipment.Armour
 import uk.laxd.dndSimulator.equipment.UnarmedAttack
 import uk.laxd.dndSimulator.equipment.Weapon
 import java.util.*
@@ -21,6 +22,7 @@ class CharacterConfig(
 
     // TODO: Change to WeaponConfig and allow building a weapon by type
     val weapons: MutableCollection<Weapon> = mutableListOf(UnarmedAttack())
+    val armour: MutableCollection<Armour> = mutableListOf()
 
     init {
         Ability.values().forEach { a -> abilityScores[a] = 10 }
