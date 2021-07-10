@@ -48,6 +48,7 @@
           "type": "CUSTOM",
           "name": "My super awesome armour",
           "ac": 20,
+          "hasDexBonus": true,
           "category": "LIGHT"
         }
       ],

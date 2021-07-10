@@ -3,7 +3,7 @@ package uk.laxd.dndSimulator.action
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
-import uk.laxd.dndSimulator.config.SimulationConfig
+import uk.laxd.dndSimulator.config.internal.SimulationConfig
 
 @Component
 class MultiThreadedSimulation(private val encounterFactory: EncounterFactory): Simulation {

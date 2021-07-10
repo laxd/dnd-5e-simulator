@@ -4,11 +4,19 @@ import org.springframework.stereotype.Component
 import uk.laxd.dndSimulator.feature.FeatureFactory
 import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.character.Character
+import uk.laxd.dndSimulator.config.internal.CharacterConfig
+import uk.laxd.dndSimulator.config.internal.CustomArmourConfig
+import uk.laxd.dndSimulator.config.internal.LookupArmourConfig
 import uk.laxd.dndSimulator.dice.Die
+import uk.laxd.dndSimulator.equipment.Armour
 import java.util.stream.Collectors
 
 @Component
-class CharacterFactory(private val featureFactory: FeatureFactory) {
+class CharacterFactory(
+    private val featureFactory: FeatureFactory,
+    private val armourFactory: ArmourFactory,
+    private val weaponFactory: WeaponFactory
+) {
 
     fun createCharacters(characterConfigs: Collection<CharacterConfig>) : List<Character> {
         return characterConfigs
@@ -17,7 +25,7 @@ class CharacterFactory(private val featureFactory: FeatureFactory) {
             .collect(Collectors.toList())
     }
 
-    private fun createCharacter(characterConfig: CharacterConfig): Character {
+    fun createCharacter(characterConfig: CharacterConfig): Character {
         val character = Character(
             characterConfig.name,
             characterConfig.team
@@ -37,22 +45,40 @@ class CharacterFactory(private val featureFactory: FeatureFactory) {
         character.maxHp = hp
         character.hp = hp
 
-        // TODO: Armour class should be able to be calculated through equipment/features
-        character.armorClass = characterConfig.armourClass
+        if(characterConfig.overrideArmourClass == null) {
+            // TODO: Should this be calculated by the character? Doing it here means it can't change mid-combat
+            // Build all of the armour we have equipped, and then
+            // find some armour that we can wear and calculate AC from that
+            val armour = characterConfig.armour.mapNotNull { a -> armourFactory.createArmour(a) }
+                .filter { a -> a.requiredStrength < character.getAbilityScore(Ability.STRENGTH) }
+                .filter { a -> a.armourClass != null }
+                .minByOrNull { a -> a.priority }
 
+            if(armour == null) {
+                character.armorClass = 10
+            }
+            else {
+                character.armorClass = armour.armourClass!! + armour.getAdditionalArmourClass(character)
+            }
+        }
+        else {
+            character.armorClass = characterConfig.overrideArmourClass
+        }
+        // TODO: Allow to equip a shield if we have one
+
+        character.weapons.addAll(
+            characterConfig.weapons.map { w -> weaponFactory.createWeapon(w) }
+        )
+
+        character.proficiencyBonus = (1 + Math.ceil(character.level / 4.0)).toInt()
+        character.initiativeModifier = character.getAbilityModifier(Ability.DEXTERITY)
+
+        // Finally, allow features to modify character
         featureFactory.createFeatures(characterConfig)
             .forEach { f -> character.addFeature(f) }
 
         character.features
             .forEach { f -> f.onCreate(character) }
-
-        character.proficiencyBonus = (1 + Math.ceil(character.level / 4.0)).toInt()
-        character.initiativeModifier = character.getAbilityModifier(Ability.DEXTERITY)
-
-        // TODO: Look through equipment, find the best armour we can wear calculate our armour class from that
-
-        // TODO: Delegate to WeaponFactory instead of creating weapons in CharacterConfig
-        character.weapons.addAll(characterConfig.weapons)
 
         return character
     }

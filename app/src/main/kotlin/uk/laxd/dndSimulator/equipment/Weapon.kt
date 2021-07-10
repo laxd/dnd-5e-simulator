@@ -55,14 +55,6 @@ abstract class Weapon(name: String) : Equipment(name) {
      */
     open val throwRangeDisadvantage = 0
 
-    /**
-     * Priorities determine the order in which weapons should be attempted to be used.
-     *
-     * This will be used e.g. when we don't have direct control over the weapons provided to a Character,
-     * as we will be able to sort the weapons by priority
-     */
-    abstract val priority: Double
-
     open val properties: List<WeaponProperty> = mutableListOf()
 
     fun hasProperty(weaponProperty: WeaponProperty): Boolean {

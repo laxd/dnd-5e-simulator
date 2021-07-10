@@ -1,11 +1,10 @@
 package uk.laxd.dndSimulator.feature
 
-import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import uk.laxd.dndSimulator.character.CharacterClass
-import uk.laxd.dndSimulator.config.CharacterConfig
+import uk.laxd.dndSimulator.config.internal.CharacterConfig
 import uk.laxd.dndSimulator.feature.barbarian.Rage
 import uk.laxd.dndSimulator.feature.generic.ExtraAttack
 import uk.laxd.dndSimulator.feature.rogue.SneakAttack

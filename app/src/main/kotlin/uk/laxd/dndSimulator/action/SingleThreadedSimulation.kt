@@ -1,8 +1,7 @@
 package uk.laxd.dndSimulator.action
 
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Component
-import uk.laxd.dndSimulator.config.SimulationConfig
+import uk.laxd.dndSimulator.config.internal.SimulationConfig
 
 class SingleThreadedSimulation(private val encounterFactory: EncounterFactory): Simulation {
     val LOGGER = LoggerFactory.getLogger(this.javaClass.name)

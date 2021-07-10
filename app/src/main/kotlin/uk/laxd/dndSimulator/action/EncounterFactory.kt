@@ -2,7 +2,7 @@ package uk.laxd.dndSimulator.action
 
 import org.springframework.stereotype.Component
 import uk.laxd.dndSimulator.config.CharacterFactory
-import uk.laxd.dndSimulator.config.SimulationConfig
+import uk.laxd.dndSimulator.config.internal.SimulationConfig
 
 @Component
 class EncounterFactory(

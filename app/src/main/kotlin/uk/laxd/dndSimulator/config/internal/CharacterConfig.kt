@@ -1,10 +1,7 @@
-package uk.laxd.dndSimulator.config
+package uk.laxd.dndSimulator.config.internal
 
 import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.character.CharacterClass
-import uk.laxd.dndSimulator.equipment.Armour
-import uk.laxd.dndSimulator.equipment.UnarmedAttack
-import uk.laxd.dndSimulator.equipment.Weapon
 import java.util.*
 
 /**
@@ -13,16 +10,15 @@ import java.util.*
  */
 class CharacterConfig(
     val name: String,
-    val team: String
+    val team: String,
+    val overrideArmourClass: Int? = null
 ) {
     var hp: Int = 1
-    var armourClass: Int = 10
     val characterClassLevels: MutableMap<CharacterClass, Int> = EnumMap(CharacterClass::class.java)
     val abilityScores: MutableMap<Ability, Int> = EnumMap(Ability::class.java)
 
-    // TODO: Change to WeaponConfig and allow building a weapon by type
-    val weapons: MutableCollection<Weapon> = mutableListOf(UnarmedAttack())
-    val armour: MutableCollection<Armour> = mutableListOf()
+    val weapons: MutableCollection<WeaponConfig> = mutableListOf()
+    val armour: MutableCollection<ArmourConfig> = mutableListOf()
 
     init {
         Ability.values().forEach { a -> abilityScores[a] = 10 }

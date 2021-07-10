@@ -1,4 +1,6 @@
-package uk.laxd.dndSimulator.config
+package uk.laxd.dndSimulator.config.internal
+
+import uk.laxd.dndSimulator.config.PostSimulationEvent
 
 open class SimulationConfig(
     open val simulationCount: Int,

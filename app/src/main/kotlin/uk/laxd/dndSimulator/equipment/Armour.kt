@@ -2,6 +2,7 @@ package uk.laxd.dndSimulator.equipment
 
 import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.character.Character
+import kotlin.math.max
 import kotlin.math.min
 
 /**
@@ -193,11 +194,18 @@ class ExtendedArmour(
  */
 class CustomArmour(
     name: String,
-    val additionalArmourClass: Int,
     override val armourClass: Int,
-    override val requiredStrength: Int,
-    override val disadvantageOnStealth: Boolean,
+    val hasDexBonus: Boolean,
+    val maxDexBonus: Int? = null,
+    override val requiredStrength: Int = 0,
+    override val disadvantageOnStealth: Boolean = false,
     override val armourCategory: ArmourCategory
 ): Armour(name) {
-    override fun getAdditionalArmourClass(character: Character) = additionalArmourClass
+    override fun getAdditionalArmourClass(character: Character): Int {
+        if(!hasDexBonus) {
+            return 0
+        }
+
+        return min(maxDexBonus ?: 100, character.getAbilityModifier(Ability.DEXTERITY))
+    }
 }

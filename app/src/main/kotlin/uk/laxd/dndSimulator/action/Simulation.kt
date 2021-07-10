@@ -1,7 +1,6 @@
 package uk.laxd.dndSimulator.action
 
-import org.slf4j.LoggerFactory
-import uk.laxd.dndSimulator.config.SimulationConfig
+import uk.laxd.dndSimulator.config.internal.SimulationConfig
 
 /**
  * A simulation consists of a encounter repeated a number of times, with

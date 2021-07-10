@@ -1,15 +1,8 @@
 package uk.laxd.dndSimulator.feature
 
 import org.springframework.stereotype.Component
-import uk.laxd.dndSimulator.config.CharacterConfig
-import uk.laxd.dndSimulator.event.EventLogger
-import uk.laxd.dndSimulator.feature.barbarian.Rage
-import uk.laxd.dndSimulator.feature.barbarian.RecklessAttack
-import uk.laxd.dndSimulator.feature.barbarian.UnarmoredDefence
-import uk.laxd.dndSimulator.feature.rogue.SneakAttack
-import java.util.*
+import uk.laxd.dndSimulator.config.internal.CharacterConfig
 import java.util.stream.Collectors
-import kotlin.reflect.KClass
 
 @Component
 class FeatureFactory(

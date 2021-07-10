@@ -6,11 +6,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import uk.laxd.dndSimulator.config.PostSimulationEventFactory
+import uk.laxd.dndSimulator.equipment.ArmourRegistry
+import uk.laxd.dndSimulator.equipment.StuddedLeatherArmour
 import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JsonConfigParserIntegrationTest {
 
+    private val armourRegistry: ArmourRegistry = mockk()
     private val postSimulationEventFactory: PostSimulationEventFactory = mockk()
 
     private val configBuilder: JsonConfigBuilder = JsonConfigBuilder(postSimulationEventFactory)
@@ -19,6 +22,7 @@ class JsonConfigParserIntegrationTest {
 
     init {
         every { postSimulationEventFactory.createEvent(any()) }.returns(mockk())
+        every { armourRegistry.getArmour("Studded leather armour") }.returns(StuddedLeatherArmour())
     }
 
     @Test
@@ -48,7 +52,7 @@ class JsonConfigParserIntegrationTest {
 
         assertThat(simulationConfig.characterConfigs.find { c -> c.name == "Magnus" }?.weapons)
             .extracting("name")
-            .contains("Greataxe", "Unarmed attack")
+            .contains("Greataxe", "Shortbow")
     }
 
     @Test
@@ -67,5 +71,13 @@ class JsonConfigParserIntegrationTest {
         assertThat(simulationConfig.characterConfigs.find { c -> c.name == "Magnus" }?.armour)
             .extracting("name")
             .contains("My super awesome armour")
+    }
+
+    @Test
+    internal fun `config with manual AC is set`() {
+        val simulationConfig = configParser.getConfig("src/test/resources/test.json")
+
+        assertThat(simulationConfig.characterConfigs.find { c -> c.name == "Magnus" }?.overrideArmourClass)
+            .isEqualTo(18)
     }
 }
