@@ -60,6 +60,16 @@
         "WISDOM": 13,
         "CHARISMA": 11
       },
+      "proficiencies": [
+        {
+          "type": "WEAPONS",
+          "name": "Simple weapons"
+        },
+        {
+          "type": "SAVING_THROWS",
+          "name": "Charisma saving throws"
+        }
+      ],
       "hp": 50,
       "targetSelection": "lowestHealth"
     },

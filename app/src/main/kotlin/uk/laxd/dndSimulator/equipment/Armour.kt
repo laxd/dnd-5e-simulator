@@ -2,7 +2,6 @@ package uk.laxd.dndSimulator.equipment
 
 import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.character.Character
-import kotlin.math.max
 import kotlin.math.min
 
 /**
@@ -190,7 +189,9 @@ class ExtendedArmour(
 }
 
 /**
- * Allows implementations to implement their own custom armour
+ * Allows implementations to implement their own custom armour.
+ *
+ * Can benefit from Dexterity via [hasDexBonus]/[maxDexBonus]
  */
 class CustomArmour(
     name: String,

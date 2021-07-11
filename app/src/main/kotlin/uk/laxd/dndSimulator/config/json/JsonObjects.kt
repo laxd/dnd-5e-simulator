@@ -11,6 +11,7 @@ import uk.laxd.dndSimulator.config.internal.*
 import uk.laxd.dndSimulator.equipment.ArmourCategory
 import uk.laxd.dndSimulator.equipment.CustomWeapon
 import uk.laxd.dndSimulator.equipment.WeaponProperty
+import uk.laxd.dndSimulator.proficiency.Proficiency
 import java.lang.IllegalArgumentException
 import kotlin.reflect.KClass
 
@@ -28,7 +29,8 @@ data class JsonCharacterConfig(
     val levels: Map<String, Int> = mapOf(),
     val abilities: Map<String, Int> = mapOf(),
     val armour: MutableCollection<JsonArmour> = mutableListOf(),
-    val weapons: MutableCollection<JsonWeapon> = mutableListOf()
+    val weapons: MutableCollection<JsonWeapon> = mutableListOf(),
+    val proficiencies: MutableCollection<Proficiency> = mutableListOf()
 ): CharacterConfigBuilder {
     override fun toCharacterConfig(): CharacterConfig {
         val config = CharacterConfig(name, team, AC)
@@ -45,6 +47,8 @@ data class JsonCharacterConfig(
 
         weapons.forEach { w -> config.weapons.add(w.toWeaponConfig()) }
         armour.forEach { a -> config.armour.add(a.toArmourConfig()) }
+
+        config.proficiencies.addAll(proficiencies)
 
         return config
     }

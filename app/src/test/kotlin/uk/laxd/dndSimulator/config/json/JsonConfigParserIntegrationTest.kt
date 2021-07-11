@@ -8,6 +8,8 @@ import org.junit.jupiter.api.TestInstance
 import uk.laxd.dndSimulator.config.PostSimulationEventFactory
 import uk.laxd.dndSimulator.equipment.ArmourRegistry
 import uk.laxd.dndSimulator.equipment.StuddedLeatherArmour
+import uk.laxd.dndSimulator.proficiency.Proficiency
+import uk.laxd.dndSimulator.proficiency.ProficiencyType
 import kotlin.test.assertEquals
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -79,5 +81,14 @@ class JsonConfigParserIntegrationTest {
 
         assertThat(simulationConfig.characterConfigs.find { c -> c.name == "Magnus" }?.overrideArmourClass)
             .isEqualTo(18)
+    }
+
+    @Test
+    internal fun `config with proficiencies set contains those proficiencies`() {
+        val simulationConfig = configParser.getConfig("src/test/resources/test.json")
+
+        assertThat(simulationConfig.characterConfigs.find { c -> c.name == "Magnus" }?.proficiencies)
+            .extracting("name")
+            .contains("Charisma saving throws", "Simple weapons")
     }
 }

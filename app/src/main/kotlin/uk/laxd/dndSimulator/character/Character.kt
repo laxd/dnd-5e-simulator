@@ -10,6 +10,7 @@ import uk.laxd.dndSimulator.event.DamageEvent
 import uk.laxd.dndSimulator.event.EventLogger
 import uk.laxd.dndSimulator.feature.Effect
 import uk.laxd.dndSimulator.feature.Feature
+import uk.laxd.dndSimulator.proficiency.Proficiency
 import java.util.*
 import java.util.stream.Collectors
 import kotlin.math.min
@@ -27,10 +28,10 @@ class Character(
     var proficiencyBonus: Int = 1
     var initiativeModifier: Int = 0
     val features: MutableList<Feature> = mutableListOf()
+    val proficiencies: MutableList<Proficiency> = mutableListOf()
 
     // TODO: Combine armour and weapons into equipment list?
     val armour: MutableList<Armour> = mutableListOf()
-    // TODO: Add support for TWF (weapons?)
     var weapons: MutableList<Weapon> = mutableListOf(UnarmedAttack())
 
     fun addLevel(characterClass: CharacterClass, level: Int) {

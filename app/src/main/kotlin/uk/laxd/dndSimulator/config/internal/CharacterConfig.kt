@@ -2,11 +2,19 @@ package uk.laxd.dndSimulator.config.internal
 
 import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.character.CharacterClass
+import uk.laxd.dndSimulator.proficiency.Proficiency
 import java.util.*
 
 /**
  * Defines a [Character] in a configuration style, allowing for repeatable
  * instantiation of a single character from a set configuration.
+ *
+ * Some features of a [Character] may contain some sort of state, these values are
+ * stored as e.g. [WeaponConfig] or [ArmourConfig] so that a new instance
+ * may be instantiated when the character is created.
+ *
+ * Immutable [Character] features such as levels, ability scores and proficiencies are stored
+ * as simple lists/maps and just copied to the [Character] on creation.
  */
 class CharacterConfig(
     val name: String,
@@ -19,6 +27,7 @@ class CharacterConfig(
 
     val weapons: MutableCollection<WeaponConfig> = mutableListOf()
     val armour: MutableCollection<ArmourConfig> = mutableListOf()
+    val proficiencies: MutableCollection<Proficiency> = mutableListOf()
 
     init {
         Ability.values().forEach { a -> abilityScores[a] = 10 }
