@@ -27,7 +27,10 @@ class WeaponAttackRollFactory {
             actor.getAbilityModifier(Ability.STRENGTH)
         }
 
-        // TODO: Check if character is proficient with weapon
+        if(actor.hasProficiency(weapon)) {
+            mod += actor.proficiencyBonus
+        }
+
         mod += actor.proficiencyBonus
 
         return when (rollType) {

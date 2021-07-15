@@ -19,4 +19,5 @@ class UnarmedAttack : Weapon("Unarmed attack") {
     override val damageType = DamageType.BLUDGEONING
     override val range = 5
     override val priority = 0.01
+    override fun getProficiencyNames(): List<String> = listOf()
 }

@@ -13,7 +13,8 @@ class CustomWeapon(
     val attackBonus: Int,
     override val properties: List<WeaponProperty>,
     override val range: Int,
-    override val priority: Double
+    override val priority: Double,
+    val proficienciesRequired: List<String> = listOf()
     ) : Weapon(name) {
 
     override var toHitModifier = attackBonus
@@ -29,4 +30,5 @@ class CustomWeapon(
     }
 
     override fun getDamage(attackAction: MeleeAttackAction): Int = damageBonus
+    override fun getProficiencyNames(): List<String> = proficienciesRequired
 }

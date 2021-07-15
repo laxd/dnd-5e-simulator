@@ -11,6 +11,7 @@ import uk.laxd.dndSimulator.event.EventLogger
 import uk.laxd.dndSimulator.feature.Effect
 import uk.laxd.dndSimulator.feature.Feature
 import uk.laxd.dndSimulator.proficiency.Proficiency
+import uk.laxd.dndSimulator.proficiency.ProficiencyAble
 import java.util.*
 import java.util.stream.Collectors
 import kotlin.math.min
@@ -92,5 +93,12 @@ class Character(
 
     override fun toString(): String {
         return "$name ($hp/$maxHp)"
+    }
+
+    fun hasProficiency(proficiencyAble: ProficiencyAble): Boolean {
+        val proficiencyNames = proficiencyAble.getProficiencyNames()
+
+        return proficiencies.map { p -> p.name }
+            .any { name -> proficiencyNames.contains(name) }
     }
 }

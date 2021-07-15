@@ -27,4 +27,5 @@ class Greatsword : Weapon("Greatsword") {
     override val damageType = DamageType.SLASHING
     override val range = 5
     override val priority = 0.8
+    override fun getProficiencyNames(): List<String> = listOf("martial-weapons", "greatsword")
 }
