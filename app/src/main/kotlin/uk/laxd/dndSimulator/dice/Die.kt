@@ -42,6 +42,8 @@ open class Die(val maxValue: Int) {
         @JvmField
         val D8 = Die(8)
         @JvmField
+        val D10 = Die(10)
+        @JvmField
         val D12 = Die(12)
         @JvmField
         val D20 = Die(20)
