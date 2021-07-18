@@ -45,7 +45,7 @@ class CharacterFactory(
         character.maxHp = hp
         character.hp = hp
 
-        character.armour.addAll(characterConfig.armour.mapNotNull {  a -> armourFactory.createArmour(a) })
+        character.inventory.addAll(characterConfig.armour.mapNotNull {  a -> armourFactory.createArmour(a) })
 
 
         if(characterConfig.overrideArmourClass != null) {
@@ -53,7 +53,7 @@ class CharacterFactory(
         }
         // TODO: Allow to equip a shield if we have one
 
-        character.weapons.addAll(
+        character.inventory.addAll(
             characterConfig.weapons.map { w -> weaponFactory.createWeapon(w) }
         )
 

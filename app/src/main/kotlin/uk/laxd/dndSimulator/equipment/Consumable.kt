@@ -9,7 +9,7 @@ import uk.laxd.dndSimulator.character.Character
  * * Scrolls
  * * Any other usable trinkets
  */
-abstract class Consumable(name: String) : Equipment(name) {
+abstract class Consumable(name: String) : Item(name) {
 
     val uses: Int = 1
 
@@ -21,5 +21,5 @@ abstract class Consumable(name: String) : Equipment(name) {
 enum class ConsumableCategory {
     POTION,
     SCROLL,
-    TRINKET
+    WONDROUS_ITEM
 }

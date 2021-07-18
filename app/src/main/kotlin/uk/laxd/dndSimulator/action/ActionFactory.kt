@@ -25,7 +25,7 @@ class ActionFactory(
         }
 
         // Find highest priority weapon with melee range
-        val weapon = character.weapons
+        val weapon = character.getEquippedWeapons()
             .filter { w -> w.range <= 5 }
             .maxByOrNull { w -> w.priority } ?: UnarmedAttack()
 

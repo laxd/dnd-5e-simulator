@@ -6,6 +6,7 @@ import uk.laxd.dndSimulator.equipment.UnarmedAttack
 import uk.laxd.dndSimulator.action.Damage
 import uk.laxd.dndSimulator.dice.Die
 import uk.laxd.dndSimulator.equipment.Armour
+import uk.laxd.dndSimulator.equipment.Item
 import uk.laxd.dndSimulator.event.DamageEvent
 import uk.laxd.dndSimulator.event.EventLogger
 import uk.laxd.dndSimulator.feature.Effect
@@ -31,9 +32,7 @@ class Character(
     val features: MutableList<Feature> = mutableListOf()
     val proficiencies: MutableList<Proficiency> = mutableListOf()
 
-    // TODO: Combine armour and weapons into equipment list?
-    val armour: MutableList<Armour> = mutableListOf()
-    var weapons: MutableList<Weapon> = mutableListOf(UnarmedAttack())
+    val inventory: MutableList<Item> = mutableListOf()
 
     fun addLevel(characterClass: CharacterClass, level: Int) {
         characterClassLevels.compute(characterClass) { _: CharacterClass?, v: Int? -> if (v == null) level else level + v }
@@ -54,7 +53,8 @@ class Character(
         }
 
         // For now, find best armour we can equip, and assume it is equipped
-        val ac = armour.filter { a -> a.requiredStrength <= getAbilityScore(Ability.STRENGTH) }
+        val ac = inventory.asSequence().filterIsInstance<Armour>()
+            .filter { a -> a.requiredStrength <= getAbilityScore(Ability.STRENGTH) }
             .filter { a -> hasProficiency(a) }
             .map { a -> (a.armourClass ?: 0) + a.getAdditionalArmourClass(this) }
             .minOrNull()
@@ -114,6 +114,17 @@ class Character(
 
         return proficiencies.map { p -> p.name }
             .any { name -> proficiencyNames.contains(name) }
+    }
+
+    // TODO: Can you have more than one piece of armour equipped at a time?
+    fun getEquippedArmour(): List<Armour> {
+        return inventory.filterIsInstance<Armour>()
+            .filter { a -> a.isEquipped }
+    }
+
+    fun getEquippedWeapons(): List<Weapon> {
+        return inventory.filterIsInstance<Weapon>()
+            .filter { w -> w.isEquipped }
     }
 
     // All Effect methods replicated in Character to make it easier to apply
