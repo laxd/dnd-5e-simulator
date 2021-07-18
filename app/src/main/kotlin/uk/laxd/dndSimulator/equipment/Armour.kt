@@ -2,13 +2,14 @@ package uk.laxd.dndSimulator.equipment
 
 import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.character.Character
+import uk.laxd.dndSimulator.proficiency.ProficiencyAble
 import kotlin.math.min
 
 /**
  * Any sort of wearable armour that provides some sort of
  * protection to the wearer (including Shields)
  */
-abstract class Armour(name: String) : Equipment(name) {
+abstract class Armour(name: String) : Equipment(name), ProficiencyAble {
 
     /**
      * Returns the static armour class provided by this armour.
@@ -44,6 +45,9 @@ abstract class Armour(name: String) : Equipment(name) {
      */
     abstract val armourCategory: ArmourCategory
 
+    override fun getProficiencyNames(): List<String> {
+        return listOf(armourCategory.proficiencyName)
+    }
 }
 
 class PaddedArmour : Armour("Padded armour") {

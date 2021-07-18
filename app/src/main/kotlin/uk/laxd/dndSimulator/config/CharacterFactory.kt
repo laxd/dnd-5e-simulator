@@ -45,24 +45,11 @@ class CharacterFactory(
         character.maxHp = hp
         character.hp = hp
 
-        if(characterConfig.overrideArmourClass == null) {
-            // TODO: Should this be calculated by the character? Doing it here means it can't change mid-combat
-            // Build all of the armour we have equipped, and then
-            // find some armour that we can wear and calculate AC from that
-            val armour = characterConfig.armour.mapNotNull { a -> armourFactory.createArmour(a) }
-                .filter { a -> a.requiredStrength < character.getAbilityScore(Ability.STRENGTH) }
-                .filter { a -> a.armourClass != null }
-                .minByOrNull { a -> a.priority }
+        character.armour.addAll(characterConfig.armour.mapNotNull {  a -> armourFactory.createArmour(a) })
 
-            if(armour == null) {
-                character.armorClass = 10
-            }
-            else {
-                character.armorClass = armour.armourClass!! + armour.getAdditionalArmourClass(character)
-            }
-        }
-        else {
-            character.armorClass = characterConfig.overrideArmourClass
+
+        if(characterConfig.overrideArmourClass != null) {
+            character.overrideArmourClass = characterConfig.overrideArmourClass
         }
         // TODO: Allow to equip a shield if we have one
 

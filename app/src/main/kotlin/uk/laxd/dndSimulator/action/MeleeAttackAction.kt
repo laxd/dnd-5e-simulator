@@ -26,7 +26,7 @@ class MeleeAttackAction(
         outcome = when(attackRollResult.dieOutcome) {
             1 -> AttackOutcome.MISS
             20 -> AttackOutcome.CRIT
-            else -> if (attackRollResult.outcome >= target.armorClass) AttackOutcome.HIT else AttackOutcome.MISS
+            else -> if (attackRollResult.outcome >= target.getArmourClass()) AttackOutcome.HIT else AttackOutcome.MISS
         }
 
         EventLogger.instance.logEvent(MeleeAttackEventOnly(actor, target, attackRollResult, outcome))

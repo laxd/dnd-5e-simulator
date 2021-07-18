@@ -25,7 +25,7 @@ class Character(
     val characterClassLevels: MutableMap<CharacterClass, Int> = EnumMap(CharacterClass::class.java)
     val abilities: MutableMap<Ability, Int> = EnumMap(Ability::class.java)
     var attackCount = 1
-    var armorClass = 10
+    var overrideArmourClass: Int? = null
     var proficiencyBonus: Int = 1
     var initiativeModifier: Int = 0
     val features: MutableList<Feature> = mutableListOf()
@@ -47,6 +47,20 @@ class Character(
         get() = characterClassLevels.values
             .stream().mapToInt { i -> i }
             .sum()
+
+    fun getArmourClass(): Int {
+        if(overrideArmourClass != null) {
+            return overrideArmourClass!!
+        }
+
+        // For now, find best armour we can equip, and assume it is equipped
+        val ac = armour.filter { a -> a.requiredStrength <= getAbilityScore(Ability.STRENGTH) }
+            .filter { a -> hasProficiency(a) }
+            .map { a -> (a.armourClass ?: 0) + a.getAdditionalArmourClass(this) }
+            .minOrNull()
+
+        return ac ?: 10
+    }
 
     fun setAbilityScore(ability: Ability, score: Int) {
         abilities[ability] = score
@@ -101,4 +115,6 @@ class Character(
         return proficiencies.map { p -> p.name }
             .any { name -> proficiencyNames.contains(name) }
     }
+
+    // All Effect methods replicated in Character to make it easier to apply
 }
