@@ -34,7 +34,7 @@ internal class MeleeAttackActionTest {
         every { attackRollFactory.createAttackRoll(weapon, actor) }
             .returns(Roll(Die.fixedRoll(10, 20), modifier = 0))
 
-        target.armorClass = 15
+        target.overrideArmourClass = 15
 
         meleeAttackAction.performAction()
 
@@ -46,7 +46,7 @@ internal class MeleeAttackActionTest {
         every { attackRollFactory.createAttackRoll(weapon, actor) }
             .returns(Roll(Die.fixedRoll(1, 20), modifier = 100))
 
-        target.armorClass = 15
+        target.overrideArmourClass = 15
 
         meleeAttackAction.performAction()
 
@@ -58,7 +58,7 @@ internal class MeleeAttackActionTest {
         every { attackRollFactory.createAttackRoll(weapon, actor) }
             .returns(Roll(Die.fixedRoll(20, 20), modifier = 0))
 
-        target.armorClass = 21
+        target.overrideArmourClass = 21
 
         meleeAttackAction.performAction()
 

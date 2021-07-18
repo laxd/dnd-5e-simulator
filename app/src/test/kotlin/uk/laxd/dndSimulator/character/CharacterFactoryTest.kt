@@ -22,6 +22,8 @@ import uk.laxd.dndSimulator.equipment.StuddedLeatherArmour
 import uk.laxd.dndSimulator.feature.Feature
 import uk.laxd.dndSimulator.feature.FeatureFactory
 import uk.laxd.dndSimulator.feature.barbarian.Rage
+import uk.laxd.dndSimulator.proficiency.Proficiency
+import uk.laxd.dndSimulator.proficiency.ProficiencyType
 import java.util.stream.Stream
 
 internal class CharacterFactoryTest {
@@ -76,7 +78,7 @@ internal class CharacterFactoryTest {
     internal fun `AC is set to 10 if no armour equipped`() {
         val character = characterFactory.createCharacter(config)
 
-        assertEquals(10, character.armorClass)
+        assertEquals(10, character.getArmourClass())
     }
 
     @Test
@@ -88,12 +90,27 @@ internal class CharacterFactoryTest {
         ))
 
         val character = characterFactory.createCharacter(config)
+        character.proficiencies.add(Proficiency("light-armour", ProficiencyType.ARMOUR))
 
-        assertEquals(12, character.armorClass)
+        assertEquals(12, character.getArmourClass())
     }
 
     @Test
-    internal fun `AC is set based on equipped armour and includes additional based on ability scores`() {
+    internal fun `AC does not include equipped armour without proficiency`() {
+        config.armour.add(CustomArmourConfig("Test armour", 12, false, null, armourCategory = ArmourCategory.LIGHT))
+
+        every { armourFactory.createArmour(any()) }.returns(CustomArmour(
+            "Test armour", 12, false, armourCategory = ArmourCategory.LIGHT
+        ))
+
+        val character = characterFactory.createCharacter(config)
+        character.proficiencies.remove(Proficiency("light-armour", ProficiencyType.ARMOUR))
+
+        assertEquals(10, character.getArmourClass())
+    }
+
+    @Test
+    internal fun `AC is set based on equipped armour if proficient and includes additional based on ability scores`() {
         config.armour.add(CustomArmourConfig("Test armour", 12, true, null, armourCategory = ArmourCategory.LIGHT))
         config.abilityScores.put(Ability.DEXTERITY, 20)
 
@@ -102,9 +119,10 @@ internal class CharacterFactoryTest {
         ))
 
         val character = characterFactory.createCharacter(config)
+        character.proficiencies.add(Proficiency("light-armour", ProficiencyType.ARMOUR))
 
         // Base 12 AC, plus 5 from dex
-        assertEquals(17, character.armorClass)
+        assertEquals(17, character.getArmourClass())
     }
 
     @Test
@@ -114,7 +132,7 @@ internal class CharacterFactoryTest {
 
         val character = characterFactory.createCharacter(config)
 
-        assertEquals(25, character.armorClass)
+        assertEquals(25, character.getArmourClass())
     }
 
     @Test
