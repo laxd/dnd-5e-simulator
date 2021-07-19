@@ -52,14 +52,13 @@ class Character(
             return overrideArmourClass!!
         }
 
-        // For now, find best armour we can equip, and assume it is equipped
-        val ac = inventory.asSequence().filterIsInstance<Armour>()
-            .filter { a -> a.requiredStrength <= getAbilityScore(Ability.STRENGTH) }
-            .filter { a -> hasProficiency(a) }
-            .map { a -> (a.armourClass ?: 0) + a.getAdditionalArmourClass(this) }
-            .minOrNull()
+        val armour = getEquippedArmour()
 
-        return ac ?: 10
+        if(armour == null || !hasProficiency(armour)) {
+            return 10
+        }
+
+        return (armour.armourClass ?: 0) + armour.getAdditionalArmourClass(this)
     }
 
     fun setAbilityScore(ability: Ability, score: Int) {
@@ -116,10 +115,9 @@ class Character(
             .any { name -> proficiencyNames.contains(name) }
     }
 
-    // TODO: Can you have more than one piece of armour equipped at a time?
-    fun getEquippedArmour(): List<Armour> {
+    fun getEquippedArmour(): Armour? {
         return inventory.filterIsInstance<Armour>()
-            .filter { a -> a.isEquipped }
+            .firstOrNull { a -> a.isEquipped }
     }
 
     fun getEquippedWeapons(): List<Weapon> {

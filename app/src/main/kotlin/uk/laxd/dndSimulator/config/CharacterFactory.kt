@@ -45,8 +45,17 @@ class CharacterFactory(
         character.maxHp = hp
         character.hp = hp
 
-        character.inventory.addAll(characterConfig.armour.mapNotNull {  a -> armourFactory.createArmour(a) })
+        val armour = characterConfig.armour
+            .mapNotNull { a -> armourFactory.createArmour(a) }
+                // TODO: Allow equipping sub-optimal armour like this
+            .filter { a -> a.requiredStrength <= character.getAbilityScore(Ability.STRENGTH) }
+            .sortedBy { a -> (a.armourClass ?: 0) + a.getAdditionalArmourClass(character) }
 
+        // Un-equip all armour, then set the one with highest total AC to be equipped
+        armour.forEach { a -> a.isEquipped = false }
+        armour.firstOrNull()?.isEquipped = true
+
+        character.inventory.addAll(armour)
 
         if(characterConfig.overrideArmourClass != null) {
             character.overrideArmourClass = characterConfig.overrideArmourClass

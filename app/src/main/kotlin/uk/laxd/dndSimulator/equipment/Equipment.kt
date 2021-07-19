@@ -5,6 +5,6 @@ package uk.laxd.dndSimulator.equipment
  */
 open class Equipment(name: String) : Item(name) {
 
-    val isEquipped: Boolean = false
+    var isEquipped: Boolean = false
 
 }
