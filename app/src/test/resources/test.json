@@ -8,8 +8,9 @@
       "levels": {
         "BARBARIAN": 4
       },
-      "weapons": [
+      "inventory": [
         {
+          "type": "CUSTOM_WEAPON",
           "name": "Greataxe",
           "damageType": "SLASHING",
           "diceDamage": 12,
@@ -23,6 +24,7 @@
           "priority": 1.0
         },
         {
+          "type": "CUSTOM_WEAPON",
           "name": "Shortbow",
           "damageType": "PIERCING",
           "diceDamage": 6,
@@ -37,15 +39,13 @@
           ],
           "range": 60,
           "priority": 0.5
-        }
-      ],
-      "armour": [
+        },
         {
-          "type": "LOOKUP",
+          "type": "LOOKUP_ARMOUR",
           "name": "Studded leather armour"
         },
         {
-          "type": "CUSTOM",
+          "type": "CUSTOM_ARMOUR",
           "name": "My super awesome armour",
           "ac": 20,
           "hasDexBonus": true,

@@ -11,14 +11,13 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import uk.laxd.dndSimulator.ability.Ability
-import uk.laxd.dndSimulator.config.ArmourFactory
 import uk.laxd.dndSimulator.config.internal.CharacterConfig
 import uk.laxd.dndSimulator.config.CharacterFactory
-import uk.laxd.dndSimulator.config.WeaponFactory
 import uk.laxd.dndSimulator.config.internal.CustomArmourConfig
+import uk.laxd.dndSimulator.config.internal.ItemConfig
 import uk.laxd.dndSimulator.equipment.ArmourCategory
 import uk.laxd.dndSimulator.equipment.CustomArmour
-import uk.laxd.dndSimulator.equipment.StuddedLeatherArmour
+import uk.laxd.dndSimulator.equipment.ItemFactory
 import uk.laxd.dndSimulator.feature.Feature
 import uk.laxd.dndSimulator.feature.FeatureFactory
 import uk.laxd.dndSimulator.feature.barbarian.Rage
@@ -29,8 +28,7 @@ import java.util.stream.Stream
 internal class CharacterFactoryTest {
 
     private val featureFactory: FeatureFactory = mockk(relaxed = true)
-    private val armourFactory: ArmourFactory = mockk(relaxed = true)
-    private val weaponFactory: WeaponFactory = mockk(relaxed = true)
+    private val itemFactory: ItemFactory = mockk(relaxed = true)
 
     private lateinit var characterFactory: CharacterFactory
 
@@ -40,7 +38,7 @@ internal class CharacterFactoryTest {
     internal fun setUp() {
         config = CharacterConfig("Steve", "Team A")
 
-        characterFactory = CharacterFactory(featureFactory, armourFactory, weaponFactory)
+        characterFactory = CharacterFactory(featureFactory, itemFactory)
     }
 
     @Test
@@ -72,67 +70,6 @@ internal class CharacterFactoryTest {
         val characters = characterFactory.createCharacters(listOf(config))
 
         assertEquals(characters[0].hp, characters[0].maxHp)
-    }
-
-    @Test
-    internal fun `AC is set to 10 if no armour equipped`() {
-        val character = characterFactory.createCharacter(config)
-
-        assertEquals(10, character.getArmourClass())
-    }
-
-    @Test
-    internal fun `AC is set based on equipped armour`() {
-        config.armour.add(CustomArmourConfig("Test armour", 12, false, null, armourCategory = ArmourCategory.LIGHT))
-
-        every { armourFactory.createArmour(any()) }.returns(CustomArmour(
-            "Test armour", 12, false, armourCategory = ArmourCategory.LIGHT
-        ))
-
-        val character = characterFactory.createCharacter(config)
-        character.proficiencies.add(Proficiency("light-armour", ProficiencyType.ARMOUR))
-
-        assertEquals(12, character.getArmourClass())
-    }
-
-    @Test
-    internal fun `AC does not include equipped armour without proficiency`() {
-        config.armour.add(CustomArmourConfig("Test armour", 12, false, null, armourCategory = ArmourCategory.LIGHT))
-
-        every { armourFactory.createArmour(any()) }.returns(CustomArmour(
-            "Test armour", 12, false, armourCategory = ArmourCategory.LIGHT
-        ))
-
-        val character = characterFactory.createCharacter(config)
-        character.proficiencies.remove(Proficiency("light-armour", ProficiencyType.ARMOUR))
-
-        assertEquals(10, character.getArmourClass())
-    }
-
-    @Test
-    internal fun `AC is set based on equipped armour if proficient and includes additional based on ability scores`() {
-        config.armour.add(CustomArmourConfig("Test armour", 12, true, null, armourCategory = ArmourCategory.LIGHT))
-        config.abilityScores.put(Ability.DEXTERITY, 20)
-
-        every { armourFactory.createArmour(any()) }.returns(CustomArmour(
-            "Test armour", 12, true, armourCategory = ArmourCategory.LIGHT
-        ))
-
-        val character = characterFactory.createCharacter(config)
-        character.proficiencies.add(Proficiency("light-armour", ProficiencyType.ARMOUR))
-
-        // Base 12 AC, plus 5 from dex
-        assertEquals(17, character.getArmourClass())
-    }
-
-    @Test
-    internal fun `AC is set to override value if it is set`() {
-        config = CharacterConfig("Steve", "Team A", overrideArmourClass = 25)
-        config.armour.add(CustomArmourConfig("Test armour", 12, true, null, armourCategory = ArmourCategory.LIGHT))
-
-        val character = characterFactory.createCharacter(config)
-
-        assertEquals(25, character.getArmourClass())
     }
 
     @Test

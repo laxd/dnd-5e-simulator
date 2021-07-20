@@ -6,16 +6,17 @@ import uk.laxd.dndSimulator.ability.Ability
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.config.internal.CharacterConfig
 import uk.laxd.dndSimulator.config.internal.CustomArmourConfig
-import uk.laxd.dndSimulator.config.internal.LookupArmourConfig
 import uk.laxd.dndSimulator.dice.Die
 import uk.laxd.dndSimulator.equipment.Armour
+import uk.laxd.dndSimulator.equipment.Equipment
+import uk.laxd.dndSimulator.equipment.ItemFactory
+import uk.laxd.dndSimulator.equipment.Weapon
 import java.util.stream.Collectors
 
 @Component
 class CharacterFactory(
     private val featureFactory: FeatureFactory,
-    private val armourFactory: ArmourFactory,
-    private val weaponFactory: WeaponFactory
+    private val itemFactory: ItemFactory
 ) {
 
     fun createCharacters(characterConfigs: Collection<CharacterConfig>) : List<Character> {
@@ -45,26 +46,33 @@ class CharacterFactory(
         character.maxHp = hp
         character.hp = hp
 
-        val armour = characterConfig.armour
-            .mapNotNull { a -> armourFactory.createArmour(a) }
-                // TODO: Allow equipping sub-optimal armour like this
-            .filter { a -> a.requiredStrength <= character.getAbilityScore(Ability.STRENGTH) }
-            .sortedBy { a -> (a.armourClass ?: 0) + a.getAdditionalArmourClass(character) }
+        character.inventory.addAll(
+            characterConfig.inventory.mapNotNull { i -> itemFactory.createItem(i) }
+        )
 
-        // Un-equip all armour, then set the one with highest total AC to be equipped
-        armour.forEach { a -> a.isEquipped = false }
-        armour.firstOrNull()?.isEquipped = true
+        // Set everything to be NOT equipped by default
+        character.inventory
+            .filterIsInstance<Equipment>()
+            .forEach { i -> i.isEquipped = false }
 
-        character.inventory.addAll(armour)
+        // Then equip just a single item of armour
+        val armour = character.inventory
+            .filterIsInstance<Armour>()
+                // TODO: Allow equipping sub-optimal armour instead of just filtering them out
+            .filter { a -> a.requiredStrength >= character.getAbilityScore(Ability.STRENGTH) }
+            .filter { a -> character.hasProficiency(a) }
+            .maxByOrNull { a -> (a.armourClass ?: 0) + a.getAdditionalArmourClass(character) }
+
+        armour?.isEquipped = true
+
+        // TODO: Equip weapons
+        character.inventory
+            .filterIsInstance<Weapon>()
+            .sortedBy { w -> w.priority }
 
         if(characterConfig.overrideArmourClass != null) {
             character.overrideArmourClass = characterConfig.overrideArmourClass
         }
-        // TODO: Allow to equip a shield if we have one
-
-        character.inventory.addAll(
-            characterConfig.weapons.map { w -> weaponFactory.createWeapon(w) }
-        )
 
         character.proficiencyBonus = (1 + Math.ceil(character.level / 4.0)).toInt()
         character.initiativeModifier = character.getAbilityModifier(Ability.DEXTERITY)

@@ -9,10 +9,8 @@ import uk.laxd.dndSimulator.character.CharacterClass
 import uk.laxd.dndSimulator.config.PostSimulationEventDefinition
 import uk.laxd.dndSimulator.config.internal.*
 import uk.laxd.dndSimulator.equipment.ArmourCategory
-import uk.laxd.dndSimulator.equipment.CustomWeapon
 import uk.laxd.dndSimulator.equipment.WeaponProperty
 import uk.laxd.dndSimulator.proficiency.Proficiency
-import java.lang.IllegalArgumentException
 import kotlin.reflect.KClass
 
 data class JsonSimulationConfig(
@@ -28,11 +26,10 @@ data class JsonCharacterConfig(
     var AC: Int? = null,
     val levels: Map<String, Int> = mapOf(),
     val abilities: Map<String, Int> = mapOf(),
-    val armour: MutableCollection<JsonArmour> = mutableListOf(),
-    val weapons: MutableCollection<JsonWeapon> = mutableListOf(),
+    val inventory: MutableCollection<JsonItem> = mutableListOf(),
     val proficiencies: MutableCollection<Proficiency> = mutableListOf()
-): CharacterConfigBuilder {
-    override fun toCharacterConfig(): CharacterConfig {
+): ConfigBuilder<CharacterConfig> {
+    override fun toConfig(): CharacterConfig {
         val config = CharacterConfig(name, team, AC)
 
         config.hp = hp ?: 0
@@ -45,8 +42,7 @@ data class JsonCharacterConfig(
             abilities.mapKeys { (k, _) -> Ability.valueOf(k) }
         )
 
-        weapons.forEach { w -> config.weapons.add(w.toWeaponConfig()) }
-        armour.forEach { a -> config.armour.add(a.toArmourConfig()) }
+        inventory.forEach { i -> config.inventory.add(i.toConfig()) }
 
         config.proficiencies.addAll(proficiencies)
 
@@ -54,29 +50,38 @@ data class JsonCharacterConfig(
     }
 }
 
-enum class ArmourType {
-    LOOKUP, CUSTOM
+enum class JsonItemType {
+    LOOKUP_ARMOUR,
+    CUSTOM_ARMOUR,
+    LOOKUP_WEAPON,
+    CUSTOM_WEAPON,
+    LOOKUP_WONDROUS_ITEM,
+    LOOKUP_CONSUMABLE
 }
 
-class ArmourAdapter: TypeAdapter<JsonArmour> {
-    override fun classFor(type: Any): KClass<out JsonArmour> {
-        return when(ArmourType.valueOf(type as String)) {
-            ArmourType.LOOKUP -> LookupJsonArmour::class
-            ArmourType.CUSTOM -> CustomJsonArmour::class
+class ItemAdapter: TypeAdapter<JsonItem> {
+    override fun classFor(type: Any): KClass<out JsonItem> {
+        return when(JsonItemType.valueOf(type as String)) {
+            JsonItemType.LOOKUP_ARMOUR -> LookupJsonArmour::class
+            JsonItemType.CUSTOM_ARMOUR -> CustomJsonArmour::class
+            JsonItemType.LOOKUP_WEAPON -> LookupJsonWeapon::class
+            JsonItemType.CUSTOM_WEAPON -> CustomJsonWeapon::class
+            JsonItemType.LOOKUP_WONDROUS_ITEM -> LookupJsonWondrousItem::class
+            JsonItemType.LOOKUP_CONSUMABLE -> LookupJsonConsumable::class
         }
     }
 }
 
-@TypeFor(field = "type", adapter = ArmourAdapter::class)
-abstract class JsonArmour(
-    val type: ArmourType
-): ArmourConfigBuilder
+@TypeFor(field = "type", adapter = ItemAdapter::class)
+abstract class JsonItem(
+    val type: JsonItemType
+): ConfigBuilder<ItemConfig>
 
 data class LookupJsonArmour(
     val name: String
-): JsonArmour(ArmourType.LOOKUP) {
-    override fun toArmourConfig(): ArmourConfig {
-        return LookupArmourConfig(name)
+): JsonItem(JsonItemType.LOOKUP_ARMOUR) {
+    override fun toConfig(): LookupItem {
+        return LookupItem(name, ItemType.ARMOUR)
     }
 }
 
@@ -88,8 +93,8 @@ data class CustomJsonArmour(
     val requiredStrength: Int = 0,
     val disadvantageOnStealth: Boolean = false,
     val category: ArmourCategory
-): JsonArmour(ArmourType.CUSTOM) {
-    override fun toArmourConfig(): ArmourConfig {
+): JsonItem(JsonItemType.CUSTOM_ARMOUR) {
+    override fun toConfig(): CustomArmourConfig {
         return CustomArmourConfig(
             name,
             ac,
@@ -102,8 +107,15 @@ data class CustomJsonArmour(
     }
 }
 
-// TODO: Refactor to CustomJsonWeapon and LookupJsonWeapon, allowing adding base weapons just by name
-data class JsonWeapon(
+data class LookupJsonWeapon(
+    val name: String
+): JsonItem(JsonItemType.LOOKUP_WEAPON) {
+    override fun toConfig(): LookupItem {
+        return LookupItem(name, ItemType.WEAPON)
+    }
+}
+
+data class CustomJsonWeapon(
     val name: String,
     val damageType: String,
     val diceDamage: Int,
@@ -113,8 +125,8 @@ data class JsonWeapon(
     val properties: Collection<String>,
     val range: Int,
     val priority: Double = 1.0
-) : WeaponConfigBuilder {
-    override fun toWeaponConfig(): WeaponConfig {
+) : JsonItem(JsonItemType.CUSTOM_WEAPON) {
+    override fun toConfig(): CustomWeaponConfig {
         return CustomWeaponConfig(
             this.name,
             DamageType.valueOf(this.damageType.toUpperCase()),
@@ -126,5 +138,21 @@ data class JsonWeapon(
             this.range,
             this.priority
         )
+    }
+}
+
+data class LookupJsonWondrousItem(
+    val name: String
+): JsonItem(JsonItemType.LOOKUP_WONDROUS_ITEM) {
+    override fun toConfig(): LookupItem {
+        return LookupItem(name, ItemType.WONDROUS_ITEM)
+    }
+}
+
+data class LookupJsonConsumable(
+    val name: String
+): JsonItem(JsonItemType.LOOKUP_CONSUMABLE) {
+    override fun toConfig(): LookupItem {
+        return LookupItem(name, ItemType.CONSUMABLE)
     }
 }

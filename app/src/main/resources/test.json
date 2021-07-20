@@ -8,8 +8,9 @@
       "levels": {
         "BARBARIAN": 5
       },
-      "weapons": [
+      "inventory": [
         {
+          "type": "CUSTOM_WEAPON",
           "name": "Greatsword",
           "damageType": "SLASHING",
           "diceDamage": 6,
@@ -23,6 +24,7 @@
           "priority": 1.0
         },
         {
+          "type": "CUSTOM_WEAPON",
           "name": "Shortbow",
           "damageType": "PIERCING",
           "diceDamage": 6,
@@ -65,8 +67,9 @@
       "team": "Creatures",
       "AC": 15,
       "levels": {},
-      "weapons": [
+      "inventory": [
         {
+          "type": "CUSTOM_WEAPON",
           "name": "Dagger",
           "damageType": "PIERCING",
           "diceDamage": 4,
@@ -89,8 +92,9 @@
       "team": "Creatures",
       "AC": 20,
       "levels": {},
-      "weapons": [
+      "inventory": [
         {
+          "type": "CUSTOM_WEAPON",
           "name": "Dagger",
           "damageType": "PIERCING",
           "diceDamage": 4,

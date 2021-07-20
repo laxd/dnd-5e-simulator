@@ -25,8 +25,7 @@ class CharacterConfig(
     val characterClassLevels: MutableMap<CharacterClass, Int> = EnumMap(CharacterClass::class.java)
     val abilityScores: MutableMap<Ability, Int> = EnumMap(Ability::class.java)
 
-    val weapons: MutableCollection<WeaponConfig> = mutableListOf()
-    val armour: MutableCollection<ArmourConfig> = mutableListOf()
+    val inventory: MutableCollection<ItemConfig> = mutableListOf()
     val proficiencies: MutableCollection<Proficiency> = mutableListOf()
 
     init {

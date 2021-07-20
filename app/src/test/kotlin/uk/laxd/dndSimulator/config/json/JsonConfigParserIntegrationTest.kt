@@ -52,7 +52,7 @@ class JsonConfigParserIntegrationTest {
     internal fun `config includes characters weapons`() {
         val simulationConfig = configParser.getConfig("src/test/resources/test.json")
 
-        assertThat(simulationConfig.characterConfigs.find { c -> c.name == "Magnus" }?.weapons)
+        assertThat(simulationConfig.characterConfigs.find { c -> c.name == "Magnus" }?.inventory)
             .extracting("name")
             .contains("Greataxe", "Shortbow")
     }
@@ -61,7 +61,7 @@ class JsonConfigParserIntegrationTest {
     internal fun `config includes armour with lookup type`() {
         val simulationConfig = configParser.getConfig("src/test/resources/test.json")
 
-        assertThat(simulationConfig.characterConfigs.find { c -> c.name == "Magnus" }?.armour)
+        assertThat(simulationConfig.characterConfigs.find { c -> c.name == "Magnus" }?.inventory)
             .extracting("name")
             .contains("Studded leather armour")
     }
@@ -70,7 +70,7 @@ class JsonConfigParserIntegrationTest {
     internal fun `config includes armour with custom type`() {
         val simulationConfig = configParser.getConfig("src/test/resources/test.json")
 
-        assertThat(simulationConfig.characterConfigs.find { c -> c.name == "Magnus" }?.armour)
+        assertThat(simulationConfig.characterConfigs.find { c -> c.name == "Magnus" }?.inventory)
             .extracting("name")
             .contains("My super awesome armour")
     }

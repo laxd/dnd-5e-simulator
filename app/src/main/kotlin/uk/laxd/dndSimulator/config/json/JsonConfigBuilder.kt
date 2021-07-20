@@ -19,7 +19,7 @@ class JsonConfigBuilder(
         val postSimulationEvents = mutableListOf<PostSimulationEvent>()
 
         for(jsonCharacterConfig in t.characters) {
-            val config = jsonCharacterConfig.toCharacterConfig()
+            val config = jsonCharacterConfig.toConfig()
 
             characterConfigs.add(config)
         }
