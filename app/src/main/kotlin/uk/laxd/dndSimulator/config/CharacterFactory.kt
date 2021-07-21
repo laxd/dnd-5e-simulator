@@ -65,10 +65,12 @@ class CharacterFactory(
 
         armour?.isEquipped = true
 
-        // TODO: Equip weapons
-        character.inventory
+        // TODO: Allow equipping multiple weapons (TWF)
+        val weapon = character.inventory
             .filterIsInstance<Weapon>()
-            .sortedBy { w -> w.priority }
+            .maxByOrNull { w -> w.priority }
+
+        weapon?.isEquipped = true
 
         if(characterConfig.overrideArmourClass != null) {
             character.overrideArmourClass = characterConfig.overrideArmourClass
