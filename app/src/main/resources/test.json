@@ -74,8 +74,8 @@
           "damageType": "PIERCING",
           "diceDamage": 4,
           "diceCount": 1,
-          "damageBonus": 1,
-          "attackBonus": 1,
+          "damageBonus": 2,
+          "attackBonus": 2,
           "properties": [
             "Finesse",
             "Light",
@@ -99,8 +99,8 @@
           "damageType": "PIERCING",
           "diceDamage": 4,
           "diceCount": 1,
-          "damageBonus": 1,
-          "attackBonus": 1,
+          "damageBonus": 2,
+          "attackBonus": 2,
           "properties": [
             "Finesse",
             "Light",
