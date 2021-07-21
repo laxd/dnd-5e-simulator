@@ -80,8 +80,8 @@ abstract class AttackAction(
     val attackDamage = AttackDamage()
 
     fun applyDamage() {
-        actor.features.forEach { f -> f.onDamageRoll(this) }
-        actor.features.forEach { f -> f.onDamageRollReceived(this) }
+        actor.onDamageRoll(this)
+        target.onDamageRollReceived(this)
 
         if(attackDamage.totalAmount == 0) {
             return
@@ -96,8 +96,8 @@ abstract class AttackAction(
                 attackDamage.damageMap[effect]!!)
         }
 
-        actor.features.forEach { f -> f.onDamageInflicted(this) }
-        actor.features.forEach { f -> f.onDamageReceived(this) }
+        actor.onDamageInflicted(this)
+        target.onDamageReceived(this)
 
         if(target.isDead()) {
             EventLogger.instance.logEvent(DeathEvent(target, actor))
