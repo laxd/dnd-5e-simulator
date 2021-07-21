@@ -17,19 +17,19 @@ class Encounter(
         // Create a list of characters, sorted by initiative
         val characters = participants.sortedBy { getInitiative(it) }
 
-        characters.forEach { c -> c.features.forEach { f -> f.onCombatStart(c) } }
+        characters.forEach { c -> c.onCombatStart() }
 
         while (!isEncounterFinished()) {
             EventLogger.instance.logEvent(RoundStartEvent())
             for (character in characters) {
                 if(character.hp > 0) {
-                    // TODO: Notify ALL characters about a character's turn start?
-                    character.features.forEach { f -> f.onTurnStart(character) }
+                    // TODO: Notify ALL characters about a character's turn start
+                    character.onTurnStart()
 
                     turnFactory.createTurn(character, targetSelector)
                         .doTurn()
 
-                    character.features.forEach { f -> f.onTurnEnd(character) }
+                    character.onTurnEnd()
                 }
             }
         }
@@ -46,7 +46,7 @@ class Encounter(
     private fun getInitiative(character: Character): Int {
         val roll = InitiativeRoll()
 
-        character.features.forEach { f -> f.onInitiativeRoll(roll) }
+        character.onInitiativeRoll(roll)
 
         return roll.roll().outcome + character.initiativeModifier
     }

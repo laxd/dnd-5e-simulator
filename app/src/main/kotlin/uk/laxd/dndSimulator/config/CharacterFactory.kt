@@ -78,11 +78,9 @@ class CharacterFactory(
         character.initiativeModifier = character.getAbilityModifier(Ability.DEXTERITY)
 
         // Finally, allow features to modify character
-        featureFactory.createFeatures(characterConfig)
-            .forEach { f -> character.addFeature(f) }
+        featureFactory.createFeatures(characterConfig).forEach { f -> character.addFeature(f) }
 
-        character.features
-            .forEach { f -> f.onCreate(character) }
+        character.onCreate()
 
         return character
     }
