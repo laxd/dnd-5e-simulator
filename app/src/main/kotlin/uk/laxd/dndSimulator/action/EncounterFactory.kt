@@ -1,6 +1,7 @@
 package uk.laxd.dndSimulator.action
 
 import org.springframework.stereotype.Component
+import uk.laxd.dndSimulator.action.initiative.SimpleInitiativeProvider
 import uk.laxd.dndSimulator.config.CharacterFactory
 import uk.laxd.dndSimulator.config.internal.SimulationConfig
 
@@ -13,6 +14,6 @@ class EncounterFactory(
         val characters = characterFactory.createCharacters(simulationConfig.characterConfigs)
 
         // TODO: Move target selector to character factory, as it be defined externally
-        return Encounter(turnFactory, characters, SimpleTargetSelector(characters))
+        return Encounter(turnFactory, characters, SimpleTargetSelector(characters), SimpleInitiativeProvider())
     }
 }

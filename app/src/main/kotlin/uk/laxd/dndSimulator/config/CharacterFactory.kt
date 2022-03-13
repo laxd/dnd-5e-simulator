@@ -80,6 +80,9 @@ class CharacterFactory(
         character.initiativeModifier = character.getAbilityModifier(Ability.DEXTERITY)
 
         // Finally, allow features to modify character
+        // TODO: Also allow specifying features as part of config
+        // If some features are required, should all automatic ones be ignored? Or provide an option to NOT
+        // use automatic ones?
         featureFactory.createFeatures(characterConfig).forEach { f -> character.addFeature(f) }
 
         character.onCreate()

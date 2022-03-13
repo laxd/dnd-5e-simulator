@@ -1,13 +1,15 @@
 package uk.laxd.dndSimulator.action
 
 import org.slf4j.LoggerFactory
+import uk.laxd.dndSimulator.action.initiative.InitiativeProvider
 import uk.laxd.dndSimulator.character.Character
 import uk.laxd.dndSimulator.event.*
 
 class Encounter(
     private val turnFactory: TurnFactory,
     private val participants: Collection<Character>,
-    private val targetSelector: TargetSelector
+    private val targetSelector: TargetSelector,
+    private val initiativeProvider: InitiativeProvider
 ) {
 
     fun startEncounter() {
@@ -15,7 +17,7 @@ class Encounter(
         EventLogger.instance.logEvent(EncounterStartEvent())
 
         // Create a list of characters, sorted by initiative
-        val characters = participants.sortedBy { getInitiative(it) }
+        val characters = participants.sortedBy { initiativeProvider.getInitiative(it) }
 
         characters.forEach { c -> c.onCombatStart() }
 
@@ -41,14 +43,6 @@ class Encounter(
         ))
 
         LOGGER.debug("Finishing encounter")
-    }
-
-    private fun getInitiative(character: Character): Int {
-        val roll = InitiativeRoll()
-
-        character.onInitiativeRoll(roll)
-
-        return roll.roll().outcome + character.initiativeModifier
     }
 
     /**
